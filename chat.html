@@ -35,7 +35,13 @@
     <li><a href="chat-room-music-toki.html">🎵 音楽と木</a></li>
 </ul>
 
-<script src="https://cdn.jsdelivr.net/npm/markmap-autoloader"></script>
+ <h2>マインドマップ｜みんなの思考メモ</h2>
+  <p>ここでは、気づき・問い・ひらめきを誰でも投稿できます。</p>
+    <!-- マインドマップ＋投稿フォーム（このあと貼る） -->
+
+</main>
+
+  <script src="https://cdn.jsdelivr.net/npm/markmap-autoloader"></script>
 
 <pre id="mindmap">
 # 音楽と木
@@ -50,14 +56,27 @@
 </pre>
 
 <form id="memoForm">
-  <textarea placeholder="メモを入力してください..." rows="4"></textarea>
+  <textarea id="memo" placeholder="メモを入力してください..." rows="4"></textarea>
   <button type="submit">投稿</button>
 </form>
 
-  
-  
-  <footer>
-    <small>© 2025 ULTLA Fan Community</small>
+<script>
+  const form = document.getElementById("memoForm");
+  const memoInput = document.getElementById("memo");
+  const mindmapEl = document.getElementById("mindmap");
+
+  form.addEventListener("submit", function(event) {
+    event.preventDefault();
+    const text = memoInput.value.trim();
+    if (text) {
+      mindmapEl.textContent += `\\n- ${text}`;
+      window.markmap.autoLoader.renderAll();
+      memoInput.value = "";
+    }
+  });
+</script>
+
+
   </footer>
 </body>
 </html>
