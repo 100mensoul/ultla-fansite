@@ -1,0 +1,27 @@
+<h2>🌱 ULTLAって何？ </h2>
+
+<form id="chat-form">
+  <label>ニックネーム: <input type="text" id="username" required></label><br><br>
+  <label>メッセージ: <input type="text" id="message" required></label>
+  <button type="submit">送信</button>
+</form>
+
+<div id="chat-log" style="margin-top:2rem; border-top:1px solid #ccc; padding-top:1rem;">
+  <p>（まだ投稿はありません）</p>
+</div>
+
+<script>
+  const form = document.getElementById('chat-form');
+  const log = document.getElementById('chat-log');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const user = document.getElementById('username').value;
+    const msg = document.getElementById('message').value;
+    const time = new Date().toLocaleTimeString();
+    const p = document.createElement('p');
+    p.innerHTML = `<strong>${user}</strong>（${time}）: ${msg}`;
+    log.appendChild(p);
+    form.reset();
+  });
+</script>
