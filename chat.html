@@ -70,6 +70,7 @@
     const text = memoInput.value.trim();
     if (text) {
       mindmapEl.textContent += `\\n- ${text}`;
+      window.addEventListener("DOMContentLoaded", () => {
       window.markmap.autoLoader.renderAll();
       memoInput.value = "";
     }
