@@ -39,6 +39,8 @@
   <p>ここでは、気づき・問い・ひらめきを誰でも投稿できます。</p>
     <!-- マインドマップ＋投稿フォーム（このあと貼る） -->
 
+  </footer>
+  
 </main>
 
   <script src="https://cdn.jsdelivr.net/npm/markmap-autoloader"></script>
@@ -66,18 +68,22 @@
   const memoInput = document.getElementById("memo");
   const mindmapEl = document.getElementById("mindmap");
 
+  // ✅ 投稿時の処理
   form.addEventListener("submit", function(event) {
     event.preventDefault();
     const text = memoInput.value.trim();
     if (text) {
-      mindmapEl.textContent += `\\n- ${text}`;
-      window.addEventListener("DOMContentLoaded", () => {
-      window.markmap.autoLoader.renderAll();
+      mindmapEl.textContent += `\n- ${text}`;
+      window.markmap.autoLoader.renderAll();  // 再描画
       memoInput.value = "";
     }
   });
-</script>
 
+  // ✅ ページ読み込み時の初期描画（←ここが重要）
+  window.addEventListener("DOMContentLoaded", () => {
+    window.markmap.autoLoader.renderAll();
+  });
+</script>
 
 
   
@@ -116,6 +122,6 @@
 
 
 
-  </footer>
+
 </body>
 </html>
