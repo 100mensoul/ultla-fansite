@@ -6,83 +6,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --color-bg: #fdfdfd;
-      --color-border: #ddd;
-      --color-header-bg: #fafafa;
-      --color-accent: #005b96;
-      --color-role-bg: #f0f4f8;
-      --font-main: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+      --header-bg: #004080;
+      --month-header: #e0f0ff;
+      --role-header: #f4f4f4;
+      --zebra-even: #ffffff;
+      --zebra-odd: #f9f9f9;
+      --highlight: #fdd;
+      --border: #ccc;
+      --font: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
     }
 
     body {
-      font-family: var(--font-main);
+      font-family: var(--font);
       margin: 0;
-      background-color: var(--color-bg);
-      color: #333;
+      background: #fff;
+      color: #222;
     }
 
     h1 {
+      background: var(--header-bg);
+      color: #fff;
       text-align: center;
-      padding: 1.5rem 1rem;
-      margin: 0;
-      background-color: var(--color-accent);
-      color: white;
+      padding: 1rem;
       font-size: 1.8rem;
       letter-spacing: 0.05em;
+      margin: 0;
     }
 
     .schedule-container {
       overflow-x: auto;
-      padding: 2rem 1rem;
+      padding: 1rem;
     }
 
     table {
-      border-collapse: separate;
-      border-spacing: 0;
+      border-collapse: collapse;
+      width: max-content;
       min-width: 100%;
-      background: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-      border-radius: 8px;
-      overflow: hidden;
+      font-size: 15px;
     }
 
     th, td {
-      border: 1px solid var(--color-border);
+      border: 1px solid var(--border);
       padding: 1rem;
-      min-width: 140px;
+      min-width: 160px;
       vertical-align: top;
     }
 
-    th {
-      background-color: var(--color-header-bg);
-      font-weight: 600;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .month-header {
+    thead th {
       position: sticky;
       top: 0;
-      background-color: var(--color-header-bg);
-      z-index: 10;
-      box-shadow: inset 0 -1px #ccc;
+      background: var(--month-header);
+      font-weight: bold;
+      text-align: center;
+      z-index: 5;
     }
 
-    .role-header {
-      background-color: var(--color-role-bg);
+    tbody th.role-header {
       position: sticky;
       left: 0;
+      background: var(--role-header);
       text-align: left;
-      z-index: 20;
+      z-index: 10;
+      font-weight: bold;
     }
 
-    .category-nagoya    { background-color: #fef6f6; }
-    .category-jimukyoku { background-color: #fff9ec; }
-    .category-assesment { background-color: #f4fff4; }
-    .category-facilitator { background-color: #f2f9ff; }
-    .category-manager   { background-color: #fdf4ff; }
-    .category-online    { background-color: #f9f9f9; }
-    .category-director  { background-color: #f0f0f0; }
+    tbody tr:nth-child(odd) {
+      background-color: var(--zebra-odd);
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: var(--zebra-even);
+    }
+
+    .highlight {
+      background-color: var(--highlight);
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -91,47 +90,46 @@
     <table>
       <thead>
         <tr>
-          <th class="month-header role-header">役割</th>
-          <th class="month-header">4月</th>
-          <th class="month-header">5月</th>
-          <th class="month-header">6月</th>
-          <th class="month-header">7月</th>
-          <th class="month-header">8月</th>
-          <th class="month-header">9月</th>
-          <th class="month-header">10月</th>
-          <th class="month-header">11月</th>
-          <th class="month-header">12月</th>
-          <th class="month-header">1〜3月</th>
+          <th class="role-header">役割</th>
+          <th>4月</th><th>5月</th><th>6月</th><th>7月</th><th>8月</th>
+          <th>9月</th><th>10月</th><th>11月</th><th>12月</th><th>1〜3月</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <th class="role-header category-nagoya">名古屋市教育委員会</th>
-          <td>契約締結・定例</td><td></td><td></td><td></td><td>選考</td><td>報告会準備</td><td></td><td></td><td>告知</td><td>実施</td>
+          <th class="role-header">名古屋市教育委員会</th>
+          <td class="highlight">契約締結・定例</td><td></td><td></td><td></td><td>選考</td>
+          <td>報告準備</td><td></td><td></td><td>告知</td><td class="highlight">報告実施</td>
         </tr>
         <tr>
-          <th class="role-header category-jimukyoku">事務局</th>
-          <td></td><td>立ち上げ</td><td></td><td>募集告知</td><td></td><td></td><td></td><td></td><td></td><td></td>
+          <th class="role-header">事務局</th>
+          <td></td><td class="highlight">立ち上げ</td><td></td><td>募集告知</td><td></td>
+          <td></td><td></td><td></td><td></td><td></td>
         </tr>
         <tr>
-          <th class="role-header category-assesment">アセスメントチーム</th>
-          <td>設計準備</td><td>フォーム作成</td><td></td><td>開始</td><td>活用</td><td>活用</td><td></td><td>分析</td><td>共有</td><td></td>
+          <th class="role-header">アセスメントチーム</th>
+          <td>設計準備</td><td>フォーム作成</td><td></td><td class="highlight">開始</td><td>活用</td>
+          <td>活用</td><td></td><td class="highlight">分析</td><td>共有</td><td></td>
         </tr>
         <tr>
-          <th class="role-header category-facilitator">ファシリテーター</th>
-          <td>現地調査</td><td>候補検討</td><td>体制構築</td><td>準備</td><td>実施</td><td>実施</td><td></td><td></td><td></td><td></td>
+          <th class="role-header">ファシリテーター</th>
+          <td>現地調査</td><td>候補検討</td><td>体制構築</td><td>準備</td><td class="highlight">実施</td>
+          <td>実施</td><td></td><td></td><td></td><td></td>
         </tr>
         <tr>
-          <th class="role-header category-manager">マネジャー</th>
-          <td></td><td>WEB更新</td><td>制作</td><td>オープン</td><td>継続</td><td>問い合わせ</td><td></td><td></td><td></td><td>報告企画</td>
+          <th class="role-header">マネジャー</th>
+          <td></td><td>WEB更新</td><td>制作</td><td>オープン</td><td>継続</td>
+          <td>問合対応</td><td></td><td></td><td></td><td>報告企画</td>
         </tr>
         <tr>
-          <th class="role-header category-online">オンラインサポート</th>
-          <td></td><td></td><td></td><td>配布対応</td><td></td><td></td><td>メール対応</td><td></td><td></td><td></td>
+          <th class="role-header">オンラインサポート</th>
+          <td></td><td></td><td></td><td>配布</td><td></td>
+          <td></td><td>メール対応</td><td></td><td></td><td></td>
         </tr>
         <tr>
-          <th class="role-header category-director">ディレクター</th>
-          <td>全体設計</td><td>確認</td><td></td><td>チェック</td><td>調整</td><td>確認</td><td>進行管理</td><td></td><td>配布</td><td>報告</td>
+          <th class="role-header">ディレクター</th>
+          <td class="highlight">全体設計</td><td>確認</td><td></td><td>チェック</td><td>調整</td>
+          <td>確認</td><td>進行管理</td><td></td><td>配布</td><td>報告</td>
         </tr>
       </tbody>
     </table>
