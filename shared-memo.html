@@ -54,16 +54,25 @@
       background: #ffa500;
     }
     .filter-btn {
-      background: #eee;
-      border: none;
-      border-radius: 5px;
-      padding: 0.3rem 0.8rem;
-      margin: 0.2rem;
-      cursor: pointer;
-    }
-    .filter-btn.active {
-      background: #ffd700;
-    }
+  background: #eee;
+  border: none;
+  border-radius: 5px;
+  padding: 0.2rem 0.5rem;
+  margin: 0.1rem;
+  cursor: pointer;
+  font-size: 0.75rem; /* 文字サイズ小さく */
+  display: inline-block; /* 横並び表示 */
+}
+.filter-btn.active {
+  background: #ffd700;
+}
+#tagFilters {
+  display: flex;
+  flex-wrap: wrap; /* 改行許可 */
+  justify-content: flex-start;
+  gap: 0.3rem; /* ボタン同士の隙間を調整 */
+  margin-bottom: 1rem;
+}
   </style>
 </head>
 <body>
