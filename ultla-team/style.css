@@ -1,54 +1,13 @@
-body {
-  font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-  background: #f4f4f4;
-  color: #333;
-  padding: 2rem;
-  text-align: center;
-}
+// 各要素に保存された内容を localStorage から読み込み、変更があれば保存
+document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+  const key = el.parentElement.dataset.role + "-" + el.className;
 
-h1 {
-  margin-bottom: 1rem;
-}
+  // すでに保存されている内容があれば反映
+  const saved = localStorage.getItem(key);
+  if (saved) el.textContent = saved;
 
-.org-chart {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.person {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  padding: 1rem;
-  width: 220px;
-  text-align: center;
-}
-
-.icon {
-  font-size: 3rem;
-}
-
-.name {
-  font-weight: bold;
-  font-size: 1.2rem;
-  margin-top: 0.5rem;
-}
-
-.role {
-  color: #777;
-  margin: 0.3rem 0;
-}
-
-.desc {
-  font-size: 0.9rem;
-  background: #f0f0f0;
-  border-radius: 5px;
-  padding: 0.3rem;
-}
-
-[contenteditable="true"]:hover {
-  outline: 1px dashed #aaa;
-}
+  // 編集時に自動保存
+  el.addEventListener("input", () => {
+    localStorage.setItem(key, el.textContent);
+  });
+});
