@@ -1,152 +1,78 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>U2スケジュール（編集可）</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>U2スケジュール共有</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="main.js"></script>
   <style>
-    body {
-      font-family: 'Yu Gothic UI', sans-serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 1rem;
-    }
-    h1 {
-      text-align: center;
-      color: #004080;
-    }
-    .buttons {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
+    body { font-family: 'Yu Gothic UI', sans-serif; background: #f4f4f4; margin: 0; padding: 1rem; }
+    h1 { text-align: center; color: #004080; }
+    .buttons { text-align: center; margin-bottom: 1rem; }
     button {
-      margin: 0 0.5rem;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      background: #004080;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0066cc;
+      margin: 0 0.5rem; padding: 0.5rem 1rem; font-size: 1rem;
+      background: #004080; color: white; border: none; border-radius: 4px;
     }
     table {
-      border-collapse: collapse;
-      width: 100%;
-      background: white;
+      border-collapse: collapse; width: 100%; background: white;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     th, td {
-      border: 1px solid #ccc;
-      padding: 0.8rem;
-      min-width: 120px;
-      vertical-align: top;
+      border: 1px solid #ccc; padding: 0.8rem; min-width: 120px; vertical-align: top;
     }
-    th {
-      background: #e0f0ff;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-    .role-header {
-      background: #f8f8f8;
-      font-weight: bold;
-      position: sticky;
-      left: 0;
-      z-index: 2;
-    }
-    td[contenteditable="true"] {
-      background: #fffbe6;
-      cursor: text;
-    }
+    th { background: #e0f0ff; position: sticky; top: 0; z-index: 1; }
+    .role-header { background: #f8f8f8; font-weight: bold; position: sticky; left: 0; z-index: 2; }
+    td[contenteditable="true"] { background: #fffbe6; cursor: text; }
   </style>
 </head>
 <body>
-  <h1>U2スケジュール（編集モード）</h1>
-
+  <h1>U2スケジュール（共有・保存対応）</h1>
   <div class="buttons">
-    <button onclick="saveTable()">保存</button>
-    <button onclick="loadTable()">読み込み</button>
-    <button onclick="resetTable()">初期化</button>
+    <button onclick="saveSchedule()">保存</button>
+    <button onclick="loadSchedule()">読み込み</button>
   </div>
-
   <div class="schedule-container">
     <table id="scheduleTable">
       <thead>
         <tr>
           <th class="role-header">業務</th>
-          <th>4月</th><th>5月</th><th>6月</th><th>7月</th>
-          <th>8月</th><th>9月</th><th>10月</th><th>11月</th>
-          <th>12月</th><th>1〜3月</th>
+          <th>4月</th><th>5月</th><th>6月</th><th>7月</th><th>8月</th>
+          <th>9月</th><th>10月</th><th>11月</th><th>12月</th><th>1-3月</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <th class="role-header">教育委員会</th>
-          <td contenteditable="true">契約締結</td><td contenteditable="true"></td><td contenteditable="true"></td>
-          <td contenteditable="true"></td><td contenteditable="true">選考</td><td contenteditable="true">準備</td>
-          <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">告知</td>
-          <td contenteditable="true">報告会</td>
-        </tr>
-        <tr>
-          <th class="role-header">事務局</th>
-          <td contenteditable="true"></td><td contenteditable="true">立ち上げ</td><td contenteditable="true"></td>
-          <td contenteditable="true">募集告知</td><td contenteditable="true"></td><td contenteditable="true"></td>
-          <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
-          <td contenteditable="true"></td>
-        </tr>
-        <tr>
-          <th class="role-header">アセスメント業務</th>
-          <td contenteditable="true">設計</td><td contenteditable="true">フォーム</td><td contenteditable="true"></td>
-          <td contenteditable="true">開始</td><td contenteditable="true">活用</td><td contenteditable="true">活用</td>
-          <td contenteditable="true"></td><td contenteditable="true">分析</td><td contenteditable="true">共有</td>
-          <td contenteditable="true"></td>
-        </tr>
-        <tr>
-          <th class="role-header">プログラム業務</th>
-          <td contenteditable="true">現地調査</td><td contenteditable="true">検討</td><td contenteditable="true">構築</td>
-          <td contenteditable="true">準備</td><td contenteditable="true">実施</td><td contenteditable="true">実施</td>
-          <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
-          <td contenteditable="true"></td>
-        </tr>
-        <tr>
-          <th class="role-header">効果検証業務</th>
-          <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
-          <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
-          <td contenteditable="true">集計</td><td contenteditable="true"></td><td contenteditable="true"></td>
-          <td contenteditable="true">報告</td>
-        </tr>
+        <tr><th class="role-header">教育委員会</th><td contenteditable="true">契約</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+        <tr><th class="role-header">事務局</th><td contenteditable="true"></td><td contenteditable="true">立ち上げ</td><td contenteditable="true"></td><td contenteditable="true">告知</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+        <tr><th class="role-header">アセスメント</th><td contenteditable="true">設計</td><td contenteditable="true">フォーム</td><td contenteditable="true"></td><td contenteditable="true">開始</td><td contenteditable="true">活用</td><td contenteditable="true">活用</td><td contenteditable="true"></td><td contenteditable="true">分析</td><td contenteditable="true">共有</td><td contenteditable="true"></td></tr>
       </tbody>
     </table>
   </div>
 
-  <script>
-    const tableId = "scheduleTable";
+  <script type="module">
+    import { db } from './firebase.js';
+    import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
-    function saveTable() {
-      const html = document.getElementById(tableId).innerHTML;
-      localStorage.setItem("u2_schedule_table", html);
+    const table = document.getElementById("scheduleTable");
+    const docRef = doc(db, "memos", "u2-schedule");
+
+    window.saveSchedule = async function() {
+      const rows = Array.from(table.querySelectorAll("tbody tr"));
+      const data = rows.map(row => Array.from(row.querySelectorAll("td")).map(cell => cell.innerText));
+      await setDoc(docRef, { data });
       alert("保存しました！");
     }
 
-    function loadTable() {
-      const html = localStorage.getItem("u2_schedule_table");
-      if (html) {
-        document.getElementById(tableId).innerHTML = html;
-      }
+    window.loadSchedule = async function() {
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) return;
+      const { data } = snap.data();
+      const rows = table.querySelectorAll("tbody tr");
+      data.forEach((row, i) => row.forEach((text, j) => rows[i]?.cells[j + 1].innerText = text));
     }
 
-    function resetTable() {
-      if (confirm("すべて初期化してよいですか？")) {
-        localStorage.removeItem("u2_schedule_table");
-        location.reload();
-      }
-    }
-
-    // 初期読み込み
-    window.onload = loadTable;
+    window.addEventListener("load", loadSchedule);
   </script>
 </body>
 </html>
