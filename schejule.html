@@ -39,9 +39,8 @@
   </style>
 </head>
 <body>
-  <h1>U2スケジュール（共有・保存対応）</h1>
+  <h1>U2スケジュール（自動保存付き）</h1>
   <div class="buttons">
-    <button onclick="saveSchedule()">保存</button>
     <button onclick="loadSchedule()">読み込み</button>
   </div>
   <div class="schedule-container">
@@ -53,11 +52,7 @@
           <th>9月</th><th>10月</th><th>11月</th><th>12月</th><th>1-3月</th>
         </tr>
       </thead>
-      <tbody>
-        <tr><th class="role-header">教育委員会</th><td contenteditable="true">契約</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-        <tr><th class="role-header">事務局</th><td contenteditable="true"></td><td contenteditable="true">立ち上げ</td><td contenteditable="true"></td><td contenteditable="true">告知</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-        <tr><th class="role-header">アセスメント</th><td contenteditable="true">設計</td><td contenteditable="true">フォーム</td><td contenteditable="true"></td><td contenteditable="true">開始</td><td contenteditable="true">活用</td><td contenteditable="true">活用</td><td contenteditable="true"></td><td contenteditable="true">分析</td><td contenteditable="true">共有</td><td contenteditable="true"></td></tr>
-      </tbody>
+      <tbody></tbody>
     </table>
   </div>
   <div class="add-row-button">
@@ -72,11 +67,17 @@
     const tbody = table.querySelector("tbody");
     const docRef = doc(db, "memos", "u2-schedule");
 
-    window.saveSchedule = async function () {
-      const rows = Array.from(table.querySelectorAll("tbody tr"));
-      const data = rows.map(row => Array.from(row.querySelectorAll("td")).map(cell => cell.innerText));
+    async function saveSchedule() {
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const data = rows
+        .map(row => {
+          const role = row.querySelector("th")?.innerText || "";
+          const cells = Array.from(row.querySelectorAll("td")).map(cell => cell.innerText);
+          return { role, cells };
+        })
+        .filter(row => row.role.trim() !== "" || row.cells.some(cell => cell.trim() !== ""));
       await setDoc(docRef, { data });
-      alert("保存しました！");
+      console.log("保存しました", data);
     }
 
     window.loadSchedule = async function () {
@@ -84,19 +85,22 @@
       if (!snap.exists()) return;
       const { data } = snap.data();
       tbody.innerHTML = "";
-      const roles = ["教育委員会", "事務局", "アセスメント", "プログラム", "効果検証"];
-      data.forEach((rowData, i) => {
+
+      data.forEach(item => {
         const tr = document.createElement("tr");
         const th = document.createElement("th");
         th.className = "role-header";
-        th.textContent = roles[i] || `新規業務 ${i + 1}`;
+        th.textContent = item.role || "新規業務";
         tr.appendChild(th);
-        rowData.forEach(text => {
+
+        item.cells.forEach(text => {
           const td = document.createElement("td");
           td.contentEditable = true;
           td.textContent = text;
+          td.addEventListener("input", debounceSave);
           tr.appendChild(td);
         });
+
         tbody.appendChild(tr);
       });
     }
@@ -112,9 +116,16 @@
       for (let i = 0; i < 10; i++) {
         const td = document.createElement("td");
         td.contentEditable = true;
+        td.addEventListener("input", debounceSave);
         tr.appendChild(td);
       }
       tbody.appendChild(tr);
+      saveSchedule();
+    }
+
+    function debounceSave() {
+      clearTimeout(window._saveTimer);
+      window._saveTimer = setTimeout(saveSchedule, 1000);
     }
 
     window.addEventListener("load", loadSchedule);
