@@ -4,73 +4,77 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>共有メモ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: "Hiragino Kaku Gothic ProN", sans-serif;
-      background: #fdfdfd;
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      background: #f9f9fb;
       padding: 2rem;
-      max-width: 1080px;
-      margin: 0 auto;
-      font-size: 14px;
-      line-height: 1.7;
+      max-width: 700px;
+      margin: auto;
+      color: #333;
     }
-    .memo-card {
-      background: #fff8dc;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      padding: 1rem;
-      margin-bottom: 1.5rem;
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
     }
-    .memo-card h3 {
-      margin: 0;
-      font-size: 1.1rem;
-    }
-    .memo-card p {
-      margin: 0.6rem 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    .tag {
-      background: #ffd700;
-      color: black;
-      padding: 0.2rem 0.6rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      display: inline-block;
-      margin-right: 0.4rem;
-      margin-bottom: 0.4rem;
-    }
-    .btn {
-      padding: 0.4rem 0.9rem;
-      border: none;
-      border-radius: 4px;
-      margin-right: 0.5rem;
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
-    .edit-btn { background: #666; color: white; }
-    .delete-btn { background: crimson; color: white; }
-    .url-link {
-      display: block;
-      margin-top: 0.4rem;
-      font-size: 0.85rem;
-      color: #0645AD;
-      text-decoration: underline;
-      word-break: break-all;
+    form {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+      margin-bottom: 2rem;
     }
     input, textarea {
       width: 100%;
-      padding: 0.5rem;
-      margin: 0.3rem 0 1rem;
-      border-radius: 4px;
+      margin-bottom: 1rem;
+      padding: 0.75rem;
       border: 1px solid #ccc;
+      border-radius: 8px;
       font-size: 1rem;
     }
-    button[type="submit"] {
-      background-color: #007bff;
-      color: white;
-      font-weight: bold;
+    button {
+      padding: 0.5rem 1.2rem;
+      font-size: 0.9rem;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
     }
+    .memo-card {
+      background: linear-gradient(to bottom right, #fff8dc, #fffef3);
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    .memo-card h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.2rem;
+    }
+    .tag {
+      background: #ffd700;
+      color: #333;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      margin-right: 0.5rem;
+      display: inline-block;
+    }
+    .btn {
+      padding: 0.4rem 1rem;
+      border: none;
+      border-radius: 6px;
+      margin-right: 0.5rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .edit-btn { background: #666; color: white; }
+    .delete-btn { background: #d33; color: white; }
   </style>
 </head>
 <body>
@@ -79,7 +83,7 @@
     <input type="text" id="title" placeholder="タイトル" required>
     <textarea id="content" rows="3" placeholder="内容を入力" required></textarea>
     <input type="text" id="tags" placeholder="タグ（カンマ区切り）">
-    <input type="url" id="url" placeholder="関連リンク（URL）任意">
+    <input type="text" id="link" placeholder="関連リンク（URL）任意">
     <button type="submit">追加</button>
   </form>
 
@@ -88,7 +92,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import {
-      getFirestore, collection, addDoc, getDocs, deleteDoc, doc, orderBy, query
+      getFirestore, collection, addDoc, getDocs, deleteDoc, doc
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -108,7 +112,7 @@
     const titleInput = document.getElementById("title");
     const contentInput = document.getElementById("content");
     const tagsInput = document.getElementById("tags");
-    const urlInput = document.getElementById("url");
+    const linkInput = document.getElementById("link");
     const memoList = document.getElementById("memoList");
 
     form.addEventListener("submit", async (e) => {
@@ -116,13 +120,12 @@
       const title = titleInput.value.trim();
       const content = contentInput.value.trim();
       const tags = tagsInput.value.split(",").map(tag => tag.trim()).filter(Boolean);
-      const url = urlInput.value.trim();
+      const link = linkInput.value.trim();
       const status = "未着手";
       const date = new Date().toLocaleDateString("ja-JP");
-      const timestamp = Date.now();
 
       if (title && content) {
-        await addDoc(memoRef, { title, content, tags, url, status, date, timestamp });
+        await addDoc(memoRef, { title, content, status, date, tags, link });
         form.reset();
         loadMemos();
       }
@@ -130,9 +133,9 @@
 
     async function loadMemos() {
       memoList.innerHTML = "";
-      const q = query(memoRef, orderBy("timestamp", "desc"));
-      const snapshot = await getDocs(q);
-      snapshot.forEach(docSnap => {
+      const snapshot = await getDocs(memoRef);
+      const docs = snapshot.docs.reverse();
+      docs.forEach(docSnap => {
         const data = docSnap.data();
         const div = document.createElement("div");
         div.className = "memo-card";
@@ -140,7 +143,7 @@
           <h3>${data.title}</h3>
           ${data.tags ? data.tags.map(t => `<span class="tag">${t}</span>`).join("") : ""}
           <p>${data.content}</p>
-          ${data.url ? `<a href="${data.url}" class="url-link" target="_blank">${data.url}</a>` : ""}
+          ${data.link ? `<p><a href="${data.link}" target="_blank">🔗 関連リンク</a></p>` : ""}
           <div>${data.date}</div>
           <button class="btn edit-btn">編集</button>
           <button class="btn delete-btn">削除</button>
