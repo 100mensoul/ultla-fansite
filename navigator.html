@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>ナビゲーター一覧</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import {
+      getFirestore, collection, getDocs
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtDPnYex-KL2hbHAQe5fY9bNiWn9lHCRg",
+      authDomain: "u2memo-36f61.firebaseapp.com",
+      projectId: "u2memo-36f61",
+      storageBucket: "u2memo-36f61.appspot.com",
+      messagingSenderId: "14274931072",
+      appId: "1:14274931072:web:5d9c902690542e41b5c187"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const memoRef = collection(db, "memos");
+
+    async function loadNavigators() {
+      const res = await getDocs(memoRef);
+      const list = document.getElementById("navigatorList");
+      list.innerHTML = "";
+
+      res.forEach(doc => {
+        const data = doc.data();
+        if (data.tags && data.tags.includes("navigator")) {
+          const div = document.createElement("div");
+          div.className = "memo-card";
+          div.innerHTML = `
+            <h3>${data.title}</h3>
+            <p>${data.content}</p>
+            ${data.url ? `<a href="${data.url}" target="_blank">${data.url}</a>` : ""}
+            <div>${data.date}</div>
+          `;
+          list.appendChild(div);
+        }
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", loadNavigators);
+  </script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      max-width: 700px;
+      margin: auto;
+    }
+    .memo-card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>ナビゲーター候補</h1>
+  <div id="navigatorList"></div>
+</body>
+</html>
