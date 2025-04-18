@@ -6,43 +6,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --header-bg: #004080;
-      --month-header: #e0f0ff;
-      --role-header: #f4f4f4;
-      --zebra-even: #ffffff;
-      --zebra-odd: #f9f9f9;
-      --highlight: #fdd;
-      --border: #ccc;
-      --font: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+      --bg: #f9fafc;
+      --table-bg: #ffffff;
+      --border: #ddd;
+      --text: #333;
+      --highlight: #004080;
+      --subtle: #666;
+      --badge: #dff0ff;
+      --badge-text: #004080;
     }
 
     body {
-      font-family: var(--font);
+      font-family: "Yu Gothic UI", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
       margin: 0;
-      background: #fff;
-      color: #222;
     }
 
     h1 {
-      background: var(--header-bg);
-      color: #fff;
-      text-align: center;
-      padding: 1rem;
-      font-size: 1.8rem;
-      letter-spacing: 0.05em;
+      background: var(--highlight);
+      color: white;
       margin: 0;
+      padding: 1.2rem;
+      text-align: center;
+      font-size: 1.8rem;
     }
 
     .schedule-container {
       overflow-x: auto;
-      padding: 1rem;
+      padding: 2rem 1rem;
     }
 
     table {
-      border-collapse: collapse;
       width: max-content;
       min-width: 100%;
-      font-size: 15px;
+      border-collapse: collapse;
+      background: var(--table-bg);
+      border-radius: 8px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+      overflow: hidden;
     }
 
     th, td {
@@ -50,37 +52,46 @@
       padding: 1rem;
       min-width: 160px;
       vertical-align: top;
+      font-size: 15px;
     }
 
     thead th {
+      background: #e6f2ff;
       position: sticky;
       top: 0;
-      background: var(--month-header);
-      font-weight: bold;
+      z-index: 10;
+      font-weight: 600;
       text-align: center;
-      z-index: 5;
     }
 
     tbody th.role-header {
+      background: #f2f2f2;
       position: sticky;
       left: 0;
-      background: var(--role-header);
+      z-index: 20;
       text-align: left;
-      z-index: 10;
-      font-weight: bold;
+      font-weight: 600;
     }
 
-    tbody tr:nth-child(odd) {
-      background-color: var(--zebra-odd);
+    tbody tr:nth-child(odd) { background: #fafafa; }
+    tbody tr:nth-child(even) { background: #ffffff; }
+
+    .sub-role {
+      padding-left: 1.2rem;
+      font-weight: 400;
+      color: var(--subtle);
+      font-size: 0.95em;
     }
 
-    tbody tr:nth-child(even) {
-      background-color: var(--zebra-even);
-    }
-
-    .highlight {
-      background-color: var(--highlight);
-      font-weight: bold;
+    .badge {
+      display: inline-block;
+      background: var(--badge);
+      color: var(--badge-text);
+      padding: 0.3em 0.7em;
+      border-radius: 12px;
+      font-size: 0.9em;
+      line-height: 1.4;
+      margin-bottom: 0.3em;
     }
   </style>
 </head>
@@ -90,46 +101,51 @@
     <table>
       <thead>
         <tr>
-          <th class="role-header">役割</th>
-          <th>4月</th><th>5月</th><th>6月</th><th>7月</th><th>8月</th>
-          <th>9月</th><th>10月</th><th>11月</th><th>12月</th><th>1〜3月</th>
+          <th class="role-header">業務</th>
+          <th>4月</th><th>5月</th><th>6月</th><th>7月</th>
+          <th>8月</th><th>9月</th><th>10月</th><th>11月</th>
+          <th>12月</th><th>1〜3月</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <th class="role-header">名古屋市教育委員会</th>
-          <td class="highlight">契約締結・定例</td><td></td><td></td><td></td><td>選考</td>
-          <td>報告準備</td><td></td><td></td><td>告知</td><td class="highlight">報告実施</td>
+          <th class="role-header">教育委員会</th>
+          <td><span class="badge">契約締結</span></td><td></td><td></td><td></td>
+          <td><span class="badge">選考</span></td><td><span class="badge">報告準備</span></td><td></td><td></td>
+          <td><span class="badge">告知</span></td><td><span class="badge">報告会</span></td>
         </tr>
         <tr>
           <th class="role-header">事務局</th>
-          <td></td><td class="highlight">立ち上げ</td><td></td><td>募集告知</td><td></td>
+          <td></td><td><span class="badge">立ち上げ</span></td><td></td><td><span class="badge">募集告知</span></td>
+          <td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+          <th class="role-header sub-role">┗ 受付業務</th>
+          <td></td><td></td><td></td><td><span class="badge">配布対応</span></td>
+          <td></td><td></td><td><span class="badge">メール対応</span></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+          <th class="role-header sub-role">┗ サイト運営</th>
+          <td></td><td><span class="badge">WEB更新</span></td><td><span class="badge">制作</span></td>
+          <td><span class="badge">オープン</span></td><td><span class="badge">継続</span></td>
+          <td><span class="badge">対応</span></td><td></td><td></td><td></td><td><span class="badge">報告企画</span></td>
+        </tr>
+        <tr>
+          <th class="role-header">アセスメント業務</th>
+          <td><span class="badge">設計準備</span></td><td><span class="badge">フォーム作成</span></td><td></td>
+          <td><span class="badge">開始</span></td><td><span class="badge">活用</span></td><td><span class="badge">活用</span></td>
+          <td></td><td><span class="badge">分析</span></td><td><span class="badge">共有</span></td><td></td>
+        </tr>
+        <tr>
+          <th class="role-header">プログラム業務</th>
+          <td><span class="badge">現地調査</span></td><td><span class="badge">候補検討</span></td><td><span class="badge">体制構築</span></td>
+          <td><span class="badge">準備</span></td><td><span class="badge">実施</span></td><td><span class="badge">実施</span></td>
+          <td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+          <th class="role-header">効果検証業務</th>
           <td></td><td></td><td></td><td></td><td></td>
-        </tr>
-        <tr>
-          <th class="role-header">アセスメントチーム</th>
-          <td>設計準備</td><td>フォーム作成</td><td></td><td class="highlight">開始</td><td>活用</td>
-          <td>活用</td><td></td><td class="highlight">分析</td><td>共有</td><td></td>
-        </tr>
-        <tr>
-          <th class="role-header">ファシリテーター</th>
-          <td>現地調査</td><td>候補検討</td><td>体制構築</td><td>準備</td><td class="highlight">実施</td>
-          <td>実施</td><td></td><td></td><td></td><td></td>
-        </tr>
-        <tr>
-          <th class="role-header">マネジャー</th>
-          <td></td><td>WEB更新</td><td>制作</td><td>オープン</td><td>継続</td>
-          <td>問合対応</td><td></td><td></td><td></td><td>報告企画</td>
-        </tr>
-        <tr>
-          <th class="role-header">オンラインサポート</th>
-          <td></td><td></td><td></td><td>配布</td><td></td>
-          <td></td><td>メール対応</td><td></td><td></td><td></td>
-        </tr>
-        <tr>
-          <th class="role-header">ディレクター</th>
-          <td class="highlight">全体設計</td><td>確認</td><td></td><td>チェック</td><td>調整</td>
-          <td>確認</td><td>進行管理</td><td></td><td>配布</td><td>報告</td>
+          <td></td><td><span class="badge">集計</span></td><td></td><td></td><td><span class="badge">報告</span></td>
         </tr>
       </tbody>
     </table>
