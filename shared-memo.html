@@ -13,21 +13,21 @@
       margin: auto;
     }
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.25rem;
       margin-bottom: 1rem;
     }
     input, textarea, select, button {
       width: 100%;
-      font-size: 1rem;
-      padding: 0.5rem;
+      font-size: 0.9rem;
+      padding: 0.4rem;
       margin-bottom: 0.75rem;
       border: 1px solid #ccc;
       border-radius: 6px;
     }
     .btn {
       width: auto;
-      font-size: 0.875rem;
-      padding: 0.4rem 1rem;
+      font-size: 0.75rem;
+      padding: 0.3rem 0.8rem;
       margin-right: 0.5rem;
     }
     .memo-card {
@@ -38,14 +38,14 @@
       margin-bottom: 1rem;
     }
     .memo-card h3 {
-      font-size: 1rem;
+      font-size: 0.95rem;
       margin: 0 0 0.25rem;
     }
     .tag {
       background: #ffd700;
       padding: 0.2rem 0.5rem;
       border-radius: 5px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       display: inline-block;
       margin-right: 0.5rem;
       cursor: pointer;
@@ -119,6 +119,7 @@
       if (title && content) {
         await addDoc(memoRef, { title, content, status, date, timestamp, tags, url });
         form.reset();
+        form.onsubmit = defaultSubmit;
         loadMemos();
       }
     });
@@ -142,7 +143,7 @@
       memoList.innerHTML = "";
       const snapshot = await getDocs(memoRef);
       const memos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-        .sort((a, b) => b.timestamp - a.timestamp).reverse();
+        .sort((a, b) => b.timestamp - a.timestamp);
       const allTags = memos.map(m => m.tags || []);
       createTagFilter(allTags);
 
