@@ -9,7 +9,7 @@
       font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
       background: #fff;
       padding: 2rem 1rem;
-      max-width: 1080px;
+      max-width: 640px;
       margin: auto;
     }
     h1 {
@@ -82,7 +82,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import {
-      getFirestore, collection, addDoc, getDocs, deleteDoc, doc
+      getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -115,8 +115,9 @@
       const url = linkInput.value.trim();
       const status = "未着手";
       const date = new Date().toLocaleDateString("ja-JP");
+      const timestamp = Date.now();
       if (title && content) {
-        await addDoc(memoRef, { title, content, status, date, tags, url });
+        await addDoc(memoRef, { title, content, status, date, timestamp, tags, url });
         form.reset();
         loadMemos();
       }
@@ -141,7 +142,7 @@
       memoList.innerHTML = "";
       const snapshot = await getDocs(memoRef);
       const memos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-        .sort((a, b) => b.date.localeCompare(a.date));
+        .sort((a, b) => b.timestamp - a.timestamp).reverse();
       const allTags = memos.map(m => m.tags || []);
       createTagFilter(allTags);
 
@@ -154,19 +155,48 @@
             ${(data.tags || []).map(t => `<span class="tag">${t}</span>`).join("")}
             <p>${data.content}</p>
             ${data.url ? `<a href="${data.url}" target="_blank">${data.url}</a>` : ""}
-            <div>${data.date}</div>
+            <div>${data.date} / ${new Date(data.timestamp).toLocaleTimeString()}</div>
             <button class="btn edit-btn">編集</button>
             <button class="btn delete-btn">削除</button>
           `;
-          const delBtn = div.querySelector(".delete-btn");
-          delBtn.onclick = async () => {
+
+          div.querySelector(".delete-btn").onclick = async () => {
             await deleteDoc(doc(db, "memos", data.id));
             loadMemos();
           };
+
+          div.querySelector(".edit-btn").onclick = () => {
+            titleInput.value = data.title;
+            contentInput.value = data.content;
+            tagsInput.value = (data.tags || []).join(", ");
+            linkInput.value = data.url || "";
+            form.onsubmit = async (e) => {
+              e.preventDefault();
+              const newTitle = titleInput.value.trim();
+              const newContent = contentInput.value.trim();
+              const newTags = tagsInput.value.split(",").map(tag => tag.trim()).filter(Boolean);
+              const newUrl = linkInput.value.trim();
+              const newDate = new Date().toLocaleDateString("ja-JP");
+              const newTimestamp = Date.now();
+              await updateDoc(doc(db, "memos", data.id), {
+                title: newTitle,
+                content: newContent,
+                tags: newTags,
+                url: newUrl,
+                date: newDate,
+                timestamp: newTimestamp
+              });
+              form.reset();
+              form.onsubmit = defaultSubmit;
+              loadMemos();
+            };
+          };
+
           memoList.appendChild(div);
         });
     }
 
+    const defaultSubmit = form.onsubmit;
     loadMemos();
   </script>
 </body>
