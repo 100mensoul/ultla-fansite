@@ -8,22 +8,28 @@
   <script type="module" src="firebase.js"></script>
   <script type="module" src="main.js"></script>
   <style>
-    body { font-family: 'Yu Gothic UI', sans-serif; background: #f4f4f4; margin: 0; padding: 1rem; }
-    h1 { text-align: center; color: #004080; }
+    body { font-family: 'Yu Gothic UI', sans-serif; background: #f4f4f4; margin: 0; padding: 0.5rem; }
+    h1 { text-align: center; color: #004080; font-size: 1.5rem; margin-bottom: 1rem; }
     .buttons { text-align: center; margin: 1rem 0; }
     button {
-      margin: 0.5rem 0.3rem; padding: 0.5rem 1rem; font-size: 1rem;
+      margin: 0.3rem auto; padding: 0.5rem 0.8rem; font-size: 0.9rem;
       background: #004080; color: white; border: none; border-radius: 6px;
-      cursor: pointer; transition: background 0.3s ease;
+      cursor: pointer; transition: background 0.3s ease; width: 90%; max-width: 300px;
+      display: block;
     }
     button:hover { background: #0066cc; }
+    .schedule-container {
+      overflow-x: auto; margin-bottom: 1rem;
+    }
     table {
       border-collapse: separate; border-spacing: 0;
       width: 100%; background: white; border-radius: 8px;
       overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      min-width: 600px;
     }
     th, td {
-      border: 1px solid #ccc; padding: 0.8rem; min-width: 120px; vertical-align: top;
+      border: 1px solid #ccc; padding: 0.5rem; min-width: 80px; vertical-align: top;
+      font-size: 0.85rem;
     }
     th { background: #e0f0ff; position: sticky; top: 0; z-index: 1; }
     .role-header {
@@ -34,7 +40,7 @@
     }
     tbody tr:nth-child(odd) { background: #fcfcfc; }
     .add-row-button {
-      text-align: center; margin-top: 1.5rem;
+      text-align: center; margin-top: 1rem;
     }
   </style>
 </head>
