@@ -2,49 +2,58 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>ULTLAチーム構成（管理者用）</title>
+  <title>ULTLA チーム体制図（管理用）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>ULTLA地域チーム構成 管理画面</h1>
-  <p>このページは、各地域の運営マネジャーがチーム状況を把握・共有するための管理用ダッシュボードです。</p>
+  <h1>ULTLA 地域チーム構成</h1>
+  <p>運営マネジャー用：チーム体制を視覚的に確認・編集できます。</p>
 
-  <div class="team-grid">
-    <div class="role-card">
-      <h2>コンセプト（リーラ）</h2>
-      <p class="status filled">担当：リーラ</p>
+  <div class="org-chart">
+    <div class="person" data-role="concept">
+      <div class="icon">👩</div>
+      <div class="name" contenteditable="true">リーラ</div>
+      <div class="role">コンセプト</div>
+      <div class="desc" contenteditable="true">世界観づくり</div>
     </div>
 
-    <div class="role-card">
-      <h2>現場マネジメント（タカさん）</h2>
-      <p class="status filled">担当：タカさん</p>
+    <div class="person" data-role="management">
+      <div class="icon">👨</div>
+      <div class="name" contenteditable="true">タカさん</div>
+      <div class="role">現場マネジメント</div>
+      <div class="desc" contenteditable="true">物理環境、進行</div>
     </div>
 
-    <div class="role-card">
-      <h2>オンライン連携（ライリー）</h2>
-      <p class="status vacant">未配置</p>
+    <div class="person" data-role="online">
+      <div class="icon">👩</div>
+      <div class="name" contenteditable="true">ライリー</div>
+      <div class="role">オンライン連携</div>
+      <div class="desc" contenteditable="true">Zoom運用、SNS</div>
     </div>
 
-    <div class="role-card">
-      <h2>ファシリテーター（チーフ）</h2>
-      <p class="status tentative">候補者：〇〇</p>
+    <div class="person" data-role="facilitator">
+      <div class="icon">🏃</div>
+      <div class="name" contenteditable="true">チーフ</div>
+      <div class="role">ファシリテート</div>
+      <div class="desc" contenteditable="true">場の流れを整える</div>
     </div>
 
-    <div class="role-card">
-      <h2>受付・連絡窓口</h2>
-      <p class="status filled">担当：△△</p>
+    <div class="person" data-role="reception">
+      <div class="icon">👨</div>
+      <div class="name" contenteditable="true">△△</div>
+      <div class="role">受付・連絡</div>
+      <div class="desc" contenteditable="true">問い合わせ窓口</div>
     </div>
 
-    <div class="role-card">
-      <h2>学生・研究</h2>
-      <p class="status unknown">外部連携予定</p>
-    </div>
-
-    <div class="role-card">
-      <h2>自由サポート（アズミン他）</h2>
-      <p class="status filled">アズミン、他2名</p>
+    <div class="person" data-role="student">
+      <div class="icon">👥</div>
+      <div class="name" contenteditable="true">学生チーム</div>
+      <div class="role">研究・記録</div>
+      <div class="desc" contenteditable="true">観察、分析、レポート</div>
     </div>
   </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
