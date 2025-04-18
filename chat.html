@@ -86,6 +86,32 @@
   });
 </script>
 
+<section class="lab-idea-memo">
+  <h2>実験メモ <span class="en">LAB NOTES</span></h2>
+  <p>まだまとまっていないけど、ふと出たアイデアや問いを記録しておく場所。<br>
+  あとで発酵して、化けるかもしれない。</p>
+
+  <div class="memo-list">
+    <div class="memo-card">
+      <h3>名古屋のものづくりとは？</h3>
+      <p>名古屋のものづくり文化には、何が流れているのか？技術、気質、土地…何がこの地を形づくってきた？</p>
+      <time>2025.4.18</time>
+    </div>
+
+    <div class="memo-card">
+      <h3>宇宙と大「気」</h3>
+      <p>空気と宇宙、呼吸と生命。私たちはどこまでを「気」と呼ぶのか？「大気＝たいき」の語源も再考したい。</p>
+      <time>2025.4.18</time>
+    </div>
+
+    <div class="memo-card">
+      <h3>キャリア教育って？</h3>
+      <p>「将来なにになりたい？」ではなく、「今どう在りたい？」を育てる学びはキャリア教育になりうるか？</p>
+      <time>2025.4.18</time>
+    </div>
+  </div>
+</section>
+
 
   
   <style>
@@ -119,7 +145,38 @@
     font-size: 1rem;
     cursor: pointer;
   }
-</style>
+  .lab-idea-memo {
+  background-color: #fcfcf0;
+  padding: 2rem;
+  border-top: 2px dashed #ccc;
+  margin-top: 2rem;
+}
+.lab-idea-memo h2 {
+  font-family: 'Yuji Boku', serif;
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+}
+.memo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.memo-card {
+  background: #fff8dc;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+}
+.memo-card h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+}
+.memo-card time {
+  display: block;
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 0.5rem;
+}
 
 
 
