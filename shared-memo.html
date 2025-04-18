@@ -3,51 +3,61 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>共有メモ（URL機能付き）</title>
+  <title>共有メモ（スマート表示＋タグ切替）</title>
   <style>
     body {
       font-family: sans-serif;
       background: #fdfdfd;
       padding: 1rem;
-      max-width: 640px;
+      max-width: 600px;
       margin: auto;
     }
     .memo-card {
       background: #fff8dc;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      padding: 1rem;
-      margin-bottom: 1.5rem;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 0.8rem;
+      margin-bottom: 1rem;
     }
-    .memo-card h3 { margin-top: 0; }
+    .memo-card h3 { margin: 0 0 0.3rem; font-size: 1.1rem; }
+    .memo-card p { margin: 0.2rem 0; }
     .tag {
       background: #ffd700;
       padding: 0.2rem 0.5rem;
-      border-radius: 5px;
-      margin-right: 0.5rem;
-      font-size: 0.8rem;
+      border-radius: 4px;
+      margin-right: 0.4rem;
+      font-size: 0.75rem;
       display: inline-block;
     }
-    .btn {
-      padding: 0.4rem 1rem;
-      border: none;
-      border-radius: 4px;
-      margin-right: 0.5rem;
-      cursor: pointer;
-    }
-    .edit-btn { background: #666; color: white; }
-    .delete-btn { background: crimson; color: white; }
     .link-title {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #0077cc;
       text-decoration: underline;
       display: block;
+      margin-top: 0.3rem;
+    }
+    .btn {
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 4px;
       margin-top: 0.5rem;
+      cursor: pointer;
+    }
+    .toggle-btn {
+      margin-bottom: 1rem;
+      padding: 0.4rem 1rem;
+      font-size: 0.9rem;
+    }
+    h2.group-title {
+      border-bottom: 1px solid #ccc;
+      font-size: 1rem;
+      margin-top: 2rem;
     }
   </style>
 </head>
 <body>
   <h1>共有メモ</h1>
+  <button id="toggleViewBtn" class="toggle-btn">タグごとに表示する</button>
   <form id="memoForm">
     <input type="text" id="title" placeholder="タイトル" required><br><br>
     <textarea id="content" rows="3" placeholder="内容を入力" required></textarea><br><br>
@@ -60,7 +70,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCtDPnYex-KL2hbHAQe5fY9bNiWn9lHCRg",
@@ -81,25 +91,28 @@
     const tagsInput = document.getElementById("tags");
     const urlInput = document.getElementById("url");
     const memoList = document.getElementById("memoList");
+    const toggleBtn = document.getElementById("toggleViewBtn");
+
+    let groupView = false;
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const title = titleInput.value.trim();
       const content = contentInput.value.trim();
-      const tags = tagsInput.value.split(",").map(tag => tag.trim()).filter(Boolean);
+      const tags = tagsInput.value.split(",").map(t => t.trim()).filter(Boolean);
       const url = urlInput.value.trim();
       const status = "未着手";
-      const date = new Date().toLocaleDateString("ja-JP");
+      const date = new Date().toISOString();
 
       let siteTitle = "";
       if (url) {
         try {
           const res = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(url));
           const html = await res.json();
-          const titleMatch = html.contents.match(/<title[^>]*>(.*?)<\/title>/i);
+          const titleMatch = html.contents.match(/<title[^>]*>(.*?)<\\/title>/i);
           siteTitle = titleMatch ? titleMatch[1] : "";
         } catch (err) {
-          console.warn("タイトル取得に失敗:", err);
+          console.warn("タイトル取得失敗:", err);
         }
       }
 
@@ -108,29 +121,65 @@
       loadMemos();
     });
 
+    toggleBtn.onclick = () => {
+      groupView = !groupView;
+      toggleBtn.textContent = groupView ? "一覧表示にする" : "タグごとに表示する";
+      loadMemos();
+    };
+
     async function loadMemos() {
       memoList.innerHTML = "";
-      const snapshot = await getDocs(memoRef);
+      const q = query(memoRef, orderBy("date", "desc"));
+      const snapshot = await getDocs(q);
+      const allMemos = [];
       snapshot.forEach(docSnap => {
         const data = docSnap.data();
-        const div = document.createElement("div");
-        div.className = "memo-card";
-        div.innerHTML = `
-          <h3>${data.title}</h3>
-          ${data.tags?.map(t => `<span class="tag">${t}</span>`).join("") || ""}
-          <p>${data.content}</p>
-          ${data.url ? `<a class="link-title" href="${data.url}" target="_blank">${data.siteTitle || data.url}</a>` : ""}
-          <div>${data.date}</div>
-          <button class="btn edit-btn">編集</button>
-          <button class="btn delete-btn">削除</button>
-        `;
-        const delBtn = div.querySelector(".delete-btn");
-        delBtn.onclick = async () => {
-          await deleteDoc(doc(db, "memos", docSnap.id));
-          loadMemos();
-        };
-        memoList.appendChild(div);
+        allMemos.push(data);
       });
+
+      if (groupView) {
+        const grouped = {};
+        allMemos.forEach(memo => {
+          (memo.tags || ["未分類"]).forEach(tag => {
+            if (!grouped[tag]) grouped[tag] = [];
+            grouped[tag].push(memo);
+          });
+        });
+        for (const tag in grouped) {
+          const section = document.createElement("section");
+          section.innerHTML = `<h2 class="group-title">#${tag}</h2>`;
+          grouped[tag].forEach(m => section.appendChild(renderCard(m)));
+          memoList.appendChild(section);
+        }
+      } else {
+        allMemos.forEach(memo => memoList.appendChild(renderCard(memo)));
+      }
+    }
+
+    function renderCard(data) {
+      const div = document.createElement("div");
+      div.className = "memo-card";
+      div.innerHTML = `
+        <h3>${data.title}</h3>
+        ${data.tags?.map(t => `<span class="tag">${t}</span>`).join("") || ""}
+        <p>${data.content}</p>
+        ${data.url ? `<a class="link-title" href="${data.url}" target="_blank">${data.siteTitle || data.url}</a>` : ""}
+        <div>${new Date(data.date).toLocaleString()}</div>
+        <button class="btn delete-btn">削除</button>
+      `;
+      div.querySelector(".delete-btn").onclick = async () => {
+        const confirmed = confirm("削除しますか？");
+        if (confirmed) {
+          const snap = await getDocs(memoRef);
+          snap.forEach(docSnap => {
+            const d = docSnap.data();
+            if (d.title === data.title && d.date === data.date) {
+              deleteDoc(doc(db, "memos", docSnap.id)).then(loadMemos);
+            }
+          });
+        }
+      };
+      return div;
     }
 
     loadMemos();
