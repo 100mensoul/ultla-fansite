@@ -68,8 +68,26 @@
       const snap = await getDoc(docRef);
       if (!snap.exists()) return;
       const { data } = snap.data();
-      const rows = table.querySelectorAll("tbody tr");
-      data.forEach((row, i) => row.forEach((text, j) => rows[i]?.cells[j + 1].innerText = text));
+      const tbody = table.querySelector("tbody");
+      tbody.innerHTML = "";
+      const roles = ["教育委員会", "事務局", "アセスメント", "プログラム", "効果検証"];
+
+      data.forEach((rowData, i) => {
+        const tr = document.createElement("tr");
+        const th = document.createElement("th");
+        th.className = "role-header";
+        th.textContent = roles[i] || `未定義${i + 1}`;
+        tr.appendChild(th);
+
+        rowData.forEach(text => {
+          const td = document.createElement("td");
+          td.contentEditable = true;
+          td.textContent = text;
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      });
     }
 
     window.addEventListener("load", loadSchedule);
