@@ -5,71 +5,88 @@
   <title>U2運営スケジュール</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    :root {
+      --color-bg: #fdfdfd;
+      --color-border: #ddd;
+      --color-header-bg: #fafafa;
+      --color-accent: #005b96;
+      --color-role-bg: #f0f4f8;
+      --font-main: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+    }
+
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: var(--font-main);
       margin: 0;
-      padding: 0;
-      background: #f8f8f8;
+      background-color: var(--color-bg);
+      color: #333;
     }
 
     h1 {
       text-align: center;
-      padding: 1rem;
-      background-color: #004080;
-      color: white;
+      padding: 1.5rem 1rem;
       margin: 0;
+      background-color: var(--color-accent);
+      color: white;
+      font-size: 1.8rem;
+      letter-spacing: 0.05em;
     }
 
     .schedule-container {
       overflow-x: auto;
-      white-space: nowrap;
-      padding: 1rem;
+      padding: 2rem 1rem;
     }
 
     table {
-      border-collapse: collapse;
-      width: max-content;
+      border-collapse: separate;
+      border-spacing: 0;
       min-width: 100%;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      border-radius: 8px;
+      overflow: hidden;
     }
 
     th, td {
-      border: 1px solid #ccc;
+      border: 1px solid var(--color-border);
       padding: 1rem;
-      min-width: 150px;
+      min-width: 140px;
       vertical-align: top;
     }
 
     th {
-      background-color: #e0e0e0;
+      background-color: var(--color-header-bg);
+      font-weight: 600;
       text-align: center;
-      font-weight: bold;
-    }
-
-    .role-header {
-      background-color: #cce5ff;
-      position: sticky;
-      left: 0;
-      z-index: 1;
+      white-space: nowrap;
     }
 
     .month-header {
-      background-color: #d9edf7;
       position: sticky;
       top: 0;
-      z-index: 2;
+      background-color: var(--color-header-bg);
+      z-index: 10;
+      box-shadow: inset 0 -1px #ccc;
     }
 
-    .category-nagoya { background-color: #ffe0e0; }
-    .category-jimukyoku { background-color: #fff5cc; }
-    .category-assesment { background-color: #e0ffe0; }
-    .category-facilitator { background-color: #e0f0ff; }
-    .category-manager { background-color: #f0e0ff; }
-    .category-online { background-color: #f0f0f0; }
-    .category-director { background-color: #dddddd; }
+    .role-header {
+      background-color: var(--color-role-bg);
+      position: sticky;
+      left: 0;
+      text-align: left;
+      z-index: 20;
+    }
+
+    .category-nagoya    { background-color: #fef6f6; }
+    .category-jimukyoku { background-color: #fff9ec; }
+    .category-assesment { background-color: #f4fff4; }
+    .category-facilitator { background-color: #f2f9ff; }
+    .category-manager   { background-color: #fdf4ff; }
+    .category-online    { background-color: #f9f9f9; }
+    .category-director  { background-color: #f0f0f0; }
   </style>
 </head>
 <body>
-  <h1>運営スケジュール（2025年度）</h1>
+  <h1>U2運営スケジュール（2024年度）</h1>
   <div class="schedule-container">
     <table>
       <thead>
@@ -90,10 +107,10 @@
       <tbody>
         <tr>
           <th class="role-header category-nagoya">名古屋市教育委員会</th>
-          <td>契約締結・定例</td><td></td><td></td><td></td><td>選考</td><td>報告会準備</td><td></td><td></td><td>報告会告知</td><td>報告会実施</td>
+          <td>契約締結・定例</td><td></td><td></td><td></td><td>選考</td><td>報告会準備</td><td></td><td></td><td>告知</td><td>実施</td>
         </tr>
         <tr>
-          <th class="role-header category-jimukyoku">運営事務局</th>
+          <th class="role-header category-jimukyoku">事務局</th>
           <td></td><td>立ち上げ</td><td></td><td>募集告知</td><td></td><td></td><td></td><td></td><td></td><td></td>
         </tr>
         <tr>
