@@ -2,84 +2,122 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>U2スケジュール管理</title>
+  <title>U2運営スケジュール</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background: #fefefe;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      background: #f8f8f8;
     }
+
     h1 {
       text-align: center;
-      font-size: 1.8em;
+      padding: 1rem;
+      background-color: #004080;
+      color: white;
+      margin: 0;
     }
-    .month {
-      margin: 2em 0;
-      padding: 1em;
-      background-color: #f0f8ff;
-      border-left: 6px solid #0077cc;
+
+    .schedule-container {
+      overflow-x: auto;
+      white-space: nowrap;
+      padding: 1rem;
     }
-    .month h2 {
-      margin: 0 0 0.5em 0;
-      font-size: 1.5em;
-      color: #0077cc;
+
+    table {
+      border-collapse: collapse;
+      width: max-content;
+      min-width: 100%;
     }
-    .task-category {
-      margin: 1em 0;
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      min-width: 150px;
+      vertical-align: top;
     }
-    .task-category h3 {
-      font-size: 1.2em;
-      border-bottom: 1px solid #aaa;
-      padding-bottom: 0.2em;
+
+    th {
+      background-color: #e0e0e0;
+      text-align: center;
+      font-weight: bold;
     }
-    ul {
-      list-style: disc;
-      padding-left: 1.5em;
+
+    .role-header {
+      background-color: #cce5ff;
+      position: sticky;
+      left: 0;
+      z-index: 1;
     }
+
+    .month-header {
+      background-color: #d9edf7;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .category-nagoya { background-color: #ffe0e0; }
+    .category-jimukyoku { background-color: #fff5cc; }
+    .category-assesment { background-color: #e0ffe0; }
+    .category-facilitator { background-color: #e0f0ff; }
+    .category-manager { background-color: #f0e0ff; }
+    .category-online { background-color: #f0f0f0; }
+    .category-director { background-color: #dddddd; }
   </style>
 </head>
 <body>
-
-<h1>U2運営スケジュール（2024年度）</h1>
-
-<div class="month">
-  <h2>2024年4月</h2>
-  <div class="task-category">
-    <h3>全体 / 名古屋市</h3>
-    <ul>
-      <li>実施計画書に基づく契約締結</li>
-      <li>随時定例</li>
-    </ul>
+  <h1>U2運営スケジュール（2024年度）</h1>
+  <div class="schedule-container">
+    <table>
+      <thead>
+        <tr>
+          <th class="month-header role-header">役割</th>
+          <th class="month-header">4月</th>
+          <th class="month-header">5月</th>
+          <th class="month-header">6月</th>
+          <th class="month-header">7月</th>
+          <th class="month-header">8月</th>
+          <th class="month-header">9月</th>
+          <th class="month-header">10月</th>
+          <th class="month-header">11月</th>
+          <th class="month-header">12月</th>
+          <th class="month-header">1〜3月</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="role-header category-nagoya">名古屋市教育委員会</th>
+          <td>契約締結・定例</td><td></td><td></td><td></td><td>選考</td><td>報告会準備</td><td></td><td></td><td>報告会告知</td><td>報告会実施</td>
+        </tr>
+        <tr>
+          <th class="role-header category-jimukyoku">事務局</th>
+          <td></td><td>立ち上げ</td><td></td><td>募集告知</td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+          <th class="role-header category-assesment">アセスメントチーム</th>
+          <td>設計準備</td><td>フォーム作成</td><td></td><td>開始</td><td>活用</td><td>活用</td><td></td><td>分析</td><td>共有</td><td></td>
+        </tr>
+        <tr>
+          <th class="role-header category-facilitator">ファシリテーター</th>
+          <td>現地調査</td><td>候補検討</td><td>体制構築</td><td>準備</td><td>実施</td><td>実施</td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+          <th class="role-header category-manager">マネジャー</th>
+          <td></td><td>WEB更新</td><td>制作</td><td>オープン</td><td>継続</td><td>問い合わせ</td><td></td><td></td><td></td><td>報告企画</td>
+        </tr>
+        <tr>
+          <th class="role-header category-online">オンラインサポート</th>
+          <td></td><td></td><td></td><td>配布対応</td><td></td><td></td><td>メール対応</td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+          <th class="role-header category-director">ディレクター</th>
+          <td>全体設計</td><td>確認</td><td></td><td>チェック</td><td>調整</td><td>確認</td><td>進行管理</td><td></td><td>配布</td><td>報告</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-  <div class="task-category">
-    <h3>受付業務</h3>
-    <ul>
-      <li>WEBサイト企画（コンテンツ更新、サーバー継続）</li>
-    </ul>
-  </div>
-  <div class="task-category">
-    <h3>アセスメント業務</h3>
-    <ul>
-      <li>アセスメント項目調整（設計準備）</li>
-    </ul>
-  </div>
-  <div class="task-category">
-    <h3>プログラム業務</h3>
-    <ul>
-      <li>現地プレリサーチ（準備）</li>
-    </ul>
-  </div>
-  <div class="task-category">
-    <h3>効果検証業務</h3>
-    <ul>
-      <li>アンケート項目調整</li>
-    </ul>
-  </div>
-</div>
-
-<!-- 以下同様に 5月、6月、…2025年3月まで続けられます -->
-
 </body>
 </html>
