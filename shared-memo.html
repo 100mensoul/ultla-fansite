@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>U2memo リアルタイム共有メモ</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtDPnYex-KL2hbHAQe5fY",
+      authDomain: "u2memo-36f61.firebaseapp.com",
+      projectId: "u2memo-36f61",
+      storageBucket: "u2memo-36f61.appspot.com",
+      messagingSenderId: "14274931072",
+      appId: "1:14274931072:web:5d9c902690"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const memosRef = collection(db, "memos");
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("memoForm");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const title = document.getElementById("title").value.trim();
+        const status = document.getElementById("status").value;
+        const content = document.getElementById("content").value.trim();
+        const date = new Date().toLocaleDateString("ja-JP");
+        if (title && content) {
+          await addDoc(memosRef, { title, status, content, date });
+          form.reset();
+        }
+      });
+
+      const list = document.getElementById("memoList");
+      onSnapshot(memosRef, (snapshot) => {
+        list.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+          const memo = docSnap.data();
+          const div = document.createElement("div");
+          div.className = "memo-card";
+          div.innerHTML = `
+            <h3 contenteditable onblur="updateField('${docSnap.id}', 'title', this.innerText)">${memo.title}</h3>
+            <p contenteditable onblur="updateField('${docSnap.id}', 'content', this.innerText)">
+              <span class="badge">${memo.status}</span>${memo.content}
+            </p>
+            <time>${memo.date}</time>
+            <button onclick="deleteMemo('${docSnap.id}')">削除</button>
+          `;
+          list.appendChild(div);
+        });
+      });
+    });
+
+    window.deleteMemo = async (id) => {
+      if (confirm("削除しますか？")) {
+        await deleteDoc(doc(memosRef, id));
+      }
+    };
+
+    window.updateField = async (id, field, value) => {
+      const ref = doc(memosRef, id);
+      const update = {};
+      update[field] = value;
+      await updateDoc(ref, update);
+    };
+  </script>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #fefefe; }
+    .memo-form input, .memo-form textarea, .memo-form select {
+      display: block; margin-bottom: 1rem; padding: 0.5rem; width: 100%;
+    }
+    .memo-form button {
+      background: #0077cc; color: white; border: none;
+      padding: 0.5rem 1rem; border-radius: 4px;
+    }
+    .memo-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem; }
+    .memo-card { background: #fff8dc; padding: 1rem; border-radius: 8px; box-shadow: 1px 1px 4px rgba(0,0,0,0.1); }
+    .badge { background: #ffcc00; padding: 0.2em 0.5em; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-right: 0.5em; }
+    .memo-card button { background: crimson; color: white; padding: 0.4rem 0.8rem; border: none; border-radius: 4px; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+
+  <h1>U2memo リアルタイム共有メモ</h1>
+
+  <form id="memoForm" class="memo-form">
+    <input type="text" id="title" placeholder="タイトル">
+    <select id="status">
+      <option value="未着手">未着手</option>
+      <option value="進行中">進行中</option>
+      <option value="保留">保留</option>
+    </select>
+    <textarea id="content" placeholder="内容" rows="4"></textarea>
+    <button type="submit">追加</button>
+  </form>
+
+  <div id="memoList" class="memo-list"></div>
+
+</body>
+</html>
