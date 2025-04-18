@@ -1,204 +1,130 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
+  <title>U2スケジュール共有</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>共有メモ</title>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="main.js"></script>
   <style>
-    body {
-      font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-      background: #fff;
-      padding: 2rem 1rem;
-      max-width: 640px;
-      margin: auto;
+    body { font-family: 'Yu Gothic UI', sans-serif; background: #f4f4f4; margin: 0; padding: 1rem; }
+    h1 { text-align: center; color: #004080; }
+    .buttons { text-align: center; margin: 1rem 0; }
+    button {
+      margin: 0.5rem 0.3rem; padding: 0.5rem 1rem; font-size: 1rem;
+      background: #004080; color: white; border: none; border-radius: 6px;
+      cursor: pointer; transition: background 0.3s ease;
     }
-    h1 {
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
+    button:hover { background: #0066cc; }
+    table {
+      border-collapse: separate; border-spacing: 0;
+      width: 100%; background: white; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
-    input, textarea, select, button {
-      width: 100%;
-      font-size: 0.9rem;
-      padding: 0.4rem;
-      margin-bottom: 0.75rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+    th, td {
+      border: 1px solid #ccc; padding: 0.8rem; min-width: 120px; vertical-align: top;
     }
-    .btn {
-      width: auto;
-      font-size: 0.75rem;
-      padding: 0.3rem 0.8rem;
-      margin-right: 0.5rem;
+    th { background: #e0f0ff; position: sticky; top: 0; z-index: 1; }
+    .role-header {
+      background: #f0f0f0; font-weight: bold; position: sticky; left: 0; z-index: 2;
     }
-    .memo-card {
-      background: #fff8dc;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      padding: 1rem;
-      margin-bottom: 1rem;
+    td[contenteditable="true"] {
+      background: #fffdf0; cursor: text;
     }
-    .memo-card h3 {
-      font-size: 0.95rem;
-      margin: 0 0 0.25rem;
-    }
-    .tag {
-      background: #ffd700;
-      padding: 0.2rem 0.5rem;
-      border-radius: 5px;
-      font-size: 0.7rem;
-      display: inline-block;
-      margin-right: 0.5rem;
-      cursor: pointer;
-    }
-    .tag:hover {
-      background: #ffa500;
-    }
-    .filter-btn {
-      background: #eee;
-      border: none;
-      border-radius: 5px;
-      padding: 0.3rem 0.8rem;
-      margin: 0.2rem;
-      cursor: pointer;
-    }
-    .filter-btn.active {
-      background: #ffd700;
+    tbody tr:nth-child(odd) { background: #fcfcfc; }
+    .add-row-button {
+      text-align: center; margin-top: 1.5rem;
     }
   </style>
 </head>
 <body>
-  <h1>共有メモ</h1>
-  <form id="memoForm">
-    <input type="text" id="title" placeholder="タイトル" required>
-    <textarea id="content" rows="3" placeholder="内容を入力" required></textarea>
-    <input type="text" id="tags" placeholder="タグ（カンマ区切り）">
-    <input type="url" id="link" placeholder="関連リンク（URL） 任意">
-    <button type="submit">追加</button>
-  </form>
-
-  <div id="tagFilters"></div>
-  <div id="memoList"></div>
+  <h1>U2スケジュール（自動保存付き）</h1>
+  <div class="buttons">
+    <button onclick="loadSchedule()">読み込み</button>
+  </div>
+  <div class="schedule-container">
+    <table id="scheduleTable">
+      <thead>
+        <tr>
+          <th class="role-header">業務</th>
+          <th>4月</th><th>5月</th><th>6月</th><th>7月</th><th>8月</th>
+          <th>9月</th><th>10月</th><th>11月</th><th>12月</th><th>1-3月</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th class="role-header">教育委員会</th><td contenteditable="true">契約</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+        <tr><th class="role-header">事務局</th><td contenteditable="true"></td><td contenteditable="true">立ち上げ</td><td contenteditable="true"></td><td contenteditable="true">告知</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+        <tr><th class="role-header">アセスメント</th><td contenteditable="true">設計</td><td contenteditable="true">フォーム</td><td contenteditable="true"></td><td contenteditable="true">開始</td><td contenteditable="true">活用</td><td contenteditable="true">活用</td><td contenteditable="true"></td><td contenteditable="true">分析</td><td contenteditable="true">共有</td><td contenteditable="true"></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="add-row-button">
+    <button onclick="addRow()">＋ 業務を追加</button>
+  </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { db } from './firebase.js';
+    import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCtDPnYex-KL2hbHAQe5fY9bNiWn9lHCRg",
-      authDomain: "u2memo-36f61.firebaseapp.com",
-      projectId: "u2memo-36f61",
-      storageBucket: "u2memo-36f61.appspot.com",
-      messagingSenderId: "14274931072",
-      appId: "1:14274931072:web:5d9c902690542e41b5c187"
-    };
+    const table = document.getElementById("scheduleTable");
+    const tbody = table.querySelector("tbody");
+    const docRef = doc(db, "memos", "u2-schedule");
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const memoRef = collection(db, "memos");
+    async function saveSchedule() {
+      const rows = Array.from(table.querySelectorAll("tbody tr"));
+      const data = rows.map(row => Array.from(row.querySelectorAll("td")).map(cell => cell.innerText));
+      await setDoc(docRef, { data });
+      console.log("保存しました");
+    }
 
-    const form = document.getElementById("memoForm");
-    const titleInput = document.getElementById("title");
-    const contentInput = document.getElementById("content");
-    const tagsInput = document.getElementById("tags");
-    const linkInput = document.getElementById("link");
-    const memoList = document.getElementById("memoList");
-    const tagFilters = document.getElementById("tagFilters");
-    let currentTag = null;
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const title = titleInput.value.trim();
-      const content = contentInput.value.trim();
-      const tags = tagsInput.value.split(",").map(tag => tag.trim()).filter(Boolean);
-      const url = linkInput.value.trim();
-      const status = "未着手";
-      const date = new Date().toLocaleDateString("ja-JP");
-      const timestamp = Date.now();
-      if (title && content) {
-        await addDoc(memoRef, { title, content, status, date, timestamp, tags, url });
-        form.reset();
-        form.onsubmit = defaultSubmit;
-        loadMemos();
-      }
-    });
-
-    function createTagFilter(tags) {
-      const uniqueTags = Array.from(new Set(tags.flat()));
-      tagFilters.innerHTML = '';
-      uniqueTags.forEach(tag => {
-        const btn = document.createElement("button");
-        btn.textContent = tag;
-        btn.className = "filter-btn";
-        btn.onclick = () => {
-          currentTag = currentTag === tag ? null : tag;
-          loadMemos();
-        };
-        tagFilters.appendChild(btn);
+    window.loadSchedule = async function () {
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) return;
+      const { data } = snap.data();
+      tbody.innerHTML = "";
+      const roles = ["教育委員会", "事務局", "アセスメント", "プログラム", "効果検証"];
+      data.forEach((rowData, i) => {
+        const tr = document.createElement("tr");
+        const th = document.createElement("th");
+        th.className = "role-header";
+        th.textContent = roles[i] || `新規業務 ${i + 1}`;
+        tr.appendChild(th);
+        rowData.forEach(text => {
+          const td = document.createElement("td");
+          td.contentEditable = true;
+          td.textContent = text;
+          td.addEventListener("input", debounceSave);
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
       });
     }
 
-    async function loadMemos() {
-      memoList.innerHTML = "";
-      const snapshot = await getDocs(memoRef);
-      const memos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-        .sort((a, b) => b.timestamp - a.timestamp);
-      const allTags = memos.map(m => m.tags || []);
-      createTagFilter(allTags);
-
-      memos.filter(m => !currentTag || (m.tags || []).includes(currentTag))
-        .forEach(data => {
-          const div = document.createElement("div");
-          div.className = "memo-card";
-          div.innerHTML = `
-            <h3>${data.title}</h3>
-            ${(data.tags || []).map(t => `<span class="tag">${t}</span>`).join("")}
-            <p>${data.content}</p>
-            ${data.url ? `<a href="${data.url}" target="_blank">${data.url}</a>` : ""}
-            <div>${data.date} / ${new Date(data.timestamp).toLocaleTimeString()}</div>
-            <button class="btn edit-btn">編集</button>
-            <button class="btn delete-btn">削除</button>
-          `;
-
-          div.querySelector(".delete-btn").onclick = async () => {
-            await deleteDoc(doc(db, "memos", data.id));
-            loadMemos();
-          };
-
-          div.querySelector(".edit-btn").onclick = () => {
-            titleInput.value = data.title;
-            contentInput.value = data.content;
-            tagsInput.value = (data.tags || []).join(", ");
-            linkInput.value = data.url || "";
-            form.onsubmit = async (e) => {
-              e.preventDefault();
-              const newTitle = titleInput.value.trim();
-              const newContent = contentInput.value.trim();
-              const newTags = tagsInput.value.split(",").map(tag => tag.trim()).filter(Boolean);
-              const newUrl = linkInput.value.trim();
-              const newDate = new Date().toLocaleDateString("ja-JP");
-              const newTimestamp = Date.now();
-              await updateDoc(doc(db, "memos", data.id), {
-                title: newTitle,
-                content: newContent,
-                tags: newTags,
-                url: newUrl,
-                date: newDate,
-                timestamp: newTimestamp
-              });
-              form.reset();
-              form.onsubmit = defaultSubmit;
-              loadMemos();
-            };
-          };
-
-          memoList.appendChild(div);
-        });
+    window.addRow = function () {
+      const newLabel = prompt("新しい業務名を入力してください：", "新規業務");
+      if (!newLabel) return;
+      const tr = document.createElement("tr");
+      const th = document.createElement("th");
+      th.className = "role-header";
+      th.textContent = newLabel;
+      tr.appendChild(th);
+      for (let i = 0; i < 10; i++) {
+        const td = document.createElement("td");
+        td.contentEditable = true;
+        td.addEventListener("input", debounceSave);
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+      saveSchedule();
     }
 
-    const defaultSubmit = form.onsubmit;
-    loadMemos();
+    function debounceSave() {
+      clearTimeout(window._saveTimer);
+      window._saveTimer = setTimeout(saveSchedule, 1000);
+    }
+
+    window.addEventListener("load", loadSchedule);
   </script>
 </body>
 </html>
