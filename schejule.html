@@ -2,103 +2,78 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>U2運営スケジュール</title>
+  <title>U2スケジュール（編集可）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    :root {
-      --bg: #f9fafc;
-      --table-bg: #ffffff;
-      --border: #ddd;
-      --text: #333;
-      --highlight: #004080;
-      --subtle: #666;
-      --badge: #dff0ff;
-      --badge-text: #004080;
-    }
-
     body {
-      font-family: "Yu Gothic UI", "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'Yu Gothic UI', sans-serif;
+      background: #f4f4f4;
       margin: 0;
-    }
-
-    h1 {
-      background: var(--highlight);
-      color: white;
-      margin: 0;
-      padding: 1.2rem;
-      text-align: center;
-      font-size: 1.8rem;
-    }
-
-    .schedule-container {
-      overflow-x: auto;
-      padding: 2rem 1rem;
-    }
-
-    table {
-      width: max-content;
-      min-width: 100%;
-      border-collapse: collapse;
-      background: var(--table-bg);
-      border-radius: 8px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.05);
-      overflow: hidden;
-    }
-
-    th, td {
-      border: 1px solid var(--border);
       padding: 1rem;
-      min-width: 160px;
-      vertical-align: top;
-      font-size: 15px;
     }
-
-    thead th {
-      background: #e6f2ff;
+    h1 {
+      text-align: center;
+      color: #004080;
+    }
+    .buttons {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    button {
+      margin: 0 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background: #004080;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0066cc;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.8rem;
+      min-width: 120px;
+      vertical-align: top;
+    }
+    th {
+      background: #e0f0ff;
       position: sticky;
       top: 0;
-      z-index: 10;
-      font-weight: 600;
-      text-align: center;
+      z-index: 1;
     }
-
-    tbody th.role-header {
-      background: #f2f2f2;
+    .role-header {
+      background: #f8f8f8;
+      font-weight: bold;
       position: sticky;
       left: 0;
-      z-index: 20;
-      text-align: left;
-      font-weight: 600;
+      z-index: 2;
     }
-
-    tbody tr:nth-child(odd) { background: #fafafa; }
-    tbody tr:nth-child(even) { background: #ffffff; }
-
-    .sub-role {
-      padding-left: 1.2rem;
-      font-weight: 400;
-      color: var(--subtle);
-      font-size: 0.95em;
-    }
-
-    .badge {
-      display: inline-block;
-      background: var(--badge);
-      color: var(--badge-text);
-      padding: 0.3em 0.7em;
-      border-radius: 12px;
-      font-size: 0.9em;
-      line-height: 1.4;
-      margin-bottom: 0.3em;
+    td[contenteditable="true"] {
+      background: #fffbe6;
+      cursor: text;
     }
   </style>
 </head>
 <body>
-  <h1>U2運営スケジュール（2024年度）</h1>
+  <h1>U2スケジュール（編集モード）</h1>
+
+  <div class="buttons">
+    <button onclick="saveTable()">保存</button>
+    <button onclick="loadTable()">読み込み</button>
+    <button onclick="resetTable()">初期化</button>
+  </div>
+
   <div class="schedule-container">
-    <table>
+    <table id="scheduleTable">
       <thead>
         <tr>
           <th class="role-header">業務</th>
@@ -110,45 +85,68 @@
       <tbody>
         <tr>
           <th class="role-header">教育委員会</th>
-          <td><span class="badge">契約締結</span></td><td></td><td></td><td></td>
-          <td><span class="badge">選考</span></td><td><span class="badge">報告準備</span></td><td></td><td></td>
-          <td><span class="badge">告知</span></td><td><span class="badge">報告会</span></td>
+          <td contenteditable="true">契約締結</td><td contenteditable="true"></td><td contenteditable="true"></td>
+          <td contenteditable="true"></td><td contenteditable="true">選考</td><td contenteditable="true">準備</td>
+          <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">告知</td>
+          <td contenteditable="true">報告会</td>
         </tr>
         <tr>
           <th class="role-header">事務局</th>
-          <td></td><td><span class="badge">立ち上げ</span></td><td></td><td><span class="badge">募集告知</span></td>
-          <td></td><td></td><td></td><td></td><td></td><td></td>
-        </tr>
-        <tr>
-          <th class="role-header sub-role">┗ 受付業務</th>
-          <td></td><td></td><td></td><td><span class="badge">配布対応</span></td>
-          <td></td><td></td><td><span class="badge">メール対応</span></td><td></td><td></td><td></td>
-        </tr>
-        <tr>
-          <th class="role-header sub-role">┗ サイト運営</th>
-          <td></td><td><span class="badge">WEB更新</span></td><td><span class="badge">制作</span></td>
-          <td><span class="badge">オープン</span></td><td><span class="badge">継続</span></td>
-          <td><span class="badge">対応</span></td><td></td><td></td><td></td><td><span class="badge">報告企画</span></td>
+          <td contenteditable="true"></td><td contenteditable="true">立ち上げ</td><td contenteditable="true"></td>
+          <td contenteditable="true">募集告知</td><td contenteditable="true"></td><td contenteditable="true"></td>
+          <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+          <td contenteditable="true"></td>
         </tr>
         <tr>
           <th class="role-header">アセスメント業務</th>
-          <td><span class="badge">設計準備</span></td><td><span class="badge">フォーム作成</span></td><td></td>
-          <td><span class="badge">開始</span></td><td><span class="badge">活用</span></td><td><span class="badge">活用</span></td>
-          <td></td><td><span class="badge">分析</span></td><td><span class="badge">共有</span></td><td></td>
+          <td contenteditable="true">設計</td><td contenteditable="true">フォーム</td><td contenteditable="true"></td>
+          <td contenteditable="true">開始</td><td contenteditable="true">活用</td><td contenteditable="true">活用</td>
+          <td contenteditable="true"></td><td contenteditable="true">分析</td><td contenteditable="true">共有</td>
+          <td contenteditable="true"></td>
         </tr>
         <tr>
           <th class="role-header">プログラム業務</th>
-          <td><span class="badge">現地調査</span></td><td><span class="badge">候補検討</span></td><td><span class="badge">体制構築</span></td>
-          <td><span class="badge">準備</span></td><td><span class="badge">実施</span></td><td><span class="badge">実施</span></td>
-          <td></td><td></td><td></td><td></td>
+          <td contenteditable="true">現地調査</td><td contenteditable="true">検討</td><td contenteditable="true">構築</td>
+          <td contenteditable="true">準備</td><td contenteditable="true">実施</td><td contenteditable="true">実施</td>
+          <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+          <td contenteditable="true"></td>
         </tr>
         <tr>
           <th class="role-header">効果検証業務</th>
-          <td></td><td></td><td></td><td></td><td></td>
-          <td></td><td><span class="badge">集計</span></td><td></td><td></td><td><span class="badge">報告</span></td>
+          <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+          <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+          <td contenteditable="true">集計</td><td contenteditable="true"></td><td contenteditable="true"></td>
+          <td contenteditable="true">報告</td>
         </tr>
       </tbody>
     </table>
   </div>
+
+  <script>
+    const tableId = "scheduleTable";
+
+    function saveTable() {
+      const html = document.getElementById(tableId).innerHTML;
+      localStorage.setItem("u2_schedule_table", html);
+      alert("保存しました！");
+    }
+
+    function loadTable() {
+      const html = localStorage.getItem("u2_schedule_table");
+      if (html) {
+        document.getElementById(tableId).innerHTML = html;
+      }
+    }
+
+    function resetTable() {
+      if (confirm("すべて初期化してよいですか？")) {
+        localStorage.removeItem("u2_schedule_table");
+        location.reload();
+      }
+    }
+
+    // 初期読み込み
+    window.onload = loadTable;
+  </script>
 </body>
 </html>
