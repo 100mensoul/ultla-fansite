@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>共有メモ（タグ付き）</title>
+  <title>共有メモ（URL機能付き）</title>
   <style>
     body {
-    max-width: 600px;         /* 最大幅を600pxに制限 */
-    margin: auto;             /* 中央寄せ */
-    padding: 1rem;
-    font-family: 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
-    background: #fdfdfd;
+      font-family: sans-serif;
+      background: #fdfdfd;
+      padding: 1rem;
+      max-width: 640px;
+      margin: auto;
     }
     .memo-card {
       background: #fff8dc;
@@ -19,9 +19,7 @@
       padding: 1rem;
       margin-bottom: 1.5rem;
     }
-    .memo-card h3 {
-      margin-top: 0;
-    }
+    .memo-card h3 { margin-top: 0; }
     .tag {
       background: #ffd700;
       padding: 0.2rem 0.5rem;
@@ -39,14 +37,22 @@
     }
     .edit-btn { background: #666; color: white; }
     .delete-btn { background: crimson; color: white; }
+    .link-title {
+      font-size: 0.9rem;
+      color: #0077cc;
+      text-decoration: underline;
+      display: block;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body>
   <h1>共有メモ</h1>
   <form id="memoForm">
     <input type="text" id="title" placeholder="タイトル" required><br><br>
-    <textarea id="content" rows="4" placeholder="内容を入力" required></textarea><br><br>
+    <textarea id="content" rows="3" placeholder="内容を入力" required></textarea><br><br>
     <input type="text" id="tags" placeholder="タグ（カンマ区切り）"><br><br>
+    <input type="url" id="url" placeholder="関連リンクURL（任意）"><br><br>
     <button type="submit">追加</button>
   </form>
 
@@ -54,9 +60,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, getDocs, deleteDoc, doc
-    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCtDPnYex-KL2hbHAQe5fY9bNiWn9lHCRg",
@@ -75,6 +79,7 @@
     const titleInput = document.getElementById("title");
     const contentInput = document.getElementById("content");
     const tagsInput = document.getElementById("tags");
+    const urlInput = document.getElementById("url");
     const memoList = document.getElementById("memoList");
 
     form.addEventListener("submit", async (e) => {
@@ -82,14 +87,25 @@
       const title = titleInput.value.trim();
       const content = contentInput.value.trim();
       const tags = tagsInput.value.split(",").map(tag => tag.trim()).filter(Boolean);
+      const url = urlInput.value.trim();
       const status = "未着手";
       const date = new Date().toLocaleDateString("ja-JP");
 
-      if (title && content) {
-        await addDoc(memoRef, { title, content, status, date, tags });
-        form.reset();
-        loadMemos();
+      let siteTitle = "";
+      if (url) {
+        try {
+          const res = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(url));
+          const html = await res.json();
+          const titleMatch = html.contents.match(/<title[^>]*>(.*?)<\/title>/i);
+          siteTitle = titleMatch ? titleMatch[1] : "";
+        } catch (err) {
+          console.warn("タイトル取得に失敗:", err);
+        }
       }
+
+      await addDoc(memoRef, { title, content, tags, url, siteTitle, status, date });
+      form.reset();
+      loadMemos();
     });
 
     async function loadMemos() {
@@ -101,8 +117,9 @@
         div.className = "memo-card";
         div.innerHTML = `
           <h3>${data.title}</h3>
-          ${data.tags ? data.tags.map(t => `<span class="tag">${t}</span>`).join("") : ""}
+          ${data.tags?.map(t => `<span class="tag">${t}</span>`).join("") || ""}
           <p>${data.content}</p>
+          ${data.url ? `<a class="link-title" href="${data.url}" target="_blank">${data.siteTitle || data.url}</a>` : ""}
           <div>${data.date}</div>
           <button class="btn edit-btn">編集</button>
           <button class="btn delete-btn">削除</button>
