@@ -3,84 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>共有メモ（U2memo）</title>
+  <title>共有メモ</title>
   <style>
     body {
       font-family: "Hiragino Kaku Gothic ProN", sans-serif;
       background: #fdfdfd;
-      padding: 2rem;
-      max-width: 700px;
+      padding: 1.5rem;
+      max-width: 420px;
       margin: auto;
-    }
-    h1 {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-bottom: 1rem;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 0.6rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1rem;
-    }
-    button {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 0.5rem 1.2rem;
-      border-radius: 5px;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-bottom: 1rem;
+      font-size: 14px;
+      line-height: 1.7;
     }
     .memo-card {
       background: #fff8dc;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       padding: 1rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
     .memo-card h3 {
-      margin: 0 0 0.4rem;
-      font-size: 1.2rem;
+      margin: 0;
+      font-size: 1.1rem;
+    }
+    .memo-card p {
+      margin: 0.6rem 0;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
     .tag {
-      display: inline-block;
       background: #ffd700;
+      color: black;
       padding: 0.2rem 0.6rem;
-      border-radius: 5px;
-      font-size: 0.8rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      display: inline-block;
       margin-right: 0.4rem;
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.4rem;
     }
     .btn {
-      padding: 0.4rem 1rem;
+      padding: 0.4rem 0.9rem;
       border: none;
       border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.85rem;
       margin-right: 0.5rem;
+      cursor: pointer;
+      font-size: 0.8rem;
     }
     .edit-btn { background: #666; color: white; }
     .delete-btn { background: crimson; color: white; }
-    .link-preview {
-      font-size: 0.85rem;
-      color: #0056b3;
-      margin-top: 0.5rem;
+    .url-link {
       display: block;
-      word-wrap: break-word;
+      margin-top: 0.4rem;
+      font-size: 0.85rem;
+      color: #0645AD;
+      text-decoration: underline;
+      word-break: break-all;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.3rem 0 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button[type="submit"] {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <h1>共有メモ</h1>
   <form id="memoForm">
-    <input type="text" id="title" placeholder="タイトル" required />
+    <input type="text" id="title" placeholder="タイトル" required>
     <textarea id="content" rows="3" placeholder="内容を入力" required></textarea>
-    <input type="text" id="tags" placeholder="タグ（カンマ区切り）" />
-    <input type="text" id="url" placeholder="関連URL（任意）" />
+    <input type="text" id="tags" placeholder="タグ（カンマ区切り）">
+    <input type="url" id="url" placeholder="関連リンク（URL）任意">
     <button type="submit">追加</button>
   </form>
 
@@ -89,7 +88,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import {
-      getFirestore, collection, addDoc, getDocs, deleteDoc, doc
+      getFirestore, collection, addDoc, getDocs, deleteDoc, doc, orderBy, query
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -116,13 +115,14 @@
       e.preventDefault();
       const title = titleInput.value.trim();
       const content = contentInput.value.trim();
-      const tags = tagsInput.value.split(",").map(t => t.trim()).filter(Boolean);
+      const tags = tagsInput.value.split(",").map(tag => tag.trim()).filter(Boolean);
       const url = urlInput.value.trim();
       const status = "未着手";
       const date = new Date().toLocaleDateString("ja-JP");
+      const timestamp = Date.now();
 
       if (title && content) {
-        await addDoc(memoRef, { title, content, status, date, tags, url });
+        await addDoc(memoRef, { title, content, tags, url, status, date, timestamp });
         form.reset();
         loadMemos();
       }
@@ -130,20 +130,17 @@
 
     async function loadMemos() {
       memoList.innerHTML = "";
-      const snapshot = await getDocs(memoRef);
-      const docs = [];
-      snapshot.forEach(doc => docs.push({ id: doc.id, data: doc.data() }));
-      docs.sort((a, b) => b.data.date.localeCompare(a.data.date));  // 日付で降順
-
-      docs.forEach(docSnap => {
-        const data = docSnap.data;
+      const q = query(memoRef, orderBy("timestamp", "desc"));
+      const snapshot = await getDocs(q);
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
         const div = document.createElement("div");
         div.className = "memo-card";
         div.innerHTML = `
           <h3>${data.title}</h3>
-          ${data.tags?.map(t => `<span class="tag">${t}</span>`).join("") || ""}
+          ${data.tags ? data.tags.map(t => `<span class="tag">${t}</span>`).join("") : ""}
           <p>${data.content}</p>
-          ${data.url ? `<a class="link-preview" href="${data.url}" target="_blank">${data.url}</a>` : ""}
+          ${data.url ? `<a href="${data.url}" class="url-link" target="_blank">${data.url}</a>` : ""}
           <div>${data.date}</div>
           <button class="btn edit-btn">編集</button>
           <button class="btn delete-btn">削除</button>
