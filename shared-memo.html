@@ -8,71 +8,72 @@
     body {
       font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
       background: #fff;
-      padding: 2rem 1rem;
+      padding: 1rem;
       max-width: 640px;
       margin: auto;
     }
     h1 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
     }
-    input, textarea, select, button {
+    input, textarea, button {
       width: 100%;
-      font-size: 1rem;
-      padding: 0.5rem;
-      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+      padding: 0.4rem;
+      margin-bottom: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 6px;
     }
     .btn {
       width: auto;
-      font-size: 0.875rem;
-      padding: 0.4rem 1rem;
-      margin-right: 0.5rem;
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+      margin-right: 0.3rem;
     }
     .memo-card {
       background: #fff8dc;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      padding: 1rem;
-      margin-bottom: 1rem;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
     }
     .memo-card h3 {
-      font-size: 1rem;
-      margin: 0 0 0.25rem;
+      font-size: 0.9rem;
+      margin: 0 0 0.2rem;
     }
     .tag {
       background: #ffd700;
-      padding: 0.2rem 0.5rem;
-      border-radius: 5px;
-      font-size: 0.75rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
       display: inline-block;
-      margin-right: 0.5rem;
+      margin-right: 0.3rem;
       cursor: pointer;
     }
     .tag:hover {
       background: #ffa500;
     }
     .filter-btn {
-  background: #eee;
-  border: none;
-  border-radius: 5px;
-  padding: 0.2rem 0.5rem;
-  margin: 0.1rem;
-  cursor: pointer;
-  font-size: 0.75rem; /* 文字サイズ小さく */
-  display: inline-block; /* 横並び表示 */
-}
-.filter-btn.active {
-  background: #ffd700;
-}
-#tagFilters {
-  display: flex;
-  flex-wrap: wrap; /* 改行許可 */
-  justify-content: flex-start;
-  gap: 0.3rem; /* ボタン同士の隙間を調整 */
-  margin-bottom: 1rem;
-}
+      background: #eee;
+      border: none;
+      border-radius: 4px;
+      padding: 0.15rem 0.3rem;
+      margin: 0.1rem;
+      cursor: pointer;
+      font-size: 0.65rem;
+      display: inline-block;
+      width: auto;
+    }
+    .filter-btn.active {
+      background: #ffd700;
+    }
+    #tagFilters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.2rem;
+      margin-bottom: 0.5rem;
+      justify-content: flex-start;
+    }
   </style>
 </head>
 <body>
@@ -91,7 +92,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import {
-      getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp
+      getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -123,53 +124,38 @@
       const content = contentInput.value.trim();
       const tags = tagsInput.value.split(",").map(tag => tag.trim()).filter(Boolean);
       const url = linkInput.value.trim();
-      const status = "未着手";
       const date = new Date().toLocaleDateString("ja-JP");
       const timestamp = Date.now();
 
       if (title && content) {
         if (editingId) {
-          await updateDoc(doc(db, "memos", editingId), {
-            title, content, tags, url, status, date, timestamp
-          });
+          await updateDoc(doc(db, "memos", editingId), { title, content, tags, url, date, timestamp });
           editingId = null;
         } else {
-          await addDoc(memoRef, { title, content, status, date, timestamp, tags, url });
+          await addDoc(memoRef, { title, content, tags, url, date, timestamp });
         }
         form.reset();
-        form.onsubmit = defaultSubmit;
         loadMemos();
       }
     });
-
-    function createTagFilter(tags) {
-      const uniqueTags = Array.from(new Set(tags.flat()));
-      tagFilters.innerHTML = '';
-      uniqueTags.forEach(tag => {
-        const btn = document.createElement("button");
-        btn.textContent = tag;
-        btn.className = "filter-btn";
-        btn.onclick = () => {
-          currentTag = currentTag === tag ? null : tag;
-          loadMemos();
-        };
-        tagFilters.appendChild(btn);
-      });
-    }
 
     async function loadMemos() {
       memoList.innerHTML = "";
       const snapshot = await getDocs(memoRef);
       const memos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
         .sort((a, b) => b.timestamp - a.timestamp);
-      const allTags = memos.map(m => m.tags || []);
-      createTagFilter(allTags);
 
-      memos.filter(m => !currentTag || (m.tags || []).includes(currentTag))
-        .forEach(data => {
-          const div = document.createElement("div");
-          div.className = "memo-card";
-          div.innerHTML = `
+      const allTags = Array.from(new Set(memos.flatMap(m => m.tags || [])));
+      tagFilters.innerHTML = allTags.map(tag => `<button class="filter-btn">${tag}</button>`).join("");
+
+      document.querySelectorAll(".filter-btn").forEach(btn => btn.onclick = () => {
+        currentTag = currentTag === btn.textContent ? null : btn.textContent;
+        loadMemos();
+      });
+
+      memos.filter(m => !currentTag || m.tags.includes(currentTag)).forEach(data => {
+        memoList.innerHTML += `
+          <div class="memo-card">
             <h3>${data.title}</h3>
             ${(data.tags || []).map(t => `<span class="tag">${t}</span>`).join("")}
             <p>${data.content}</p>
@@ -177,26 +163,10 @@
             <div>${data.date} / ${new Date(data.timestamp).toLocaleTimeString()}</div>
             <button class="btn edit-btn">編集</button>
             <button class="btn delete-btn">削除</button>
-          `;
-
-          div.querySelector(".delete-btn").onclick = async () => {
-            await deleteDoc(doc(db, "memos", data.id));
-            loadMemos();
-          };
-
-          div.querySelector(".edit-btn").onclick = () => {
-            titleInput.value = data.title;
-            contentInput.value = data.content;
-            tagsInput.value = (data.tags || []).join(", ");
-            linkInput.value = data.url || "";
-            editingId = data.id;
-          };
-
-          memoList.appendChild(div);
-        });
+          </div>`;
+      });
     }
 
-    const defaultSubmit = form.onsubmit;
     loadMemos();
   </script>
 </body>
