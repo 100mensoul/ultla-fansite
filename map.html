@@ -2,14 +2,12 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>エアツリー - マイマップ</title>
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-o9N1j8RErP4RZRWzBWb2P5mYo+U+1pE3eY+hCU0K/3w="
-    crossorigin=""
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Leaflet CSS（integrity削除済） -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
   <style>
     html, body {
       height: 100%;
@@ -41,16 +39,14 @@
   <div id="map"></div>
   <button class="locate-btn" onclick="locateUser()">📍現在地を表示</button>
 
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-QVwWnT+V1i6g2R5AzvM+IaswYWoR7OykAI1Pl+ZyyTQ="
-    crossorigin=""
-  ></script>
+  <!-- Leaflet JS（integrity削除済） -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script>
     // 地図初期化（日野市周辺）
     const map = L.map('map').setView([35.6719, 139.3936], 14);
 
-    // タイル読み込み
+    // 地図タイル表示（OpenStreetMap）
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
@@ -75,7 +71,7 @@
       );
     }
 
-    // 地図クリックでピンを追加（＋メモ入力）
+    // 地図クリックでピン追加＋メモ入力
     map.on("click", function (e) {
       const latlng = e.latlng;
       const popupContent = `
@@ -91,7 +87,7 @@
         .openOn(map);
     });
 
-    // 保存処理（今は console.log に出すだけ）
+    // メモ保存処理（いまは console.log に出力のみ）
     function saveNote(lat, lng) {
       const title = document.getElementById("titleInput").value;
       const memo = document.getElementById("memoInput").value;
