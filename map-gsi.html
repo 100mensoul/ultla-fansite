@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>エアツリー - GSI航空写真マップ</title>
+  <title>エアツリー - GSI標準地図マップ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Leaflet CSS（integrity削除済） -->
@@ -46,11 +46,10 @@
     // 地図初期化（日野市周辺）
     const map = L.map('map').setView([35.6719, 139.3936], 14);
 
-    // 国土地理院・空中写真タイル
-    L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/orthophoto/{z}/{x}/{y}.jpg', {
+    // GSI 標準地図タイル（HTTPS対応）
+    L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
       attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>',
-      maxZoom: 18,
-      minZoom: 5
+      maxZoom: 18
     }).addTo(map);
 
     // 現在地を取得してピン表示
