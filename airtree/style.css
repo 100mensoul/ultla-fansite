@@ -1,0 +1,12 @@
+body {
+  font-family: sans-serif;
+  margin: 2em;
+  background: #f5f5f5;
+}
+h1, h2 {
+  color: #4CAF50;
+}
+img {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
