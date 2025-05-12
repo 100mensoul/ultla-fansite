@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>エアツリー・フィールドノート</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>🌿 エアツリー・フィールドノート</h1>
+
+  <form id="entry-form">
+    <label>写真を撮る・選ぶ:</label><br>
+    <input type="file" accept="image/*" id="photo" capture="environment"><br><br>
+
+    <label>メモ:</label><br>
+    <textarea id="note" rows="4" cols="30" placeholder="気づいたことを書いてね..."></textarea><br><br>
+
+    <button type="submit">保存する</button>
+  </form>
+
+  <hr>
+
+  <h2>📝 記録一覧</h2>
+  <div id="entries"></div>
+
+  <script src="db.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
