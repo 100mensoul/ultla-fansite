@@ -27,5 +27,12 @@
 
   <script src="db.js"></script>
   <script src="main.js"></script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(() => {
+      console.log('Service Worker 登録完了');
+    });
+  }
+</script>
 </body>
 </html>
