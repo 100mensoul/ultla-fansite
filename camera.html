@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>エアツリー - マイマップ</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-o9N1j8RErP4RZRWzBWb2P5mYo+U+1pE3eY+hCU0K/3w="
+    crossorigin=""
+  />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: sans-serif;
+    }
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+    .custom-popup {
+      max-width: 200px;
+    }
+    .locate-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      padding: 8px 12px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <button class="locate-btn" onclick="locateUser()">📍現在地を表示</button>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-QVwWnT+V1i6g2R5AzvM+IaswYWoR7OykAI1Pl+ZyyTQ="
+    crossorigin=""
+  ></script>
+  <script>
+    // 地図初期化（日野市周辺）
+    const map = L.map('map').setView([35.6719, 139.3936], 14);
+
+    // タイル読み込み
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // 現在地を取得してピン表示
+    function locateUser() {
+      if (!navigator.geolocation) {
+        alert("このブラウザでは位置情報が取得できません");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const marker = L.marker([lat, lng]).addTo(map);
+          marker.bindPopup("📍あなたの現在地").openPopup();
+          map.setView([lat, lng], 15);
+        },
+        (err) => {
+          alert("位置情報の取得に失敗しました");
+        }
+      );
+    }
+
+    // 地図クリックでピンを追加（＋メモ入力）
+    map.on("click", function (e) {
+      const latlng = e.latlng;
+      const popupContent = `
+        <div class="custom-popup">
+          <label>タイトル：<input type="text" id="titleInput" /></label><br/>
+          <label>メモ：<br/><textarea id="memoInput" rows="3" style="width:100%"></textarea></label><br/>
+          <button onclick="saveNote(${latlng.lat}, ${latlng.lng})">保存</button>
+        </div>
+      `;
+      L.popup()
+        .setLatLng(latlng)
+        .setContent(popupContent)
+        .openOn(map);
+    });
+
+    // 保存処理（今は console.log に出すだけ）
+    function saveNote(lat, lng) {
+      const title = document.getElementById("titleInput").value;
+      const memo = document.getElementById("memoInput").value;
+
+      if (!title) {
+        alert("タイトルを入力してください");
+        return;
+      }
+
+      const marker = L.marker([lat, lng]).addTo(map);
+      marker.bindPopup(`<strong>${title}</strong><br/>${memo}`);
+      map.closePopup();
+
+      console.log({
+        title,
+        memo,
+        lat,
+        lng,
+        timestamp: new Date().toISOString()
+      });
+    }
+  </script>
+</body>
+</html>
