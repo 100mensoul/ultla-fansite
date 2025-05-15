@@ -1,4 +1,4 @@
-import { db, storage, auth } from "./firebase.js";
+import { db, storage, authReady } from "./firebase.js";
 import {
   collection,
   addDoc,
@@ -30,31 +30,30 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  const user = auth.currentUser;
-  if (!user) {
-    alert("ユーザー認証に失敗しました。");
-    return;
+  try {
+    const user = await authReady;
+    const fileRef = ref(storage, `memos/${user.uid}/${Date.now()}_${file.name}`);
+    const snapshot = await uploadBytes(fileRef, file);
+    const imageUrl = await getDownloadURL(snapshot.ref);
+
+    const docRef = await addDoc(collection(db, "sharedMemos"), {
+      uid: user.uid,
+      content: note,
+      tags: tags,
+      imageUrl: imageUrl,
+      isPublic: isPublic,
+      createdAt: serverTimestamp()
+    });
+
+    resultDiv.innerHTML = `
+      投稿が完了しました！<br>
+      シェアURL: <a href="share.html?project=${encodeURIComponent(tags[0])}#${docRef.id}" target="_blank">
+        share.html?project=${encodeURIComponent(tags[0])}#${docRef.id}
+      </a>
+    `;
+    form.reset();
+
+  } catch (err) {
+    alert("投稿に失敗しました：" + err.message);
   }
-
-  const fileRef = ref(storage, `memos/${user.uid}/${Date.now()}_${file.name}`);
-  const snapshot = await uploadBytes(fileRef, file);
-  const imageUrl = await getDownloadURL(snapshot.ref);
-
-  const docRef = await addDoc(collection(db, "sharedMemos"), {
-    uid: user.uid,
-    content: note,
-    tags: tags,
-    imageUrl: imageUrl,
-    isPublic: isPublic,
-    createdAt: serverTimestamp()
-  });
-
-  resultDiv.innerHTML = `
-    投稿が完了しました！<br>
-    シェアURL: <a href="share.html?project=${encodeURIComponent(tags[0])}#${docRef.id}" target="_blank">
-      share.html?project=${encodeURIComponent(tags[0])}#${docRef.id}
-    </a>
-  `;
-
-  form.reset();
 });
