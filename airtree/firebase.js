@@ -18,8 +18,15 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-signInAnonymously(auth).catch((error) => {
-  console.error("匿名ログイン失敗:", error);
+// ログイン完了を待つ Promise を提供
+const authReady = new Promise((resolve, reject) => {
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      resolve(user);
+    } else {
+      signInAnonymously(auth).catch(reject);
+    }
+  });
 });
 
-export { app, auth, db, storage };
+export { app, auth, db, storage, authReady };
