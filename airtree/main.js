@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const photoInput = document.getElementById('photo');
   const noteInput = document.getElementById('note');
   const entriesDiv = document.getElementById('entries');
+  const importBtn = document.getElementById('import-btn');
+  const exportBtn = document.getElementById('export-btn');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -40,8 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // インポート処理
-  window.importData = async function () {
+  async function importData() {
     const fileInput = document.getElementById('import-json');
     const file = fileInput.files[0];
     if (!file) {
@@ -53,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.onload = async function (e) {
       try {
         const jsonData = JSON.parse(e.target.result);
-
         if (!Array.isArray(jsonData)) {
           alert('不正な形式です。配列のJSONを読み込んでください。');
           return;
@@ -72,10 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
     reader.readAsText(file);
-  };
+  }
 
-  // エクスポート処理
-  window.exportData = async function () {
+  async function exportData() {
     const entries = await getAllEntries();
     const json = JSON.stringify(entries, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
@@ -87,7 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
     a.click();
 
     URL.revokeObjectURL(url);
-  };
+  }
+
+  if (importBtn) importBtn.addEventListener('click', importData);
+  if (exportBtn) exportBtn.addEventListener('click', exportData);
 
   loadEntries();
 });
