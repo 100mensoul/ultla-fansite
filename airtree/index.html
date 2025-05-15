@@ -20,6 +20,15 @@
     <button type="submit">保存する</button>
   </form>
 
+  <!-- インポート・エクスポート機能 -->
+  <div style="margin-top: 2em; border-top: 1px solid #ccc; padding-top: 1em;">
+    <h2>⬇️ データの入出力</h2>
+    <p>過去の記録データ（JSON形式）を読み込んだり、現在の記録をエクスポートできます。</p>
+    <input type="file" id="import-json" accept=".json">
+    <button onclick="importData()">インポートする</button>
+    <button onclick="exportData()">エクスポートする</button>
+  </div>
+
   <hr>
 
   <h2>📝 記録一覧</h2>
@@ -28,11 +37,11 @@
   <script src="db.js"></script>
   <script src="main.js"></script>
   <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').then(() => {
-      console.log('Service Worker 登録完了');
-    });
-  }
-</script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(() => {
+        console.log('Service Worker 登録完了');
+      });
+    }
+  </script>
 </body>
 </html>
