@@ -40,5 +40,54 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // インポート処理
+  window.importData = async function () {
+    const fileInput = document.getElementById('import-json');
+    const file = fileInput.files[0];
+    if (!file) {
+      alert('JSONファイルを選んでください');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async function (e) {
+      try {
+        const jsonData = JSON.parse(e.target.result);
+
+        if (!Array.isArray(jsonData)) {
+          alert('不正な形式です。配列のJSONを読み込んでください。');
+          return;
+        }
+
+        for (const entry of jsonData) {
+          if (entry.image && entry.note) {
+            await saveEntry(entry.image, entry.note);
+          }
+        }
+
+        alert('インポート完了！一覧を更新します。');
+        await loadEntries();
+      } catch (err) {
+        alert('読み込みエラー：' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // エクスポート処理
+  window.exportData = async function () {
+    const entries = await getAllEntries();
+    const json = JSON.stringify(entries, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'fieldnote_data.json';
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   loadEntries();
 });
