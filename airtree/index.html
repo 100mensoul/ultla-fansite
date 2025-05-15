@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>エアツリー・フィールドノート</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
   <h1>🌿 エアツリー・フィールドノート</h1>
@@ -20,7 +20,6 @@
     <button type="submit">保存する</button>
   </form>
 
-  <!-- インポート・エクスポート機能 -->
   <div style="margin-top: 2em; border-top: 1px solid #ccc; padding-top: 1em;">
     <h2>⬇️ データの入出力</h2>
     <p>過去の記録データ（JSON形式）を読み込んだり、現在の記録をエクスポートできます。</p>
@@ -34,14 +33,7 @@
   <h2>📝 記録一覧</h2>
   <div id="entries"></div>
 
-  <script src="db.js"></script>
-  <script src="main.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').then(() => {
-        console.log('Service Worker 登録完了');
-      });
-    }
-  </script>
+  <script src="db.js?v=3"></script>
+  <script src="main.js?v=3"></script>
 </body>
 </html>
