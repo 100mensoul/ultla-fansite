@@ -1,0 +1,87 @@
+body {
+  margin: 0;
+  background-color: #141f18;
+  color: #e4dac0;
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+header {
+  background: #1a2c20;
+  padding: 1em 1.5em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #bfa77a;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.3em;
+  color: #ccb070;
+}
+
+.mylist-link {
+  color: #96b89d;
+  text-decoration: none;
+  font-size: 0.9em;
+}
+
+main {
+  padding: 1.2em 1.5em;
+}
+
+#empty-message {
+  text-align: center;
+  color: #aaa;
+  font-size: 0.9em;
+  margin-top: 2em;
+}
+
+.video-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  justify-content: flex-start;
+}
+
+.video-card {
+  width: calc(33.3% - 0.7em);
+  background: #1e2d24;
+  border: 1px solid #bfa77a;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.video-card iframe {
+  width: 100%;
+  height: 100px;
+  border: none;
+  background: #000;
+}
+
+.video-title {
+  padding: 0.5em 0.4em;
+  font-size: 0.8em;
+  text-align: center;
+  background-color: #1a2c20;
+  color: #e4dac0;
+  border-top: 1px solid #bfa77a;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #ccc;
+  border: none;
+  border-radius: 50%;
+  font-size: 0.9em;
+  cursor: pointer;
+  padding: 0.3em 0.45em;
+}
+
+.remove-btn:hover {
+  color: #ff5c5c;
+}
