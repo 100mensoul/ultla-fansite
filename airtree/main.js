@@ -75,17 +75,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function exportData() {
-    const entries = await getAllEntries();
-    const json = JSON.stringify(entries, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
+    try {
+      const entries = await getAllEntries();
+      if (!entries || entries.length === 0) {
+        alert('エクスポートするデータがありません');
+        return;
+      }
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'fieldnote_data.json';
-    a.click();
+      const json = JSON.stringify(entries, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
 
-    URL.revokeObjectURL(url);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'fieldnote_data.json';
+      document.body.appendChild(a); // Safari対策
+      a.click();
+      document.body.removeChild(a);
+
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('エクスポートに失敗しました：' + err.message);
+    }
   }
 
   if (importBtn) importBtn.addEventListener('click', importData);
