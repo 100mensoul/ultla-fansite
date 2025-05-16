@@ -1,56 +1,89 @@
+/* style.css */
 body {
-  font-family: sans-serif;
-  margin: 2em;
-  background-color: #f9f9f9;
+  font-family: 'Helvetica Neue', Arial, 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', Meiryo, 'メイリオ', Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif; /* 日本語フォントを追加 */
+  line-height: 1.6;
+  margin: 0;
+  padding: 20px;
+  background-color: #f4f4f4;
   color: #333;
 }
 
-h1, h2 {
-  color: #2b4a2f;
+h1 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-form {
+#memoForm {
   background: #fff;
-  padding: 1em;
+  padding: 25px;
   border-radius: 8px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 500px; /* フォームの最大幅を設定 */
+  margin: 20px auto; /* 上下マージンと左右自動で中央揃え */
+}
+
+.form-group {
+  margin-bottom: 20px; /* 各フォーム要素グループの下に余白 */
+}
+
+.form-group label {
+  display: block; /* ラベルをブロック要素にして入力欄の上に表示 */
+  margin-bottom: 8px; /* ラベルと入力欄の間に少し余白 */
+  font-weight: bold;
+}
+
+/* チェックボックスとラベルをインラインで表示するための特別スタイル */
+.form-group-checkbox label {
+  display: inline-block; /* ラベルをインラインブロックに */
+  font-weight: normal; /* 通常の太さに */
+  margin-left: 5px;    /* チェックボックスとの間に少し余白 */
+  vertical-align: middle; /* 垂直方向中央揃え */
+}
+
+.form-group-checkbox input[type="checkbox"] {
+  vertical-align: middle; /* 垂直方向中央揃え */
+}
+
+input[type="text"],
+input[type="file"],
+textarea {
+  width: 100%; /* 親要素の幅いっぱいに広げる */
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box; /* paddingとborderを要素の幅と高さに含める */
 }
 
 textarea {
-  width: 100%;
-  resize: vertical;
+  resize: vertical; /* 垂直方向のみリサイズ可能に */
 }
 
-#entries {
-  margin-top: 1em;
+input[type="file"] {
+  padding: 3px; /* ファイル入力欄のパディングはブラウザによって扱いが異なる場合がある */
 }
 
-#entries div {
-  background: #ffffff;
-  padding: 0.5em;
-  margin-bottom: 1em;
-  border-left: 4px solid #4caf50;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin-bottom: 0.5em;
-}
-
-button {
-  margin-right: 0.5em;
-  padding: 0.4em 1em;
-  font-weight: bold;
-  background-color: #4caf50;
+button[type="submit"] {
+  display: block; /* ボタンをブロック要素に */
+  width: 100%;    /* 親要素の幅いっぱいに */
+  padding: 10px 15px;
+  background-color: #007bff; /* 青系の背景色 */
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease-in-out; /* ホバー時のトランジション */
 }
 
-button:hover {
-  background-color: #388e3c;
+button[type="submit"]:hover {
+  background-color: #0056b3; /* ホバー時の背景色を少し濃く */
+}
+
+/* 簡単なレスポンシブ対応 */
+@media (max-width: 600px) {
+  #memoForm {
+    margin: 20px 10px; /* 小さな画面では左右のマージンを調整 */
+    padding: 20px;
+  }
 }
