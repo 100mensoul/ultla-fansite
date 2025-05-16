@@ -2,34 +2,43 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- レスポンシブ対応のため追加 -->
   <title>メモ投稿フォーム</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>メモ投稿フォーム</h1>
   <form id="memoForm">
-    <label>写真を選ぶ:<br>
+    <div class="form-group"> <!-- グループ化 -->
+      <label for="imageInput">写真を選ぶ:</label> <!-- for属性を追加 -->
       <input type="file" id="imageInput" accept="image/*">
-    </label><br><br>
+    </div>
 
-    <label>メモ内容:<br>
+    <div class="form-group"> <!-- グループ化 -->
+      <label for="contentInput">メモ内容:</label> <!-- for属性を追加 -->
       <textarea id="contentInput" rows="4" cols="30"></textarea>
-    </label><br><br>
+    </div>
 
-    <label>タグ（例：木,風,水）：<br>
-      <input type="text" id="tagsInput">
-    </label><br><br>
+    <div class="form-group"> <!-- グループ化 -->
+      <label for="tagsInput">タグ（例：木,風,水）：</label> <!-- for属性を追加 -->
+      <input type="text" id="tagsInput" placeholder="例：木,風,水"> <!-- placeholderを追加 -->
+    </div>
 
-    <label>
-      <input type="checkbox" id="isPublicCheckbox"> 公開する
-    </label><br><br>
+    <div class="form-group form-group-checkbox"> <!-- グループ化、チェックボックス用特別クラス -->
+      <input type="checkbox" id="isPublicCheckbox">
+      <label for="isPublicCheckbox">公開する</label> <!-- for属性を追加 -->
+    </div>
 
     <button type="submit">保存する</button>
   </form>
 
   <div id="statusMessage"></div>
 
-  <script type="module" src="memo.js"></script>
+  <!-- Firebaseの初期化と認証モジュールを先に読み込む -->
+  <script type="module" src="./firebase.js"></script>
+  <!-- メモ投稿処理のモジュール -->
+  <script type="module" src="./memo.js"></script> <!-- ./ をつけて相対パスを明確に -->
+
 
   <!-- スマホ用デバッグツール：Eruda -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
