@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>共有ビュー</title>
-  <link rel="stylesheet" href="style.css?v=1">
+  <meta charset="UTF-8">
+  <title>公開アルバム</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>公開アルバム</h1>
 
-  <label>プロジェクト（タグ）を選ぶ:</label><br>
-  <input type="text" id="tag-filter" placeholder="例: 木"><br><br>
-
+  <label>プロジェクト（タグ）を選ぶ:<br>
+    <input type="text" id="tagFilterInput" placeholder="木,風,水">
+  </label>
+  <br>
   <label>
-    <input type="checkbox" id="user-only-toggle"> 自分の投稿のみ表示
-  </label><br><br>
+    <input type="checkbox" id="myOnlyCheckbox"> 自分の投稿のみ表示
+  </label>
+  <br><br>
 
-  <div id="entries"></div>
+  <div id="memoList"></div>
 
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="main-share.js"></script>
+  <script type="module" src="share.js"></script>
 </body>
 </html>
