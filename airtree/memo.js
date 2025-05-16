@@ -1,100 +1,125 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+// memo.js
+import { db, storage, authReady } from './firebase.js'; // firebase.jsからインポート
 import {
-  getAuth,
-  signInAnonymously,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {
-  getFirestore,
   collection,
   addDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
-  getStorage,
   ref,
   uploadBytes,
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// Firebase設定
-const firebaseConfig = {
-  apiKey: "AIzaSyCtDPnYex-KL2hbHAQe5fYSPv9rz9xTa9A",
-  authDomain: "u2memo-36f61.firebaseapp.com",
-  projectId: "u2memo-36f61",
-  storageBucket: "u2memo-36f61.appspot.com",
-  messagingSenderId: "14274931072",
-  appId: "1:14274931072:web:5d9c9026905fdc0b383965"
-};
+// DOM要素の取得
+const memoForm = document.getElementById("memoForm");
+const imageInput = document.getElementById("imageInput");
+const contentInput = document.getElementById("contentInput");
+const tagsInput = document.getElementById("tagsInput");
+const isPublicCheckbox = document.getElementById("isPublicCheckbox");
+const statusMessage = document.getElementById("statusMessage");
 
-// 初期化
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+memoForm.addEventListener("submit", async (e) => {
+  e.preventDefault(); // デフォルトのフォーム送信をキャンセル
 
-let currentUID = null;
+  statusMessage.textContent = "保存処理中です...";
+  statusMessage.style.color = "blue";
 
-signInAnonymously(auth)
-  .catch((error) => {
-    alert("ログインに失敗しました：" + error.message);
-  });
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    currentUID = user.uid;
-  }
-});
-
-document.getElementById("memoForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  if (!currentUID) {
-    alert("ユーザー認証に失敗しました。再読み込みしてください。");
+  let currentUser;
+  try {
+    // firebase.jsのauthReadyを待ってユーザー情報を取得
+    currentUser = await authReady;
+    if (!currentUser || !currentUser.uid) {
+      throw new Error("ユーザー認証情報が取得できませんでした。");
+    }
+  } catch (error) {
+    console.error("認証エラー:", error);
+    statusMessage.textContent = "エラー: " + error.message + " ページを再読み込みしてください。";
+    statusMessage.style.color = "red";
     return;
   }
 
-  const content = document.getElementById("contentInput").value.trim();
-  const tagsRaw = document.getElementById("tagsInput").value.trim();
-  const isPublic = document.getElementById("isPublicCheckbox").checked;
-  const imageFile = document.getElementById("imageInput").files[0];
+  const currentUID = currentUser.uid;
 
-  const tags = tagsRaw ? tagsRaw.split(",").map(tag => tag.trim()) : [];
+  // フォームデータの取得
+  const content = contentInput.value.trim();
+  const tagsRaw = tagsInput.value.trim();
+  const isPublic = isPublicCheckbox.checked;
+  const imageFile = imageInput.files[0];
+
+  // バリデーション: メモ内容または画像が必須
+  if (!content && !imageFile) {
+    statusMessage.textContent = "メモ内容を入力するか、画像を選択してください。";
+    statusMessage.style.color = "orange";
+    return;
+  }
+
+  const tags = tagsRaw ? tagsRaw.split(",").map(tag => tag.trim().toLowerCase()).filter(tag => tag !== "") : [];
 
   let imageUrl = "";
+  let imageStoragePath = ""; // Storage内のパスを保存する変数
 
+  // 画像ファイルがある場合の処理
   if (imageFile) {
-    const imageRef = ref(storage, `sharedMemos/${currentUID}/${Date.now()}_${imageFile.name}`);
+    // ファイル名をユーザーIDとタイムスタンプで一意にする
+    const fileName = `${currentUID}_${Date.now()}_${imageFile.name}`;
+    // 保存場所を 'memos_images/ユーザーID/ファイル名' に変更（より整理しやすくするため）
+    const imageRef = ref(storage, `memos_images/${currentUID}/${fileName}`);
     try {
+      statusMessage.textContent = "画像をアップロード中です...";
       const snapshot = await uploadBytes(imageRef, imageFile);
       imageUrl = await getDownloadURL(snapshot.ref);
+      imageStoragePath = snapshot.ref.fullPath; // Storage上のフルパスを保存
+      statusMessage.textContent = "画像アップロード完了。データを保存します...";
     } catch (error) {
-      alert("画像アップロード失敗：" + error.message);
+      console.error("画像アップロード失敗:", error);
+      statusMessage.textContent = "画像アップロード失敗: " + error.message;
+      statusMessage.style.color = "red";
       return;
     }
   }
 
+  // Firestoreに保存するデータ
   const memoData = {
+    uid: currentUID,
     content,
     tags,
     isPublic,
     createdAt: serverTimestamp(),
-    imageUrl,
-    uid: currentUID
+    updatedAt: serverTimestamp(), // 作成時と更新時両方で使えるように
+    imageUrl, // 画像のURL（なければ空文字）
+    imageStoragePath, // 画像のStorageパス（なければ空文字）
   };
 
   try {
-    // Firestoreに保存（非公開メモも含む）
-    await addDoc(collection(db, "memos"), memoData);
+    // 1. 全てのメモを `memos` コレクションに保存 (ユーザー個人のメモ)
+    // このコレクションはユーザー自身のメモ置き場
+    const docRefMemos = await addDoc(collection(db, "memos"), memoData);
+    console.log("個人メモ保存成功 ID: ", docRefMemos.id);
 
-    // 公開ONなら別コレクションにも保存
+    // 2. `isPublic` が true の場合、`sharedMemos` コレクションにも保存
     if (isPublic) {
-      await addDoc(collection(db, "sharedMemos"), memoData);
+      // sharedMemos には、元の memos ドキュメントのIDも入れておくと関連付けしやすい
+      const sharedMemoData = { ...memoData, originalMemoId: docRefMemos.id };
+      const docRefShared = await addDoc(collection(db, "sharedMemos"), sharedMemoData);
+      console.log("共有メモ保存成功 ID: ", docRefShared.id);
+      statusMessage.textContent = "メモが公開され、共有されました！";
+    } else {
+      statusMessage.textContent = "メモが非公開で保存されました。";
     }
+    statusMessage.style.color = "green";
 
-    document.getElementById("statusMessage").textContent = "保存成功しました。";
-    document.getElementById("memoForm").reset();
+    memoForm.reset(); // フォームをリセット
+    imageInput.value = ""; // type="file" のリセット
+
+    // 数秒後にメッセージをクリア
+    setTimeout(() => {
+      statusMessage.textContent = "";
+    }, 5000);
+
   } catch (error) {
-    alert("投稿に失敗しました：" + error.message);
+    console.error("Firestoreへの保存に失敗しました: ", error);
+    statusMessage.textContent = "投稿に失敗しました: " + error.message;
+    statusMessage.style.color = "red";
   }
 });
