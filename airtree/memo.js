@@ -1,9 +1,14 @@
 // memo.js
-import { db, storage, authReady } from './firebase.js'; // firebase.jsからインポート
+import { db, storage, authReady } from './firebase.js';
 import {
   collection,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
+  query, // クエリ用
+  where, // where句用
+  orderBy, // orderBy句用
+  getDocs, // ドキュメント一括取得用
+  onSnapshot // リアルタイム更新用 (今回はまずgetDocsで実装)
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   ref,
@@ -11,7 +16,7 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// DOM要素の取得
+// DOM要素の取得 (既存)
 const memoForm = document.getElementById("memoForm");
 const imageInput = document.getElementById("imageInput");
 const contentInput = document.getElementById("contentInput");
@@ -19,104 +24,127 @@ const tagsInput = document.getElementById("tagsInput");
 const isPublicCheckbox = document.getElementById("isPublicCheckbox");
 const statusMessage = document.getElementById("statusMessage");
 
+// 新しく追加: 一覧表示用コンテナとローディングメッセージ
+const memoListContainer = document.getElementById("memoListContainer");
+const loadingMessage = document.getElementById("loadingMessage");
+
+let currentUID = null; // currentUIDをグローバルスコープ（またはモジュールスコープ）で保持
+
+// フォーム送信処理 (既存のコードをここに配置)
 memoForm.addEventListener("submit", async (e) => {
-  e.preventDefault(); // デフォルトのフォーム送信をキャンセル
+  // ... (既存のフォーム送信処理はそのまま)
+  // ... (保存成功後に一覧を再読み込みする処理を追加すると良い)
+    // 保存成功後
+    // ... (既存の statusMessage, memoForm.reset() など)
+    await loadUserMemos(); // ★ 保存後に一覧を再読み込み
+  // ...
+});
 
-  statusMessage.textContent = "保存処理中です...";
-  statusMessage.style.color = "blue";
 
-  let currentUser;
-  let currentUID; // currentUID をここで宣言
-
-  // 1. ユーザー認証情報を取得
-  try {
-    currentUser = await authReady;
-    if (!currentUser || !currentUser.uid) {
-      throw new Error("ユーザー認証情報が取得できませんでした。ページを再読み込みしてください。");
-    }
-    currentUID = currentUser.uid; // currentUser が確定した後に currentUID を設定
-  } catch (error) {
-    console.error("認証エラー:", error);
-    statusMessage.textContent = "エラー: " + error.message;
-    statusMessage.style.color = "red";
+// ユーザーのメモを読み込んで表示する関数
+async function loadUserMemos() {
+  if (!currentUID) {
+    console.log("ユーザーUIDがまだ利用できません。");
+    loadingMessage.textContent = "ユーザー情報を待っています...";
     return;
   }
 
-  // 2. フォームデータの取得
-  const content = contentInput.value.trim();
-  const tagsRaw = tagsInput.value.trim();
-  const isPublic = isPublicCheckbox.checked;
-  const imageFile = imageInput.files[0]; // imageFile をここで定義
+  loadingMessage.textContent = "投稿を読み込んでいます...";
+  memoListContainer.innerHTML = ''; // 一旦コンテナを空にする（ローディングメッセージも消える）
+  memoListContainer.appendChild(loadingMessage); // ローディングメッセージを再表示
 
-  // 3. バリデーション: メモ内容または画像が必須
-  if (!content && !imageFile) {
-    statusMessage.textContent = "メモ内容を入力するか、画像を選択してください。";
-    statusMessage.style.color = "orange";
-    return;
-  }
-
-  const tags = tagsRaw ? tagsRaw.split(",").map(tag => tag.trim().toLowerCase()).filter(tag => tag !== "") : [];
-
-  let imageUrl = "";
-  let imageStoragePath = "";
-
-  // 4. 画像ファイルがある場合の処理 (currentUID と imageFile が定義された後)
-  if (imageFile) {
-    const fileName = `${currentUID}_${Date.now()}_${imageFile.name}`;
-    const imageRef = ref(storage, `memos_images/${currentUID}/${fileName}`); // パスを修正
-    try {
-      statusMessage.textContent = "画像をアップロード中です...";
-      const snapshot = await uploadBytes(imageRef, imageFile);
-      imageUrl = await getDownloadURL(snapshot.ref);
-      imageStoragePath = snapshot.ref.fullPath;
-      statusMessage.textContent = "画像アップロード完了。データを保存します...";
-    } catch (error) {
-      console.error("画像アップロード失敗 (エラーオブジェクト全体):", error); // ★詳細なエラー出力
-      console.error("エラーコード:", error.code);
-      console.error("エラーメッセージ:", error.message);
-      statusMessage.textContent = "画像アップロード失敗: " + error.message + " (詳細はコンソールを確認)";
-      statusMessage.style.color = "red";
-      return; // アップロード失敗時はここで処理を中断
-    }
-  }
-
-  // 5. Firestoreに保存するデータ
-  const memoData = {
-    uid: currentUID,
-    content,
-    tags,
-    isPublic,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-    imageUrl,
-    imageStoragePath,
-  };
-
-  // 6. Firestoreへの保存処理
   try {
-    const docRefMemos = await addDoc(collection(db, "memos"), memoData);
-    console.log("個人メモ保存成功 ID: ", docRefMemos.id);
+    const memosRef = collection(db, "memos");
+    // 自分のUIDに一致し、作成日時の降順で取得するクエリ
+    const q = query(memosRef, where("uid", "==", currentUID), orderBy("createdAt", "desc"));
 
-    if (isPublic) {
-      const sharedMemoData = { ...memoData, originalMemoId: docRefMemos.id };
-      const docRefShared = await addDoc(collection(db, "sharedMemos"), sharedMemoData);
-      console.log("共有メモ保存成功 ID: ", docRefShared.id);
-      statusMessage.textContent = "メモが公開され、共有されました！";
-    } else {
-      statusMessage.textContent = "メモが非公開で保存されました。";
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      loadingMessage.textContent = "まだ投稿がありません。";
+      return;
     }
-    statusMessage.style.color = "green";
 
-    memoForm.reset();
-    imageInput.value = "";
+    loadingMessage.style.display = 'none'; // 投稿があるのでローディングメッセージを非表示
 
-    setTimeout(() => {
-      statusMessage.textContent = "";
-    }, 5000);
+    querySnapshot.forEach((doc) => {
+      const memo = doc.data();
+      const memoId = doc.id; // ドキュメントIDも取得しておく (将来の編集/削除用)
+
+      // メモ表示用のHTML要素を作成
+      const memoElement = document.createElement('div');
+      memoElement.classList.add('memo-item'); // CSSでスタイルを当てるためのクラス
+      memoElement.setAttribute('data-id', memoId); // data属性にIDを保持
+
+      let htmlContent = `
+        <h3>メモ内容:</h3>
+        <p>${escapeHTML(memo.content) || '記載なし'}</p>
+      `;
+
+      if (memo.imageUrl) {
+        htmlContent += `
+          <h4>写真:</h4>
+          <img src="${escapeHTML(memo.imageUrl)}" alt="投稿画像" style="max-width: 200px; max-height: 200px; object-fit: cover;">
+        `;
+      }
+
+      if (memo.tags && memo.tags.length > 0) {
+        htmlContent += `
+          <h4>タグ:</h4>
+          <p>${memo.tags.map(tag => `<span class="tag">${escapeHTML(tag)}</span>`).join(' ')}</p>
+        `;
+      }
+
+      htmlContent += `<p><small>公開設定: ${memo.isPublic ? '公開' : '非公開'}</small></p>`;
+      // プロジェクト名も表示 (仕様に合わせて)
+      if (memo.project) {
+          htmlContent += `<p><small>プロジェクト: ${escapeHTML(memo.project)}</small></p>`;
+      }
+      // 作成日時 (FirestoreのTimestampオブジェクトをDateオブジェクトに変換してフォーマット)
+      if (memo.createdAt && memo.createdAt.toDate) {
+        const createdAtDate = memo.createdAt.toDate();
+        htmlContent += `<p><small>作成日時: ${createdAtDate.toLocaleString('ja-JP')}</small></p>`;
+      }
+
+      memoElement.innerHTML = htmlContent;
+      memoListContainer.appendChild(memoElement);
+    });
 
   } catch (error) {
-    console.error("Firestoreへの保存に失敗しました: ", error);
-    statusMessage.textContent = "投稿に失敗しました: " + error.message;
-    statusMessage.style.color = "red";
+    console.error("メモの読み込みに失敗しました:", error);
+    loadingMessage.textContent = "メモの読み込みに失敗しました。";
+    loadingMessage.style.display = 'block';
   }
+}
+
+// HTMLエスケープ関数 (XSS対策)
+function escapeHTML(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/[&<>"']/g, function(match) {
+        return {
+            '&': '&',
+            '<': '<',
+            '>': '>',
+            '"': '"',
+            "'": '''
+        }[match];
+    });
+}
+
+
+// 認証状態が変更されたら、または初期認証後に処理を開始
+authReady.then(async (user) => {
+  if (user) {
+    currentUID = user.uid; // currentUID を設定
+    await loadUserMemos(); // ユーザーのメモを読み込む
+  } else {
+    // ユーザーがいない場合の処理 (通常は匿名認証で必ずユーザーはいるはず)
+    currentUID = null;
+    memoListContainer.innerHTML = '<p>ログインしていません。</p>';
+    loadingMessage.style.display = 'none';
+  }
+}).catch(error => {
+  console.error("認証処理中にエラー:", error);
+  memoListContainer.innerHTML = '<p>認証中にエラーが発生しました。</p>';
+  loadingMessage.style.display = 'none';
 });
