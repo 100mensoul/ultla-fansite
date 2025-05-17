@@ -26,18 +26,25 @@ memoForm.addEventListener("submit", async (e) => {
   statusMessage.style.color = "blue";
 
   let currentUser;
+ // memo.js の画像アップロード部分
+if (imageFile) {
+  const fileName = `${currentUID}_${Date.now()}_${imageFile.name}`;
+  const imageRef = ref(storage, `memos_images/${currentUID}/${fileName}`);
   try {
-    // firebase.jsのauthReadyを待ってユーザー情報を取得
-    currentUser = await authReady;
-    if (!currentUser || !currentUser.uid) {
-      throw new Error("ユーザー認証情報が取得できませんでした。");
-    }
+    statusMessage.textContent = "画像をアップロード中です...";
+    const snapshot = await uploadBytes(imageRef, imageFile);
+    imageUrl = await getDownloadURL(snapshot.ref);
+    imageStoragePath = snapshot.ref.fullPath;
+    statusMessage.textContent = "画像アップロード完了。データを保存します...";
   } catch (error) {
-    console.error("認証エラー:", error);
-    statusMessage.textContent = "エラー: " + error.message + " ページを再読み込みしてください。";
+    console.error("画像アップロード失敗 (エラーオブジェクト全体):", error); // ★重要
+    console.error("エラーコード:", error.code);                         // Firebase特有のエラーコード
+    console.error("エラーメッセージ:", error.message);
+    statusMessage.textContent = "画像アップロード失敗: " + error.message + " (詳細はコンソールを確認)";
     statusMessage.style.color = "red";
-    return;
+    return; // アップロード失敗時はここで処理を中断
   }
+}
 
   const currentUID = currentUser.uid;
 
