@@ -9,7 +9,7 @@ const firebaseConfig = {
   authDomain: "u2memo-36f61.firebaseapp.com",
   // databaseURL: "https://u2memo-36f61-default-rtdb.asia-southeast1.firebasedatabase.app", // Firestore使用時は通常不要
   projectId: "u2memo-36f61",
-  storageBucket: "u2memo-36f61.appspot.com",
+  storageBucket: "u2memo-36f61.firebasestorage.app",
   messagingSenderId: "14274931072",
   appId: "1:14274931072:web:5d9c9026905fdc0b383965"
 };
