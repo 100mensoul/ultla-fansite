@@ -26,35 +26,29 @@ memoForm.addEventListener("submit", async (e) => {
   statusMessage.style.color = "blue";
 
   let currentUser;
- // memo.js の画像アップロード部分
-if (imageFile) {
-  const fileName = `${currentUID}_${Date.now()}_${imageFile.name}`;
-  const imageRef = ref(storage, `memos_images/${currentUID}/${fileName}`);
+  let currentUID; // currentUID をここで宣言
+
+  // 1. ユーザー認証情報を取得
   try {
-    statusMessage.textContent = "画像をアップロード中です...";
-    const snapshot = await uploadBytes(imageRef, imageFile);
-    imageUrl = await getDownloadURL(snapshot.ref);
-    imageStoragePath = snapshot.ref.fullPath;
-    statusMessage.textContent = "画像アップロード完了。データを保存します...";
+    currentUser = await authReady;
+    if (!currentUser || !currentUser.uid) {
+      throw new Error("ユーザー認証情報が取得できませんでした。ページを再読み込みしてください。");
+    }
+    currentUID = currentUser.uid; // currentUser が確定した後に currentUID を設定
   } catch (error) {
-    console.error("画像アップロード失敗 (エラーオブジェクト全体):", error); // ★重要
-    console.error("エラーコード:", error.code);                         // Firebase特有のエラーコード
-    console.error("エラーメッセージ:", error.message);
-    statusMessage.textContent = "画像アップロード失敗: " + error.message + " (詳細はコンソールを確認)";
+    console.error("認証エラー:", error);
+    statusMessage.textContent = "エラー: " + error.message;
     statusMessage.style.color = "red";
-    return; // アップロード失敗時はここで処理を中断
+    return;
   }
-}
 
-  const currentUID = currentUser.uid;
-
-  // フォームデータの取得
+  // 2. フォームデータの取得
   const content = contentInput.value.trim();
   const tagsRaw = tagsInput.value.trim();
   const isPublic = isPublicCheckbox.checked;
-  const imageFile = imageInput.files[0];
+  const imageFile = imageInput.files[0]; // imageFile をここで定義
 
-  // バリデーション: メモ内容または画像が必須
+  // 3. バリデーション: メモ内容または画像が必須
   if (!content && !imageFile) {
     statusMessage.textContent = "メモ内容を入力するか、画像を選択してください。";
     statusMessage.style.color = "orange";
@@ -64,49 +58,46 @@ if (imageFile) {
   const tags = tagsRaw ? tagsRaw.split(",").map(tag => tag.trim().toLowerCase()).filter(tag => tag !== "") : [];
 
   let imageUrl = "";
-  let imageStoragePath = ""; // Storage内のパスを保存する変数
+  let imageStoragePath = "";
 
-  // 画像ファイルがある場合の処理
+  // 4. 画像ファイルがある場合の処理 (currentUID と imageFile が定義された後)
   if (imageFile) {
-    // ファイル名をユーザーIDとタイムスタンプで一意にする
     const fileName = `${currentUID}_${Date.now()}_${imageFile.name}`;
-    // 保存場所を 'memos_images/ユーザーID/ファイル名' に変更（より整理しやすくするため）
-    const imageRef = ref(storage, `memos_images/${currentUID}/${fileName}`);
+    const imageRef = ref(storage, `memos_images/${currentUID}/${fileName}`); // パスを修正
     try {
       statusMessage.textContent = "画像をアップロード中です...";
       const snapshot = await uploadBytes(imageRef, imageFile);
       imageUrl = await getDownloadURL(snapshot.ref);
-      imageStoragePath = snapshot.ref.fullPath; // Storage上のフルパスを保存
+      imageStoragePath = snapshot.ref.fullPath;
       statusMessage.textContent = "画像アップロード完了。データを保存します...";
     } catch (error) {
-      console.error("画像アップロード失敗:", error);
-      statusMessage.textContent = "画像アップロード失敗: " + error.message;
+      console.error("画像アップロード失敗 (エラーオブジェクト全体):", error); // ★詳細なエラー出力
+      console.error("エラーコード:", error.code);
+      console.error("エラーメッセージ:", error.message);
+      statusMessage.textContent = "画像アップロード失敗: " + error.message + " (詳細はコンソールを確認)";
       statusMessage.style.color = "red";
-      return;
+      return; // アップロード失敗時はここで処理を中断
     }
   }
 
-  // Firestoreに保存するデータ
+  // 5. Firestoreに保存するデータ
   const memoData = {
     uid: currentUID,
     content,
     tags,
     isPublic,
     createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(), // 作成時と更新時両方で使えるように
-    imageUrl, // 画像のURL（なければ空文字）
-    imageStoragePath, // 画像のStorageパス（なければ空文字）
+    updatedAt: serverTimestamp(),
+    imageUrl,
+    imageStoragePath,
   };
 
+  // 6. Firestoreへの保存処理
   try {
-    // 1. 全てのメモを `memos` コレクションに保存 (ユーザー個人のメモ)
-    // このコレクションはユーザー自身のメモ置き場
     const docRefMemos = await addDoc(collection(db, "memos"), memoData);
     console.log("個人メモ保存成功 ID: ", docRefMemos.id);
 
-    // 2. `isPublic` が true の場合、`sharedMemos` コレクションにも保存
     if (isPublic) {
-      // sharedMemos には、元の memos ドキュメントのIDも入れておくと関連付けしやすい
       const sharedMemoData = { ...memoData, originalMemoId: docRefMemos.id };
       const docRefShared = await addDoc(collection(db, "sharedMemos"), sharedMemoData);
       console.log("共有メモ保存成功 ID: ", docRefShared.id);
@@ -116,10 +107,9 @@ if (imageFile) {
     }
     statusMessage.style.color = "green";
 
-    memoForm.reset(); // フォームをリセット
-    imageInput.value = ""; // type="file" のリセット
+    memoForm.reset();
+    imageInput.value = "";
 
-    // 数秒後にメッセージをクリア
     setTimeout(() => {
       statusMessage.textContent = "";
     }, 5000);
