@@ -93,14 +93,28 @@ button[type="submit"]:hover {
 
 /* ... (既存の body, h1, #memoForm, .form-group などのスタイル) ... */
 
+/* style.css に追加または確認 */
+
+/* ... (既存のスタイル) ... */
+
 hr {
   margin: 30px 0;
   border: 0;
   border-top: 1px solid #eee;
 }
 
+h2 { /* 一覧の見出し用スタイル (もし必要なら) */
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: #444;
+}
+
 #memoListContainer {
   margin-top: 20px;
+  max-width: 500px; /* フォームの幅と合わせる場合 */
+  margin-left: auto;  /* 中央揃え */
+  margin-right: auto; /* 中央揃え */
 }
 
 .memo-item {
@@ -123,28 +137,34 @@ hr {
 
 .memo-item img {
   display: block;
+  width: 100%; /* 親要素いっぱいに広げる */
+  max-width: 300px; /* 最大幅は制限する (任意) */
+  height: auto; /* アスペクト比を保つ */
   margin-top: 5px;
   margin-bottom: 10px;
   border-radius: 4px;
   border: 1px solid #eee;
+  object-fit: cover; /* 画像のトリミング方法 (任意) */
 }
 
 .memo-item p {
   margin-bottom: 8px;
-  word-wrap: break-word; /* 長い文字列がはみ出ないように */
+  word-wrap: break-word;
 }
 
 .memo-item p small {
   color: #777;
   font-size: 0.9em;
+  display: block; /* 各情報を改行して表示する場合 */
+  margin-top: 4px;
 }
 
 .tag {
   display: inline-block;
-  background-color: #e0e7ff; /* タグの背景色 (例) */
-  color: #4338ca;           /* タグの文字色 (例) */
+  background-color: #e0e7ff;
+  color: #4338ca;
   padding: 3px 8px;
-  border-radius: 12px;      /* 角丸を大きくしてカプセル型に */
+  border-radius: 12px;
   font-size: 0.85em;
   margin-right: 5px;
   margin-bottom: 5px;
@@ -154,4 +174,15 @@ hr {
     text-align: center;
     color: #777;
     padding: 20px;
+}
+
+/* レスポンシブ対応で一覧も調整 (必要に応じて) */
+@media (max-width: 600px) {
+  #memoForm {
+    /* ... (既存) ... */
+  }
+  #memoListContainer {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
 }
