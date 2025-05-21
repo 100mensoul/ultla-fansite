@@ -68,3 +68,20 @@ footer {
   font-size: 0.9rem;
   color: #666;
 }
+
+.program-card {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid #ccc;
+  background: #fff;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
+}
+
+.program-card .thumb img {
+  width: 200px;
+  height: auto;
+  margin-right: 1rem;
+  object-fit: cover;
+}
