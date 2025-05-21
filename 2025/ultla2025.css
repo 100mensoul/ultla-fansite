@@ -1,0 +1,70 @@
+body {
+  font-family: "Helvetica Neue", sans-serif;
+  margin: 0;
+  background: #f9f9f9;
+  color: #222;
+  line-height: 1.6;
+}
+
+header {
+  background: #004466;
+  color: white;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+}
+
+section {
+  padding: 2rem 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.status ul {
+  list-style: none;
+  padding: 0;
+}
+
+.status li {
+  margin: 0.5rem 0;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.status li::before {
+  content: "○";
+  position: absolute;
+  left: 0;
+  color: #888;
+}
+
+.status li.done::before {
+  content: "✔︎";
+  color: green;
+}
+
+.scenario .card {
+  border: 1px solid #ccc;
+  background: white;
+  padding: 1rem;
+  margin-top: 1rem;
+  text-align: center;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+}
+
+.scenario .card img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+}
+
+footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
