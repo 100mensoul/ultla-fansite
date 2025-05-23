@@ -176,17 +176,17 @@ async function loadUserMemos() {
 // 正しい escapeHTML 関数
 function escapeHTML(str) {
     if (typeof str !== 'string') return str;
-    const escapeChars = {
-        '&': '&',
-        '<': '<',
-        '>': '>',
-        '"': '"',
-        "'": '''
-    };
     return str.replace(/[&<>"']/g, function(match) {
-        return escapeChars[match];
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+        }[match];
     });
 }
+
 
 authReady.then(async (user) => {
   if (user) {
