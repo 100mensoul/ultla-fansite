@@ -1,4 +1,4 @@
-// memo.js（前半）
+// memo.js（修正版）
 import { db, storage, authReady } from './firebase.js';
 import {
   collection,
@@ -7,7 +7,8 @@ import {
   query,
   where,
   orderBy,
-  onSnapshot
+  onSnapshot,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   ref,
@@ -91,10 +92,13 @@ memoForm.addEventListener("submit", async (e) => {
 
   try {
     const docRef = await addDoc(collection(db, "memos"), memoData);
+    console.log("メモが保存されました。ID:", docRef.id);
+    
     if (isPublic) {
       const sharedMemoData = { ...memoData, originalMemoId: docRef.id };
       await addDoc(collection(db, "sharedMemos"), sharedMemoData);
     }
+    
     statusMessage.textContent = "メモが正常に保存されました！";
     statusMessage.style.color = "green";
     memoForm.reset();
@@ -130,7 +134,7 @@ function createMemoElement(memo, memoId) {
   let htmlContent = `<h3>メモ内容:</h3><p>${escapeHTML(memo.content) || '記載なし'}</p>`;
 
   if (memo.imageUrl) {
-    htmlContent += `<h4>写真:</h4><img src="${escapeHTML(memo.imageUrl)}" alt="投稿画像" style="max-width: 200px; max-height: 200px; object-fit: cover;">`;
+    htmlContent += `<h4>写真:</h4><img src="${escapeHTML(memo.imageUrl)}" alt="投稿画像">`;
   }
 
   if (memo.tags && memo.tags.length > 0) {
@@ -143,16 +147,22 @@ function createMemoElement(memo, memoId) {
     htmlContent += `<p><small>プロジェクト: ${escapeHTML(memo.project)}</small></p>`;
   }
 
+  // createdAt が存在する場合のみ日時を表示
   if (memo.createdAt && memo.createdAt.toDate) {
-    const createdAtDate = memo.createdAt.toDate();
-    htmlContent += `<p><small>作成日時: ${createdAtDate.toLocaleString('ja-JP')}</small></p>`;
+    try {
+      const createdAtDate = memo.createdAt.toDate();
+      htmlContent += `<p><small>作成日時: ${createdAtDate.toLocaleString('ja-JP')}</small></p>`;
+    } catch (dateError) {
+      console.warn("日時の変換に失敗:", dateError);
+      htmlContent += `<p><small>作成日時: 取得できませんでした</small></p>`;
+    }
   }
 
   memoElement.innerHTML = htmlContent;
   return memoElement;
 }
 
-// ユーザーのメモをリアルタイムで表示
+// ユーザーのメモをリアルタイムで表示（修正版）
 function displayUserMemos(userId) {
   if (!userId) {
     loadingMessage.textContent = "ユーザーIDが取得できませんでした。";
@@ -160,40 +170,80 @@ function displayUserMemos(userId) {
     return;
   }
 
+  console.log("メモを読み込み中... ユーザーID:", userId);
+  
   const memosRef = collection(db, "memos");
-  const q = query(memosRef, where("uid", "==", userId), orderBy("createdAt", "desc"));
-
-  onSnapshot(q, (querySnapshot) => {
+  
+  // まずは orderBy なしでクエリを試す
+  const simpleQuery = query(memosRef, where("uid", "==", userId));
+  
+  onSnapshot(simpleQuery, (querySnapshot) => {
+    console.log("クエリ結果を受信:", querySnapshot.size, "件");
+    
+    // コンテナをクリア
     memoListContainer.innerHTML = '';
 
     if (querySnapshot.empty) {
+      console.log("メモが見つかりませんでした");
       loadingMessage.textContent = "まだ投稿がありません。";
       loadingMessage.style.display = 'block';
+      loadingMessage.style.color = '#666';
       memoListContainer.appendChild(loadingMessage);
     } else {
       loadingMessage.style.display = 'none';
+      
+      // メモを配列に格納してソート
+      const memos = [];
       querySnapshot.forEach((doc) => {
         const memo = doc.data();
         const memoId = doc.id;
-        const memoElement = createMemoElement(memo, memoId);
+        console.log("メモデータ:", { id: memoId, memo });
+        memos.push({ id: memoId, data: memo });
+      });
+      
+      // 手動でソート（createdAt の降順）
+      memos.sort((a, b) => {
+        const aTime = a.data.createdAt?.toDate?.() || new Date(0);
+        const bTime = b.data.createdAt?.toDate?.() || new Date(0);
+        return bTime - aTime;
+      });
+      
+      // ソート済みのメモを表示
+      memos.forEach(({ id, data }) => {
+        const memoElement = createMemoElement(data, id);
         memoListContainer.appendChild(memoElement);
       });
+      
+      console.log("メモの表示完了:", memos.length, "件");
     }
   }, (error) => {
     console.error("メモの読み込みエラー:", error);
-    loadingMessage.textContent = "メモの読み込みに失敗しました。";
+    console.error("エラーの詳細:", error.code, error.message);
+    
+    loadingMessage.textContent = `メモの読み込みに失敗しました: ${error.message}`;
     loadingMessage.style.display = 'block';
     loadingMessage.style.color = 'red';
+    memoListContainer.innerHTML = '';
     memoListContainer.appendChild(loadingMessage);
+    
+    // エラーの種類によって対処法を提案
+    if (error.code === 'failed-precondition') {
+      console.log("インデックスが必要です。Firebaseコンソールでインデックスを作成してください。");
+    } else if (error.code === 'permission-denied') {
+      console.log("権限エラー。Firestoreのセキュリティルールを確認してください。");
+    }
   });
 }
 
 // 認証完了後、ユーザーのメモを表示
 authReady.then(async (user) => {
+  console.log("認証完了:", user);
   if (user && user.uid) {
     currentUID = user.uid;
+    console.log("ユーザーUID設定:", currentUID);
     displayUserMemos(currentUID);
   } else {
+    console.log("ユーザー認証失敗");
     currentUID = null;
     memoListContainer.innerHTML = '<p>ログインしていません。</p>';
     loadingMessage.style.display = 'none';
