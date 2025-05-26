@@ -41,7 +41,27 @@
 
     <div class="form-group">
       <label for="tagsInput">タグ（例：木,風,水）：</label>
-      <input type="text" id="tagsInput" placeholder="例：木,風,水">
+      <div style="position: relative;">
+        <input type="text" id="tagsInput" placeholder="例：木,風,水">
+        <!-- 新規投稿用タグサジェスト -->
+        <div id="newPostTagSuggestions" style="
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: white;
+          border: 1px solid #ddd;
+          border-top: none;
+          max-height: 150px;
+          overflow-y: auto;
+          z-index: 100;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        "></div>
+      </div>
+      <small style="color: #666; font-size: 12px;">
+        💡 過去に使用したタグが候補として表示されます
+      </small>
     </div>
 
     <div class="form-group form-group-checkbox">
