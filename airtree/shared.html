@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>みんなのシェア - AIRTREE</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 認証状態表示エリア -->
+  <div id="authStatus" style="background: #e8f4fd; padding: 10px; margin-bottom: 20px; border-radius: 4px; text-align: center;">
+    <div id="loginInfo" style="display: none;">
+      <span style="color: #0066cc; font-weight: bold;">✅ ログイン中:</span>
+      <span id="currentUser"></span>
+      <button id="logoutBtn" style="margin-left: 15px; padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">ログアウト</button>
+    </div>
+    <div id="notLoginInfo" style="display: none;">
+      <span style="color: #dc3545; font-weight: bold;">⚠️ ログインしていません</span>
+      <a href="auth-test.html" style="margin-left: 15px; color: #007bff; text-decoration: none;">ログインページへ</a>
+    </div>
+  </div>
+
+  <!-- ナビゲーション -->
+  <div style="text-align: center; margin-bottom: 20px;">
+    <a href="memo-auth.html" style="margin: 0 10px; color: #007bff; text-decoration: none;">📝 マイページ</a>
+    <span style="margin: 0 10px; color: #0066cc; font-weight: bold;">🌟 みんなのシェア</span>
+  </div>
+
+  <h1>🌟 みんなのシェア</h1>
+  
+  <!-- フィルター機能 -->
+  <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">
+    <h3 style="margin-top: 0; color: #555;">🔍 絞り込み検索</h3>
+    
+    <div class="form-group">
+      <label for="tagFilterInput">タグで絞り込み:</label>
+      <input type="text" id="tagFilterInput" placeholder="例：木,風,水">
+    </div>
+    
+    <div class="form-group form-group-checkbox">
+      <input type="checkbox" id="myOnlyCheckbox">
+      <label for="myOnlyCheckbox">自分の投稿のみ表示</label>
+    </div>
+    
+    <div style="text-align: center; margin-top: 15px;">
+      <button id="clearFilterBtn" style="padding: 8px 16px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">フィルターをクリア</button>
+    </div>
+  </div>
+
+  <!-- 投稿件数表示 -->
+  <div id="postsCount" style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;"></div>
+
+  <!-- シェア投稿一覧 -->
+  <div id="sharedMemosContainer">
+    <p id="loadingMessage">シェア投稿を読み込んでいます...</p>
+  </div>
+
+  <script type="module" src="./firebase-test.js"></script>
+  <script type="module" src="./shared.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
+</body>
+</html>
