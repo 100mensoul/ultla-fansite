@@ -75,35 +75,16 @@ function displayUserInfo(user) {
   
   showStatus(`${provider}でログインしました！`, 'success');
   
-  // 自動リダイレクト機能（3秒後にメモアプリに移動）
-  let countdown = 3;
-  const redirectMessage = document.createElement('p');
-  redirectMessage.style.textAlign = 'center';
-  redirectMessage.style.color = '#007bff';
-  redirectMessage.style.fontWeight = 'bold';
-  redirectMessage.style.marginTop = '15px';
-  redirectMessage.innerHTML = `<span id="countdown">${countdown}</span>秒後にメモアプリに移動します...<br><button id="redirectNow" style="margin-top: 10px; padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">今すぐ移動</button>`;
+  // 一時的にリダイレクト機能を無効化
+  // TODO: 後でmemo.html側の認証システム統合後に再実装
+  const manualRedirectMessage = document.createElement('p');
+  manualRedirectMessage.style.textAlign = 'center';
+  manualRedirectMessage.style.color = '#dc3545';
+  manualRedirectMessage.style.fontWeight = 'bold';
+  manualRedirectMessage.style.marginTop = '15px';
+  manualRedirectMessage.innerHTML = `⚠️ 現在、自動リダイレクトは一時的に無効化されています。<br>下のリンクから手動でメモアプリにお進みください。`;
   
-  userInfo.appendChild(redirectMessage);
-  
-  // カウントダウン処理
-  const countdownElement = document.getElementById('countdown');
-  const redirectNowBtn = document.getElementById('redirectNow');
-  
-  const countdownTimer = setInterval(() => {
-    countdown--;
-    countdownElement.textContent = countdown;
-    if (countdown <= 0) {
-      clearInterval(countdownTimer);
-      window.location.href = 'memo.html';
-    }
-  }, 1000);
-  
-  // 今すぐ移動ボタン
-  redirectNowBtn.addEventListener('click', () => {
-    clearInterval(countdownTimer);
-    window.location.href = 'memo.html';
-  });
+  userInfo.appendChild(manualRedirectMessage);
 }
 
 // ログアウト処理
