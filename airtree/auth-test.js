@@ -1,5 +1,5 @@
 // auth-test.js - ログイン機能のテスト用ファイル
-import { auth } from './firebase.js';
+import { auth } from './firebase-test.js';
 import {
   signInWithPopup,
   GoogleAuthProvider,
