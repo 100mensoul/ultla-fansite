@@ -1,4 +1,4 @@
-// memo-auth.js（統合版v8・profile-manager.js の機能を直接統合）
+// memo-auth.js（統合版・profile-manager.js の機能を直接統合）
 import { db, storage, authReady } from './firebase-test.js';
 import {
   collection,
