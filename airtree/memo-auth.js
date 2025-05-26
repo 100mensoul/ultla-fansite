@@ -1,4 +1,4 @@
-// memo-auth.js（統合版・profile-manager.js の機能を直接統合）
+// memo-auth.js（統合版v8・profile-manager.js の機能を直接統合）
 import { db, storage, authReady } from './firebase-test.js';
 import {
   collection,
@@ -39,6 +39,7 @@ const loginInfo = document.getElementById("loginInfo");
 const notLoginInfo = document.getElementById("notLoginInfo");
 const currentUser = document.getElementById("currentUser");
 const logoutBtn = document.getElementById("logoutBtn");
+const editProfileBtn = document.getElementById("editProfileBtn");
 
 let currentUID = null;
 let userProfile = null;
@@ -146,6 +147,11 @@ async function handleLogout() {
 
 // ログアウトボタンのイベントリスナー
 logoutBtn.addEventListener('click', handleLogout);
+
+// プロフィール編集ボタンのイベントリスナー
+editProfileBtn.addEventListener('click', () => {
+  openUsernameModal(currentUID, true); // 編集モードで開く
+});
 
 // メモ投稿処理
 memoForm.addEventListener("submit", async (e) => {
@@ -352,52 +358,48 @@ function displayUserMemos(userId) {
 const usernameModal = document.getElementById('usernameModal');
 const usernameInput = document.getElementById('usernameInput');
 const displayNameInput = document.getElementById('displayNameInput');
+const enableDuplicateCheck = document.getElementById('enableDuplicateCheck');
+const duplicateCheckSection = document.getElementById('duplicateCheckSection');
 const checkUsernameBtn = document.getElementById('checkUsernameBtn');
 const saveUsernameBtn = document.getElementById('saveUsernameBtn');
 const cancelUsernameBtn = document.getElementById('cancelUsernameBtn');
-const usernameError = document.getElementById('usernameError');
-const usernameSuccess = document.getElementById('usernameSuccess');
+const checkResult = document.getElementById('checkResult');
 
 let usernameAvailable = false;
+let isEditMode = false;
 
-function showError(message) {
-  usernameError.textContent = message;
-  usernameError.style.display = 'block';
-  usernameSuccess.style.display = 'none';
-  saveUsernameBtn.disabled = true;
+function showCheckResult(message, isSuccess = false) {
+  checkResult.textContent = message;
+  checkResult.style.color = isSuccess ? 'green' : 'red';
+  checkResult.style.display = 'block';
+}
+
+function clearCheckResult() {
+  checkResult.style.display = 'none';
   usernameAvailable = false;
 }
 
-function showSuccess(message) {
-  usernameSuccess.textContent = message;
-  usernameSuccess.style.display = 'block';
-  usernameError.style.display = 'none';
-  saveUsernameBtn.disabled = false;
-  usernameAvailable = true;
-}
-
-function clearMessages() {
-  usernameError.style.display = 'none';
-  usernameSuccess.style.display = 'none';
-  saveUsernameBtn.disabled = true;
-  usernameAvailable = false;
-}
+// 重複チェック表示切り替え
+enableDuplicateCheck.addEventListener('change', () => {
+  duplicateCheckSection.style.display = enableDuplicateCheck.checked ? 'block' : 'none';
+  clearCheckResult();
+});
 
 async function checkUsername() {
   const username = usernameInput.value.trim();
   
   if (!username) {
-    showError('ユーザーネームを入力してください');
+    showCheckResult('ユーザーネームを入力してください');
     return;
   }
   
   if (username.length < 3) {
-    showError('ユーザーネームは3文字以上で入力してください');
+    showCheckResult('ユーザーネームは3文字以上で入力してください');
     return;
   }
   
   if (username.length > 20) {
-    showError('ユーザーネームは20文字以下で入力してください');
+    showCheckResult('ユーザーネームは20文字以下で入力してください');
     return;
   }
   
@@ -408,27 +410,41 @@ async function checkUsername() {
     const exists = await checkUsernameExists(username, currentUID);
     
     if (exists) {
-      showError('このユーザーネームは既に使用されています');
+      showCheckResult('このユーザーネームは既に使用されています');
+      usernameAvailable = false;
     } else {
-      showSuccess('このユーザーネームは使用できます！');
+      showCheckResult('このユーザーネームは使用できます！', true);
+      usernameAvailable = true;
     }
   } catch (error) {
-    showError('チェック中にエラーが発生しました');
+    showCheckResult('チェック中にエラーが発生しました');
     console.error('ユーザーネームチェックエラー:', error);
   } finally {
     checkUsernameBtn.disabled = false;
-    checkUsernameBtn.textContent = '重複チェック';
+    checkUsernameBtn.textContent = '重複チェック実行';
   }
 }
 
 async function saveProfile() {
-  if (!usernameAvailable) {
-    showError('まず重複チェックを行ってください');
+  const username = usernameInput.value.trim();
+  const displayName = displayNameInput.value.trim();
+  
+  // 基本バリデーション
+  if (!username) {
+    showCheckResult('ユーザーネームを入力してください');
     return;
   }
   
-  const username = usernameInput.value.trim();
-  const displayName = displayNameInput.value.trim();
+  if (username.length < 3 || username.length > 20) {
+    showCheckResult('ユーザーネームは3文字以上、20文字以下で入力してください');
+    return;
+  }
+  
+  // 重複チェックが有効で、まだチェックしていない場合の警告
+  if (enableDuplicateCheck.checked && !usernameAvailable) {
+    showCheckResult('重複チェックを実行してください');
+    return;
+  }
   
   saveUsernameBtn.disabled = true;
   saveUsernameBtn.textContent = '保存中...';
@@ -438,43 +454,68 @@ async function saveProfile() {
     
     if (success) {
       userProfile = await getUserProfile(currentUID);
+      await updateAuthDisplay({ uid: currentUID, email: null, isAnonymous: false, providerData: [{ providerId: 'password' }] });
       closeModal();
-      statusMessage.textContent = 'ユーザーネームが設定されました！公開投稿を続けることができます。';
+      
+      const message = isEditMode ? 
+        'プロフィールが更新されました！' : 
+        'プロフィールが設定されました！公開投稿を続けることができます。';
+      
+      statusMessage.textContent = message;
       statusMessage.style.color = 'green';
       setTimeout(() => { statusMessage.textContent = ""; }, 5000);
     } else {
-      showError('設定に失敗しました。もう一度お試しください。');
+      showCheckResult('設定に失敗しました。もう一度お試しください。');
     }
   } catch (error) {
-    showError('設定中にエラーが発生しました');
+    showCheckResult('設定中にエラーが発生しました');
     console.error('プロフィール保存エラー:', error);
   } finally {
     saveUsernameBtn.disabled = false;
-    saveUsernameBtn.textContent = '設定完了';
+    saveUsernameBtn.textContent = '💾 設定完了';
   }
 }
 
-function openUsernameModal(uid) {
+function openUsernameModal(uid, editMode = false) {
   currentUID = uid;
+  isEditMode = editMode;
+  
+  // 編集モードの場合、既存データを読み込み
+  if (editMode && userProfile) {
+    usernameInput.value = userProfile.username || '';
+    displayNameInput.value = userProfile.displayName || '';
+  }
+  
   usernameModal.style.display = 'block';
   usernameInput.focus();
-  clearMessages();
+  clearCheckResult();
+  enableDuplicateCheck.checked = false;
+  duplicateCheckSection.style.display = 'none';
 }
 
 function closeModal() {
   usernameModal.style.display = 'none';
   usernameInput.value = '';
   displayNameInput.value = '';
-  clearMessages();
+  enableDuplicateCheck.checked = false;
+  duplicateCheckSection.style.display = 'none';
+  clearCheckResult();
+  isEditMode = false;
 }
 
 // イベントリスナー
 checkUsernameBtn.addEventListener('click', checkUsername);
 saveUsernameBtn.addEventListener('click', saveProfile);
 cancelUsernameBtn.addEventListener('click', closeModal);
-usernameInput.addEventListener('input', clearMessages);
+usernameInput.addEventListener('input', clearCheckResult);
 usernameInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') checkUsername();
+  if (e.key === 'Enter') {
+    if (enableDuplicateCheck.checked) {
+      checkUsername();
+    } else {
+      saveProfile();
+    }
+  }
 });
 usernameModal.addEventListener('click', (e) => {
   if (e.target === usernameModal) closeModal();
