@@ -130,22 +130,28 @@ async function syncWithSharedMemos(memoId, memoData, isPublic) {
     if (isPublic) {
       // 公開する場合
       if (querySnapshot.empty) {
-        // 新規追加
+        // 新規追加 - 元のメモのcreatedAtを保持
+        const originalMemoRef = doc(db, "memos", memoId);
+        const originalMemoSnap = await getDoc(originalMemoRef);
+        const originalMemo = originalMemoSnap.data();
+        
         const sharedMemoData = { 
           ...memoData, 
           originalMemoId: memoId,
+          createdAt: originalMemo.createdAt, // 🔥 元の作成日時を保持
           updatedAt: serverTimestamp()
         };
         await addDoc(sharedMemosRef, sharedMemoData);
-        console.log("sharedMemos に新規追加");
+        console.log("sharedMemos に新規追加（元のcreatedAtを保持）");
       } else {
-        // 既存を更新
+        // 既存を更新 - createdAtは変更しない
         const sharedDoc = querySnapshot.docs[0];
-        await updateDoc(doc(db, "sharedMemos", sharedDoc.id), {
-          ...memoData,
-          updatedAt: serverTimestamp()
-        });
-        console.log("sharedMemos を更新");
+        const updateSharedData = { ...memoData };
+        delete updateSharedData.createdAt; // createdAtは更新しない
+        updateSharedData.updatedAt = serverTimestamp();
+        
+        await updateDoc(doc(db, "sharedMemos", sharedDoc.id), updateSharedData);
+        console.log("sharedMemos を更新（createdAtは保持）");
       }
     } else {
       // 非公開にする場合
@@ -632,6 +638,10 @@ authReady.then(async (user) => {
     console.log("ユーザーUID設定:", currentUID);
     userProfile = await getUserProfile(currentUID);
     console.log("ユーザープロフィール:", userProfile);
+    
+    // ユーザーのタグを読み込み
+    await loadUserTags();
+    
     displayUserMemos(currentUID);
   } else {
     console.log("未ログイン状態");
@@ -662,9 +672,126 @@ const editIsPublicCheckbox = document.getElementById('editIsPublicCheckbox');
 const editStatusMessage = document.getElementById('editStatusMessage');
 const saveEditBtn = document.getElementById('saveEditBtn');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
+const tagSuggestions = document.getElementById('tagSuggestions');
 
 let currentEditingMemoId = null;
 let currentEditingMemo = null;
+let allUserTags = []; // ユーザーの全タグを保持
+
+// ユーザーの使用済みタグを取得
+async function loadUserTags() {
+  try {
+    const memosRef = collection(db, "memos");
+    const q = query(memosRef, where("uid", "==", currentUID));
+    const querySnapshot = await getDocs(q);
+    
+    const tagsSet = new Set();
+    querySnapshot.forEach((doc) => {
+      const memo = doc.data();
+      if (memo.tags && Array.isArray(memo.tags)) {
+        memo.tags.forEach(tag => tagsSet.add(tag.toLowerCase()));
+      }
+    });
+    
+    allUserTags = Array.from(tagsSet).sort();
+    console.log("ユーザータグ読み込み完了:", allUserTags);
+  } catch (error) {
+    console.error("タグ読み込みエラー:", error);
+  }
+}
+
+// タグサジェスト表示
+function showTagSuggestions(input, suggestions) {
+  if (suggestions.length === 0) {
+    tagSuggestions.style.display = 'none';
+    return;
+  }
+  
+  tagSuggestions.innerHTML = '';
+  suggestions.forEach(tag => {
+    const suggestionDiv = document.createElement('div');
+    suggestionDiv.textContent = tag;
+    suggestionDiv.style.cssText = `
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    `;
+    
+    suggestionDiv.addEventListener('mouseenter', () => {
+      suggestionDiv.style.backgroundColor = '#f5f5f5';
+    });
+    
+    suggestionDiv.addEventListener('mouseleave', () => {
+      suggestionDiv.style.backgroundColor = 'white';
+    });
+    
+    suggestionDiv.addEventListener('click', () => {
+      // 現在の入力値を取得
+      const currentValue = input.value;
+      const lastCommaIndex = currentValue.lastIndexOf(',');
+      
+      let newValue;
+      if (lastCommaIndex === -1) {
+        // カンマがない場合（最初のタグ）
+        newValue = tag;
+      } else {
+        // カンマがある場合（追加のタグ）
+        const beforeLastTag = currentValue.substring(0, lastCommaIndex + 1);
+        newValue = beforeLastTag + ' ' + tag;
+      }
+      
+      // 既に同じタグがないかチェック
+      const existingTags = newValue.split(',').map(t => t.trim().toLowerCase());
+      const uniqueTags = [...new Set(existingTags)];
+      
+      input.value = uniqueTags.join(', ');
+      tagSuggestions.style.display = 'none';
+      input.focus();
+    });
+    
+    tagSuggestions.appendChild(suggestionDiv);
+  });
+  
+  tagSuggestions.style.display = 'block';
+}
+
+// タグ入力時のサジェスト機能
+editTagsInput.addEventListener('input', (e) => {
+  const value = e.target.value;
+  const lastCommaIndex = value.lastIndexOf(',');
+  const currentTag = lastCommaIndex === -1 ? 
+    value.trim().toLowerCase() : 
+    value.substring(lastCommaIndex + 1).trim().toLowerCase();
+  
+  if (currentTag.length >= 1) {
+    const matchingTags = allUserTags.filter(tag => 
+      tag.includes(currentTag) && tag !== currentTag
+    ).slice(0, 5); // 最大5個まで表示
+    
+    showTagSuggestions(editTagsInput, matchingTags);
+  } else {
+    tagSuggestions.style.display = 'none';
+  }
+});
+
+// 入力欄からフォーカスが外れたときにサジェストを非表示
+editTagsInput.addEventListener('blur', () => {
+  // 少し遅延させてクリックイベントを処理できるようにする
+  setTimeout(() => {
+    tagSuggestions.style.display = 'none';
+  }, 200);
+});
+
+// 入力欄にフォーカスが当たったときの処理
+editTagsInput.addEventListener('focus', () => {
+  const value = editTagsInput.value;
+  if (value.trim() === '' && allUserTags.length > 0) {
+    // 空の場合は人気のタグを表示
+    const popularTags = allUserTags.slice(0, 5);
+    showTagSuggestions(editTagsInput, popularTags);
+  }
+});
 
 // 編集モーダルを開く
 function openEditModal(memoId, memo) {
