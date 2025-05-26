@@ -56,9 +56,14 @@ function updateAuthDisplay(user) {
 async function handleLogout() {
   try {
     await signOut(auth);
-    statusMessage.textContent = "ログアウトしました";
+    statusMessage.textContent = "ログアウトしました。ログインページに移動します...";
     statusMessage.style.color = "blue";
-    setTimeout(() => { statusMessage.textContent = ""; }, 3000);
+    
+    // 1秒後にログインページにリダイレクト
+    setTimeout(() => {
+      window.location.href = "auth-test.html";
+    }, 1000);
+    
   } catch (error) {
     console.error("ログアウトエラー:", error);
     statusMessage.textContent = "ログアウトに失敗しました: " + error.message;
