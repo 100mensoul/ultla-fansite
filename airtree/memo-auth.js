@@ -1,4 +1,4 @@
-// memo-auth.js（認証統合版）
+// memo-auth.js（統合版・profile-manager.js の機能を直接統合）
 import { db, storage, authReady } from './firebase-test.js';
 import {
   collection,
@@ -7,7 +7,11 @@ import {
   query,
   where,
   orderBy,
-  onSnapshot
+  onSnapshot,
+  doc,
+  getDoc,
+  setDoc,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   ref,
@@ -37,6 +41,66 @@ const currentUser = document.getElementById("currentUser");
 const logoutBtn = document.getElementById("logoutBtn");
 
 let currentUID = null;
+let userProfile = null;
+
+// プロフィール管理機能（統合版）
+async function getUserProfile(uid) {
+  if (!uid) return null;
+  try {
+    const profileRef = doc(db, "userProfiles", uid);
+    const profileSnap = await getDoc(profileRef);
+    return profileSnap.exists() ? profileSnap.data() : null;
+  } catch (error) {
+    console.error("プロフィール取得エラー:", error);
+    return null;
+  }
+}
+
+async function updateUserProfile(uid, username, displayName = '') {
+  if (!uid || !username) return false;
+  try {
+    const profileRef = doc(db, "userProfiles", uid);
+    const profileData = {
+      uid,
+      username: username.trim(),
+      displayName: displayName.trim() || username.trim(),
+      updatedAt: serverTimestamp()
+    };
+    
+    const existingProfile = await getDoc(profileRef);
+    if (!existingProfile.exists()) {
+      profileData.createdAt = serverTimestamp();
+    }
+    
+    await setDoc(profileRef, profileData, { merge: true });
+    return true;
+  } catch (error) {
+    console.error("プロフィール更新エラー:", error);
+    return false;
+  }
+}
+
+async function checkUsernameExists(username, currentUid = null) {
+  if (!username) return false;
+  try {
+    const profilesRef = collection(db, "userProfiles");
+    const q = query(profilesRef, where("username", "==", username.trim()));
+    const querySnapshot = await getDocs(q);
+    
+    const duplicateUsers = querySnapshot.docs.filter(doc => 
+      currentUid ? doc.id !== currentUid : true
+    );
+    return duplicateUsers.length > 0;
+  } catch (error) {
+    console.error("ユーザーネーム重複チェックエラー:", error);
+    return false;
+  }
+}
+
+async function isProfileComplete(uid) {
+  const profile = await getUserProfile(uid);
+  return profile && profile.username && profile.username.trim() !== '';
+}
 
 // 認証状態表示の更新
 function updateAuthDisplay(user) {
@@ -58,12 +122,9 @@ async function handleLogout() {
     await signOut(auth);
     statusMessage.textContent = "ログアウトしました。ログインページに移動します...";
     statusMessage.style.color = "blue";
-    
-    // 1秒後にログインページにリダイレクト
     setTimeout(() => {
       window.location.href = "auth-test.html";
     }, 1000);
-    
   } catch (error) {
     console.error("ログアウトエラー:", error);
     statusMessage.textContent = "ログアウトに失敗しました: " + error.message;
@@ -84,12 +145,24 @@ memoForm.addEventListener("submit", async (e) => {
     return;
   }
 
+  const isPublic = isPublicCheckbox.checked;
+  
+  // 公開投稿の場合、ユーザーネーム設定をチェック
+  if (isPublic) {
+    const profileComplete = await isProfileComplete(currentUID);
+    if (!profileComplete) {
+      statusMessage.textContent = "公開投稿にはユーザーネーム設定が必要です。";
+      statusMessage.style.color = "orange";
+      openUsernameModal(currentUID);
+      return;
+    }
+  }
+
   statusMessage.textContent = "保存処理中です...";
   statusMessage.style.color = "blue";
 
   const content = contentInput.value.trim();
   const tagsRaw = tagsInput.value.trim();
-  const isPublic = isPublicCheckbox.checked;
   const imageFile = imageInput.files[0];
 
   if (!content && !imageFile) {
@@ -119,11 +192,15 @@ memoForm.addEventListener("submit", async (e) => {
     }
   }
 
+  const currentUserProfile = await getUserProfile(currentUID);
+  const authorName = currentUserProfile ? currentUserProfile.displayName : '匿名ユーザー';
+
   const memoData = {
     uid: currentUID,
     content,
     tags,
     isPublic,
+    authorName,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
     imageUrl,
@@ -236,7 +313,6 @@ function displayUserMemos(userId) {
         memos.push({ id: memoId, data: memo });
       });
       
-      // 手動でソート（createdAt の降順）
       memos.sort((a, b) => {
         const aTime = a.data.createdAt?.toDate?.() || new Date(0);
         const bTime = b.data.createdAt?.toDate?.() || new Date(0);
@@ -260,6 +336,138 @@ function displayUserMemos(userId) {
   });
 }
 
+// ユーザーネーム設定モーダル関連
+const usernameModal = document.getElementById('usernameModal');
+const usernameInput = document.getElementById('usernameInput');
+const displayNameInput = document.getElementById('displayNameInput');
+const checkUsernameBtn = document.getElementById('checkUsernameBtn');
+const saveUsernameBtn = document.getElementById('saveUsernameBtn');
+const cancelUsernameBtn = document.getElementById('cancelUsernameBtn');
+const usernameError = document.getElementById('usernameError');
+const usernameSuccess = document.getElementById('usernameSuccess');
+
+let usernameAvailable = false;
+
+function showError(message) {
+  usernameError.textContent = message;
+  usernameError.style.display = 'block';
+  usernameSuccess.style.display = 'none';
+  saveUsernameBtn.disabled = true;
+  usernameAvailable = false;
+}
+
+function showSuccess(message) {
+  usernameSuccess.textContent = message;
+  usernameSuccess.style.display = 'block';
+  usernameError.style.display = 'none';
+  saveUsernameBtn.disabled = false;
+  usernameAvailable = true;
+}
+
+function clearMessages() {
+  usernameError.style.display = 'none';
+  usernameSuccess.style.display = 'none';
+  saveUsernameBtn.disabled = true;
+  usernameAvailable = false;
+}
+
+async function checkUsername() {
+  const username = usernameInput.value.trim();
+  
+  if (!username) {
+    showError('ユーザーネームを入力してください');
+    return;
+  }
+  
+  if (username.length < 3) {
+    showError('ユーザーネームは3文字以上で入力してください');
+    return;
+  }
+  
+  if (username.length > 20) {
+    showError('ユーザーネームは20文字以下で入力してください');
+    return;
+  }
+  
+  checkUsernameBtn.disabled = true;
+  checkUsernameBtn.textContent = 'チェック中...';
+  
+  try {
+    const exists = await checkUsernameExists(username, currentUID);
+    
+    if (exists) {
+      showError('このユーザーネームは既に使用されています');
+    } else {
+      showSuccess('このユーザーネームは使用できます！');
+    }
+  } catch (error) {
+    showError('チェック中にエラーが発生しました');
+    console.error('ユーザーネームチェックエラー:', error);
+  } finally {
+    checkUsernameBtn.disabled = false;
+    checkUsernameBtn.textContent = '重複チェック';
+  }
+}
+
+async function saveProfile() {
+  if (!usernameAvailable) {
+    showError('まず重複チェックを行ってください');
+    return;
+  }
+  
+  const username = usernameInput.value.trim();
+  const displayName = displayNameInput.value.trim();
+  
+  saveUsernameBtn.disabled = true;
+  saveUsernameBtn.textContent = '保存中...';
+  
+  try {
+    const success = await updateUserProfile(currentUID, username, displayName);
+    
+    if (success) {
+      userProfile = await getUserProfile(currentUID);
+      closeModal();
+      statusMessage.textContent = 'ユーザーネームが設定されました！公開投稿を続けることができます。';
+      statusMessage.style.color = 'green';
+      setTimeout(() => { statusMessage.textContent = ""; }, 5000);
+    } else {
+      showError('設定に失敗しました。もう一度お試しください。');
+    }
+  } catch (error) {
+    showError('設定中にエラーが発生しました');
+    console.error('プロフィール保存エラー:', error);
+  } finally {
+    saveUsernameBtn.disabled = false;
+    saveUsernameBtn.textContent = '設定完了';
+  }
+}
+
+function openUsernameModal(uid) {
+  currentUID = uid;
+  usernameModal.style.display = 'block';
+  usernameInput.focus();
+  clearMessages();
+}
+
+function closeModal() {
+  usernameModal.style.display = 'none';
+  usernameInput.value = '';
+  displayNameInput.value = '';
+  clearMessages();
+}
+
+// イベントリスナー
+checkUsernameBtn.addEventListener('click', checkUsername);
+saveUsernameBtn.addEventListener('click', saveProfile);
+cancelUsernameBtn.addEventListener('click', closeModal);
+usernameInput.addEventListener('input', clearMessages);
+usernameInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') checkUsername();
+});
+usernameModal.addEventListener('click', (e) => {
+  if (e.target === usernameModal) closeModal();
+});
+
 // 認証完了後の処理
 authReady.then(async (user) => {
   console.log("認証完了:", user);
@@ -268,6 +476,8 @@ authReady.then(async (user) => {
   if (user && user.uid) {
     currentUID = user.uid;
     console.log("ユーザーUID設定:", currentUID);
+    userProfile = await getUserProfile(currentUID);
+    console.log("ユーザープロフィール:", userProfile);
     displayUserMemos(currentUID);
   } else {
     console.log("未ログイン状態");
