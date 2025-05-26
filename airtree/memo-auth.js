@@ -305,6 +305,14 @@ memoForm.addEventListener("submit", async (e) => {
     statusMessage.style.color = "green";
     memoForm.reset();
     imageInput.value = "";
+    
+    // 新規投稿後の警告チェック（匿名ユーザーのみ）
+    if (auth.currentUser && auth.currentUser.isAnonymous) {
+      // 投稿数は displayUserMemos で自動更新されるので、
+      // ここでは特別な処理は不要（リアルタイム更新により自動でチェックされる）
+      console.log('匿名ユーザーの新規投稿完了');
+    }
+    
     setTimeout(() => { statusMessage.textContent = ""; }, 5000);
   } catch (error) {
     console.error("Firestoreへの保存に失敗しました: ", error);
@@ -419,6 +427,9 @@ function displayUserMemos(userId) {
   
   onSnapshot(simpleQuery, (querySnapshot) => {
     console.log("クエリ結果を受信:", querySnapshot.size, "件");
+    
+    // 投稿数を更新（警告チェック付き）
+    updatePostCountAndCheckWarnings(querySnapshot.size);
     
     memoListContainer.innerHTML = '';
 
@@ -629,8 +640,104 @@ usernameModal.addEventListener('click', (e) => {
   if (e.target === usernameModal) closeModal();
 });
 
-// 認証完了後の処理
-authReady.then(async (user) => {
+// === 匿名ユーザー警告システム ===
+
+// 匿名警告モーダル関連要素
+const anonymousWarningModal = document.getElementById('anonymousWarningModal');
+const firstPostWarning = document.getElementById('firstPostWarning');
+const thirdPostWarning = document.getElementById('thirdPostWarning');
+const logoutWarning = document.getElementById('logoutWarning');
+const createAccountBtn = document.getElementById('createAccountBtn');
+const maybeLaterBtn = document.getElementById('maybeLaterBtn');
+const continueAnonymousBtn = document.getElementById('continueAnonymousBtn');
+
+// 投稿数を更新して警告チェック
+function updatePostCountAndCheckWarnings(newCount) {
+  userPostCount = newCount;
+  console.log('投稿数更新:', userPostCount);
+  
+  // 匿名ユーザーのみチェック
+  if (!currentUID || !auth.currentUser || !auth.currentUser.isAnonymous) {
+    return;
+  }
+  
+  // 初回投稿時の警告
+  if (userPostCount === 1 && !hasShownFirstPostWarning) {
+    showAnonymousWarning('first');
+    hasShownFirstPostWarning = true;
+  }
+  // 3回目投稿時の警告
+  else if (userPostCount === 3 && !hasShownThirdPostWarning) {
+    showAnonymousWarning('third');
+    hasShownThirdPostWarning = true;
+  }
+}
+
+// 匿名ユーザー警告を表示
+function showAnonymousWarning(type) {
+  // 全ての警告を非表示
+  firstPostWarning.style.display = 'none';
+  thirdPostWarning.style.display = 'none';
+  logoutWarning.style.display = 'none';
+  
+  // 対応する警告を表示
+  switch(type) {
+    case 'first':
+      firstPostWarning.style.display = 'block';
+      break;
+    case 'third':
+      thirdPostWarning.style.display = 'block';
+      // 3回目は「後で決める」ボタンを非表示
+      maybeLaterBtn.style.display = 'none';
+      break;
+    case 'logout':
+      logoutWarning.style.display = 'block';
+      // ログアウト時は「後で決める」ボタンを非表示
+      maybeLaterBtn.style.display = 'none';
+      continueAnonymousBtn.textContent = 'このまま続ける';
+      break;
+  }
+  
+  anonymousWarningModal.style.display = 'block';
+}
+
+// 匿名警告モーダルを閉じる
+function closeAnonymousWarning() {
+  anonymousWarningModal.style.display = 'none';
+  // ボタンの表示を初期状態に戻す
+  maybeLaterBtn.style.display = 'inline-block';
+  continueAnonymousBtn.textContent = '匿名のまま続ける';
+}
+
+// アカウント作成ボタンの処理
+createAccountBtn.addEventListener('click', () => {
+  closeAnonymousWarning();
+  // 匿名→正式アカウント移行処理（後で実装）
+  statusMessage.textContent = 'アカウント移行機能は次の段階で実装予定です。';
+  statusMessage.style.color = 'blue';
+  setTimeout(() => { statusMessage.textContent = ""; }, 3000);
+});
+
+// 後で決めるボタンの処理
+maybeLaterBtn.addEventListener('click', () => {
+  closeAnonymousWarning();
+  statusMessage.textContent = 'アカウント作成はいつでも可能です。';
+  statusMessage.style.color = 'green';
+  setTimeout(() => { statusMessage.textContent = ""; }, 3000);
+});
+
+// 匿名のまま続けるボタンの処理
+continueAnonymousBtn.addEventListener('click', () => {
+  closeAnonymousWarning();
+  console.log('ユーザーが匿名継続を選択');
+});
+
+// モーダル外クリックで閉じる（重要な警告なので無効化）
+// anonymousWarningModal.addEventListener('click', (e) => {
+//   if (e.target === anonymousWarningModal) {
+//     closeAnonymousWarning();
+//   }
+// });
   console.log("認証完了:", user);
   updateAuthDisplay(user);
   
