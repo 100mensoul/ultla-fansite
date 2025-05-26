@@ -1,4 +1,4 @@
-// memo-auth.js（統合版・profile-manager.js の機能を直接統合）
+// memo-auth.js（統合版・匿名ユーザー警告システム付き）
 import { db, storage, authReady } from './firebase-test.js';
 import {
   collection,
@@ -46,6 +46,106 @@ const editProfileBtn = document.getElementById("editProfileBtn");
 
 let currentUID = null;
 let userProfile = null;
+
+// 🚨 匿名ユーザー警告システム用の変数
+let anonymousPostCount = 0;
+let hasShownFirstPostWarning = false;
+let hasShownThirdPostWarning = false;
+
+// 🚨 匿名ユーザーの投稿数をカウント
+async function updateAnonymousPostCount(user) {
+  if (!user || !user.isAnonymous) {
+    anonymousPostCount = 0;
+    return;
+  }
+  
+  try {
+    const memosRef = collection(db, "memos");
+    const q = query(memosRef, where("uid", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+    anonymousPostCount = querySnapshot.size;
+    console.log("匿名ユーザー投稿数:", anonymousPostCount);
+  } catch (error) {
+    console.error("投稿数取得エラー:", error);
+    anonymousPostCount = 0;
+  }
+}
+
+// 🚨 匿名ユーザー警告を表示するかチェック
+function shouldShowAnonymousWarning(user, postCount) {
+  if (!user || !user.isAnonymous) return null;
+  
+  if (postCount === 1 && !hasShownFirstPostWarning) {
+    return 'first';
+  } else if (postCount === 3 && !hasShownThirdPostWarning) {
+    return 'third';
+  }
+  
+  return null;
+}
+
+// 🚨 匿名ユーザー警告モーダルを表示
+function showAnonymousWarning(warningType) {
+  const modal = document.getElementById('anonymousWarningModal');
+  if (!modal) {
+    console.error('匿名警告モーダルが見つかりません');
+    return;
+  }
+  
+  const firstWarning = document.getElementById('firstPostWarning');
+  const thirdWarning = document.getElementById('thirdPostWarning');
+  const createAccountBtn = document.getElementById('createAccountBtn');
+  const maybeLaterBtn = document.getElementById('maybeLaterBtn');
+  const continueAnonymousBtn = document.getElementById('continueAnonymousBtn');
+  
+  // 全ての警告を非表示
+  if (firstWarning) firstWarning.style.display = 'none';
+  if (thirdWarning) thirdWarning.style.display = 'none';
+  
+  // 対応する警告を表示
+  if (warningType === 'first' && firstWarning) {
+    firstWarning.style.display = 'block';
+    hasShownFirstPostWarning = true;
+  } else if (warningType === 'third' && thirdWarning) {
+    thirdWarning.style.display = 'block';
+    hasShownThirdPostWarning = true;
+  }
+  
+  modal.style.display = 'block';
+  
+  // ボタンイベント（既存のイベントリスナーを削除してから追加）
+  const handleCreateAccount = () => {
+    modal.style.display = 'none';
+    window.location.href = 'auth-test.html';
+  };
+  
+  const handleMaybeLater = () => {
+    modal.style.display = 'none';
+  };
+  
+  const handleContinueAnonymous = () => {
+    modal.style.display = 'none';
+  };
+  
+  // 既存のイベントリスナーを削除（クローンで置き換え）
+  if (createAccountBtn) {
+    const newCreateBtn = createAccountBtn.cloneNode(true);
+    createAccountBtn.parentNode.replaceChild(newCreateBtn, createAccountBtn);
+    newCreateBtn.addEventListener('click', handleCreateAccount);
+  }
+  
+  if (maybeLaterBtn) {
+    const newMaybeBtn = maybeLaterBtn.cloneNode(true);
+    maybeLaterBtn.parentNode.replaceChild(newMaybeBtn, maybeLaterBtn);
+    newMaybeBtn.addEventListener('click', handleMaybeLater);
+  }
+  
+  if (continueAnonymousBtn) {
+    const newContinueBtn = continueAnonymousBtn.cloneNode(true);
+    continueAnonymousBtn.parentNode.replaceChild(newContinueBtn, continueAnonymousBtn);
+    newContinueBtn.addEventListener('click', handleContinueAnonymous);
+  }
+}
 
 // プロフィール管理機能（統合版）
 async function getUserProfile(uid) {
@@ -216,9 +316,11 @@ async function handleLogout() {
 logoutBtn.addEventListener('click', handleLogout);
 
 // プロフィール編集ボタンのイベントリスナー
-editProfileBtn.addEventListener('click', () => {
-  openUsernameModal(currentUID, true); // 編集モードで開く
-});
+if (editProfileBtn) {
+  editProfileBtn.addEventListener('click', () => {
+    openUsernameModal(currentUID, true); // 編集モードで開く
+  });
+}
 
 // メモ投稿処理
 memoForm.addEventListener("submit", async (e) => {
@@ -306,6 +408,18 @@ memoForm.addEventListener("submit", async (e) => {
     memoForm.reset();
     imageInput.value = "";
     setTimeout(() => { statusMessage.textContent = ""; }, 5000);
+    
+    // 🚨 匿名ユーザーの場合、投稿数を更新して警告チェック
+    if (auth.currentUser && auth.currentUser.isAnonymous) {
+      await updateAnonymousPostCount(auth.currentUser);
+      const warningType = shouldShowAnonymousWarning(auth.currentUser, anonymousPostCount);
+      if (warningType) {
+        // 投稿成功メッセージが表示された後、少し遅延してから警告を表示
+        setTimeout(() => {
+          showAnonymousWarning(warningType);
+        }, 1500);
+      }
+    }
   } catch (error) {
     console.error("Firestoreへの保存に失敗しました: ", error);
     statusMessage.textContent = "投稿に失敗しました: " + error.message;
@@ -477,21 +591,29 @@ let usernameAvailable = false;
 let isEditMode = false;
 
 function showCheckResult(message, isSuccess = false) {
-  checkResult.textContent = message;
-  checkResult.style.color = isSuccess ? 'green' : 'red';
-  checkResult.style.display = 'block';
+  if (checkResult) {
+    checkResult.textContent = message;
+    checkResult.style.color = isSuccess ? 'green' : 'red';
+    checkResult.style.display = 'block';
+  }
 }
 
 function clearCheckResult() {
-  checkResult.style.display = 'none';
+  if (checkResult) {
+    checkResult.style.display = 'none';
+  }
   usernameAvailable = false;
 }
 
 // 重複チェック表示切り替え
-enableDuplicateCheck.addEventListener('change', () => {
-  duplicateCheckSection.style.display = enableDuplicateCheck.checked ? 'block' : 'none';
-  clearCheckResult();
-});
+if (enableDuplicateCheck) {
+  enableDuplicateCheck.addEventListener('change', () => {
+    if (duplicateCheckSection) {
+      duplicateCheckSection.style.display = enableDuplicateCheck.checked ? 'block' : 'none';
+    }
+    clearCheckResult();
+  });
+}
 
 async function checkUsername() {
   const username = usernameInput.value.trim();
@@ -511,8 +633,10 @@ async function checkUsername() {
     return;
   }
   
-  checkUsernameBtn.disabled = true;
-  checkUsernameBtn.textContent = 'チェック中...';
+  if (checkUsernameBtn) {
+    checkUsernameBtn.disabled = true;
+    checkUsernameBtn.textContent = 'チェック中...';
+  }
   
   try {
     const exists = await checkUsernameExists(username, currentUID);
@@ -528,8 +652,10 @@ async function checkUsername() {
     showCheckResult('チェック中にエラーが発生しました');
     console.error('ユーザーネームチェックエラー:', error);
   } finally {
-    checkUsernameBtn.disabled = false;
-    checkUsernameBtn.textContent = '重複チェック実行';
+    if (checkUsernameBtn) {
+      checkUsernameBtn.disabled = false;
+      checkUsernameBtn.textContent = '重複チェック実行';
+    }
   }
 }
 
@@ -549,13 +675,15 @@ async function saveProfile() {
   }
   
   // 重複チェックが有効で、まだチェックしていない場合の警告
-  if (enableDuplicateCheck.checked && !usernameAvailable) {
+  if (enableDuplicateCheck && enableDuplicateCheck.checked && !usernameAvailable) {
     showCheckResult('重複チェックを実行してください');
     return;
   }
   
-  saveUsernameBtn.disabled = true;
-  saveUsernameBtn.textContent = '保存中...';
+  if (saveUsernameBtn) {
+    saveUsernameBtn.disabled = true;
+    saveUsernameBtn.textContent = '保存中...';
+  }
   
   try {
     const success = await updateUserProfile(currentUID, username, displayName);
@@ -579,55 +707,69 @@ async function saveProfile() {
     showCheckResult('設定中にエラーが発生しました');
     console.error('プロフィール保存エラー:', error);
   } finally {
-    saveUsernameBtn.disabled = false;
-    saveUsernameBtn.textContent = '💾 設定完了';
+    if (saveUsernameBtn) {
+      saveUsernameBtn.disabled = false;
+      saveUsernameBtn.textContent = '💾 設定完了';
+    }
   }
 }
 
 function openUsernameModal(uid, editMode = false) {
+  if (!usernameModal) return;
+  
   currentUID = uid;
   isEditMode = editMode;
   
   // 編集モードの場合、既存データを読み込み
   if (editMode && userProfile) {
-    usernameInput.value = userProfile.username || '';
-    displayNameInput.value = userProfile.displayName || '';
+    if (usernameInput) usernameInput.value = userProfile.username || '';
+    if (displayNameInput) displayNameInput.value = userProfile.displayName || '';
   }
   
   usernameModal.style.display = 'block';
-  usernameInput.focus();
+  if (usernameInput) usernameInput.focus();
   clearCheckResult();
-  enableDuplicateCheck.checked = false;
-  duplicateCheckSection.style.display = 'none';
+  if (enableDuplicateCheck) enableDuplicateCheck.checked = false;
+  if (duplicateCheckSection) duplicateCheckSection.style.display = 'none';
 }
 
 function closeModal() {
-  usernameModal.style.display = 'none';
-  usernameInput.value = '';
-  displayNameInput.value = '';
-  enableDuplicateCheck.checked = false;
-  duplicateCheckSection.style.display = 'none';
+  if (usernameModal) usernameModal.style.display = 'none';
+  if (usernameInput) usernameInput.value = '';
+  if (displayNameInput) displayNameInput.value = '';
+  if (enableDuplicateCheck) enableDuplicateCheck.checked = false;
+  if (duplicateCheckSection) duplicateCheckSection.style.display = 'none';
   clearCheckResult();
   isEditMode = false;
 }
 
 // イベントリスナー
-checkUsernameBtn.addEventListener('click', checkUsername);
-saveUsernameBtn.addEventListener('click', saveProfile);
-cancelUsernameBtn.addEventListener('click', closeModal);
-usernameInput.addEventListener('input', clearCheckResult);
-usernameInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    if (enableDuplicateCheck.checked) {
-      checkUsername();
-    } else {
-      saveProfile();
+if (checkUsernameBtn) {
+  checkUsernameBtn.addEventListener('click', checkUsername);
+}
+if (saveUsernameBtn) {
+  saveUsernameBtn.addEventListener('click', saveProfile);
+}
+if (cancelUsernameBtn) {
+  cancelUsernameBtn.addEventListener('click', closeModal);
+}
+if (usernameInput) {
+  usernameInput.addEventListener('input', clearCheckResult);
+  usernameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      if (enableDuplicateCheck && enableDuplicateCheck.checked) {
+        checkUsername();
+      } else {
+        saveProfile();
+      }
     }
-  }
-});
-usernameModal.addEventListener('click', (e) => {
-  if (e.target === usernameModal) closeModal();
-});
+  });
+}
+if (usernameModal) {
+  usernameModal.addEventListener('click', (e) => {
+    if (e.target === usernameModal) closeModal();
+  });
+}
 
 // 認証完了後の処理
 authReady.then(async (user) => {
@@ -640,6 +782,12 @@ authReady.then(async (user) => {
     userProfile = await getUserProfile(currentUID);
     console.log("ユーザープロフィール:", userProfile);
     
+    // 🚨 匿名ユーザーの場合、投稿数を取得
+    if (user.isAnonymous) {
+      await updateAnonymousPostCount(user);
+      console.log("匿名ユーザー初期投稿数:", anonymousPostCount);
+    }
+    
     // ユーザーのタグを読み込み
     await loadUserTags();
     
@@ -647,6 +795,9 @@ authReady.then(async (user) => {
   } else {
     console.log("未ログイン状態");
     currentUID = null;
+    anonymousPostCount = 0;
+    hasShownFirstPostWarning = false;
+    hasShownThirdPostWarning = false;
     loadingMessage.textContent = 'ログインしてください。';
     loadingMessage.style.display = 'block';
     loadingMessage.style.color = 'orange';
@@ -681,6 +832,8 @@ let allUserTags = []; // ユーザーの全タグを保持
 
 // ユーザーの使用済みタグを取得
 async function loadUserTags() {
+  if (!currentUID) return;
+  
   try {
     const memosRef = collection(db, "memos");
     const q = query(memosRef, where("uid", "==", currentUID));
@@ -706,8 +859,8 @@ async function loadUserTags() {
 
 // 改良版タグサジェスト表示
 function showTagSuggestions(input, suggestionsContainer, suggestions) {
-  if (suggestions.length === 0) {
-    suggestionsContainer.style.display = 'none';
+  if (!suggestionsContainer || suggestions.length === 0) {
+    if (suggestionsContainer) suggestionsContainer.style.display = 'none';
     return;
   }
   
@@ -763,6 +916,8 @@ function showTagSuggestions(input, suggestionsContainer, suggestions) {
 
 // 改良版タグ入力ハンドラー（予測変換的動作）
 function setupTagAutocomplete(input, suggestionsContainer) {
+  if (!input || !suggestionsContainer) return;
+  
   let hideTimeout;
 
   input.addEventListener('input', (e) => {
@@ -841,10 +996,14 @@ function setupTagAutocomplete(input, suggestionsContainer) {
 function initializeTagAutocomplete() {
   if (allUserTags.length > 0) {
     // 新規投稿フォーム
-    setupTagAutocomplete(tagsInput, newPostTagSuggestions);
+    if (tagsInput && newPostTagSuggestions) {
+      setupTagAutocomplete(tagsInput, newPostTagSuggestions);
+    }
     
     // 編集モーダル
-    setupTagAutocomplete(editTagsInput, tagSuggestions);
+    if (editTagsInput && tagSuggestions) {
+      setupTagAutocomplete(editTagsInput, tagSuggestions);
+    }
     
     console.log('タグ自動補完機能を初期化:', allUserTags.length, '件のタグ');
   }
@@ -852,35 +1011,37 @@ function initializeTagAutocomplete() {
 
 // 編集モーダルを開く
 function openEditModal(memoId, memo) {
+  if (!editMemoModal) return;
+  
   currentEditingMemoId = memoId;
   currentEditingMemo = memo;
   
   // 現在の値をフォームに設定
-  editContentInput.value = memo.content || '';
-  editTagsInput.value = memo.tags ? memo.tags.join(', ') : '';
-  editIsPublicCheckbox.checked = memo.isPublic || false;
+  if (editContentInput) editContentInput.value = memo.content || '';
+  if (editTagsInput) editTagsInput.value = memo.tags ? memo.tags.join(', ') : '';
+  if (editIsPublicCheckbox) editIsPublicCheckbox.checked = memo.isPublic || false;
   
   // 現在の画像を表示
-  if (memo.imageUrl) {
+  if (memo.imageUrl && currentImage && currentImageSection) {
     currentImage.src = memo.imageUrl;
     currentImageSection.style.display = 'block';
-  } else {
+  } else if (currentImageSection) {
     currentImageSection.style.display = 'none';
   }
   
   // 新しい画像選択をクリア
-  editImageInput.value = '';
-  editStatusMessage.textContent = '';
+  if (editImageInput) editImageInput.value = '';
+  if (editStatusMessage) editStatusMessage.textContent = '';
   
   editMemoModal.style.display = 'block';
 }
 
 // 編集モーダルを閉じる
 function closeEditModal() {
-  editMemoModal.style.display = 'none';
+  if (editMemoModal) editMemoModal.style.display = 'none';
   currentEditingMemoId = null;
   currentEditingMemo = null;
-  editStatusMessage.textContent = '';
+  if (editStatusMessage) editStatusMessage.textContent = '';
 }
 
 // メモ削除（確認ダイアログ付き）
@@ -900,34 +1061,42 @@ function deleteMemo(memoId, memo) {
 // 編集保存（段階2：公開設定変更機能）
 async function saveEdit() {
   if (!currentEditingMemoId || !currentEditingMemo) {
-    editStatusMessage.textContent = 'エラー: 編集データが見つかりません。';
-    editStatusMessage.style.color = 'red';
+    if (editStatusMessage) {
+      editStatusMessage.textContent = 'エラー: 編集データが見つかりません。';
+      editStatusMessage.style.color = 'red';
+    }
     return;
   }
 
   // 公開設定を変更する場合のプロフィールチェック
-  const newIsPublic = editIsPublicCheckbox.checked;
+  const newIsPublic = editIsPublicCheckbox ? editIsPublicCheckbox.checked : false;
   const oldIsPublic = currentEditingMemo.isPublic;
   
   if (newIsPublic && !oldIsPublic) {
     // 非公開→公開にする場合、ユーザーネーム設定をチェック
     const profileComplete = await isProfileComplete(currentUID);
     if (!profileComplete) {
-      editStatusMessage.textContent = '公開投稿にはユーザーネーム設定が必要です。';
-      editStatusMessage.style.color = 'orange';
+      if (editStatusMessage) {
+        editStatusMessage.textContent = '公開投稿にはユーザーネーム設定が必要です。';
+        editStatusMessage.style.color = 'orange';
+      }
       return;
     }
   }
 
-  saveEditBtn.disabled = true;
-  saveEditBtn.textContent = '保存中...';
-  editStatusMessage.textContent = '変更を保存しています...';
-  editStatusMessage.style.color = 'blue';
+  if (saveEditBtn) {
+    saveEditBtn.disabled = true;
+    saveEditBtn.textContent = '保存中...';
+  }
+  if (editStatusMessage) {
+    editStatusMessage.textContent = '変更を保存しています...';
+    editStatusMessage.style.color = 'blue';
+  }
 
   try {
     // 更新データを準備
-    const content = editContentInput.value.trim();
-    const tagsRaw = editTagsInput.value.trim();
+    const content = editContentInput ? editContentInput.value.trim() : '';
+    const tagsRaw = editTagsInput ? editTagsInput.value.trim() : '';
     const tags = tagsRaw ? tagsRaw.split(",").map(tag => tag.trim().toLowerCase()).filter(tag => tag !== "") : [];
     
     // 基本的な更新データ
@@ -969,8 +1138,10 @@ async function saveEdit() {
       successMessage += newIsPublic ? ' (公開されました)' : ' (非公開になりました)';
     }
 
-    editStatusMessage.textContent = successMessage;
-    editStatusMessage.style.color = 'green';
+    if (editStatusMessage) {
+      editStatusMessage.textContent = successMessage;
+      editStatusMessage.style.color = 'green';
+    }
 
     // 2秒後にモーダルを閉じる
     setTimeout(() => {
@@ -982,21 +1153,31 @@ async function saveEdit() {
 
   } catch (error) {
     console.error('メモ更新エラー:', error);
-    editStatusMessage.textContent = `更新に失敗しました: ${error.message}`;
-    editStatusMessage.style.color = 'red';
+    if (editStatusMessage) {
+      editStatusMessage.textContent = `更新に失敗しました: ${error.message}`;
+      editStatusMessage.style.color = 'red';
+    }
   } finally {
-    saveEditBtn.disabled = false;
-    saveEditBtn.textContent = '💾 変更を保存';
+    if (saveEditBtn) {
+      saveEditBtn.disabled = false;
+      saveEditBtn.textContent = '💾 変更を保存';
+    }
   }
 }
 
 // イベントリスナー
-saveEditBtn.addEventListener('click', saveEdit);
-cancelEditBtn.addEventListener('click', closeEditModal);
+if (saveEditBtn) {
+  saveEditBtn.addEventListener('click', saveEdit);
+}
+if (cancelEditBtn) {
+  cancelEditBtn.addEventListener('click', closeEditModal);
+}
 
 // モーダル外クリックで閉じる
-editMemoModal.addEventListener('click', (e) => {
-  if (e.target === editMemoModal) {
-    closeEditModal();
-  }
-});
+if (editMemoModal) {
+  editMemoModal.addEventListener('click', (e) => {
+    if (e.target === editMemoModal) {
+      closeEditModal();
+    }
+  });
+}
