@@ -34,6 +34,7 @@ const isPublicCheckbox = document.getElementById("isPublicCheckbox");
 const statusMessage = document.getElementById("statusMessage");
 const memoListContainer = document.getElementById("memoListContainer");
 const loadingMessage = document.getElementById("loadingMessage");
+const newPostTagSuggestions = document.getElementById("newPostTagSuggestions");
 
 // 認証状態表示要素
 const authStatus = document.getElementById("authStatus");
@@ -695,19 +696,22 @@ async function loadUserTags() {
     
     allUserTags = Array.from(tagsSet).sort();
     console.log("ユーザータグ読み込み完了:", allUserTags);
+    
+    // タグ読み込み後に自動補完機能を初期化
+    initializeTagAutocomplete();
   } catch (error) {
     console.error("タグ読み込みエラー:", error);
   }
 }
 
-// タグサジェスト表示
-function showTagSuggestions(input, suggestions) {
+// 改良版タグサジェスト表示
+function showTagSuggestions(input, suggestionsContainer, suggestions) {
   if (suggestions.length === 0) {
-    tagSuggestions.style.display = 'none';
+    suggestionsContainer.style.display = 'none';
     return;
   }
   
-  tagSuggestions.innerHTML = '';
+  suggestionsContainer.innerHTML = '';
   suggestions.forEach(tag => {
     const suggestionDiv = document.createElement('div');
     suggestionDiv.textContent = tag;
@@ -716,10 +720,11 @@ function showTagSuggestions(input, suggestions) {
       cursor: pointer;
       border-bottom: 1px solid #eee;
       font-size: 14px;
+      transition: background-color 0.2s;
     `;
     
     suggestionDiv.addEventListener('mouseenter', () => {
-      suggestionDiv.style.backgroundColor = '#f5f5f5';
+      suggestionDiv.style.backgroundColor = '#f0f8ff';
     });
     
     suggestionDiv.addEventListener('mouseleave', () => {
@@ -743,55 +748,107 @@ function showTagSuggestions(input, suggestions) {
       
       // 既に同じタグがないかチェック
       const existingTags = newValue.split(',').map(t => t.trim().toLowerCase());
-      const uniqueTags = [...new Set(existingTags)];
+      const uniqueTags = [...new Set(existingTags)].filter(t => t !== '');
       
-      input.value = uniqueTags.join(', ');
-      tagSuggestions.style.display = 'none';
+      input.value = uniqueTags.join(', ') + (uniqueTags.length > 0 ? ', ' : '');
+      suggestionsContainer.style.display = 'none';
       input.focus();
     });
     
-    tagSuggestions.appendChild(suggestionDiv);
+    suggestionsContainer.appendChild(suggestionDiv);
   });
   
-  tagSuggestions.style.display = 'block';
+  suggestionsContainer.style.display = 'block';
 }
 
-// タグ入力時のサジェスト機能
-editTagsInput.addEventListener('input', (e) => {
-  const value = e.target.value;
-  const lastCommaIndex = value.lastIndexOf(',');
-  const currentTag = lastCommaIndex === -1 ? 
-    value.trim().toLowerCase() : 
-    value.substring(lastCommaIndex + 1).trim().toLowerCase();
-  
-  if (currentTag.length >= 1) {
-    const matchingTags = allUserTags.filter(tag => 
-      tag.includes(currentTag) && tag !== currentTag
-    ).slice(0, 5); // 最大5個まで表示
+// 改良版タグ入力ハンドラー（予測変換的動作）
+function setupTagAutocomplete(input, suggestionsContainer) {
+  let hideTimeout;
+
+  input.addEventListener('input', (e) => {
+    clearTimeout(hideTimeout);
     
-    showTagSuggestions(editTagsInput, matchingTags);
-  } else {
-    tagSuggestions.style.display = 'none';
-  }
-});
+    const value = e.target.value;
+    const lastCommaIndex = value.lastIndexOf(',');
+    const currentTag = lastCommaIndex === -1 ? 
+      value.trim().toLowerCase() : 
+      value.substring(lastCommaIndex + 1).trim().toLowerCase();
+    
+    // 予測変換的動作：1文字以上で候補表示
+    if (currentTag.length >= 1) {
+      const matchingTags = allUserTags.filter(tag => 
+        tag.includes(currentTag) && tag !== currentTag
+      ).slice(0, 8); // 最大8個まで表示
+      
+      showTagSuggestions(input, suggestionsContainer, matchingTags);
+    } else if (value.trim() === '') {
+      // 完全に空の場合は人気タグを表示
+      const popularTags = allUserTags.slice(0, 5);
+      showTagSuggestions(input, suggestionsContainer, popularTags);
+    } else {
+      suggestionsContainer.style.display = 'none';
+    }
+  });
 
-// 入力欄からフォーカスが外れたときにサジェストを非表示
-editTagsInput.addEventListener('blur', () => {
-  // 少し遅延させてクリックイベントを処理できるようにする
-  setTimeout(() => {
-    tagSuggestions.style.display = 'none';
-  }, 200);
-});
+  // フォーカス時の動作
+  input.addEventListener('focus', (e) => {
+    clearTimeout(hideTimeout);
+    
+    const value = e.target.value;
+    if (value.trim() === '' && allUserTags.length > 0) {
+      // 空の場合は人気タグを表示
+      const popularTags = allUserTags.slice(0, 5);
+      showTagSuggestions(input, suggestionsContainer, popularTags);
+    } else if (value.length >= 1) {
+      // 既に入力がある場合は現在の入力に基づいて表示
+      const lastCommaIndex = value.lastIndexOf(',');
+      const currentTag = lastCommaIndex === -1 ? 
+        value.trim().toLowerCase() : 
+        value.substring(lastCommaIndex + 1).trim().toLowerCase();
+      
+      if (currentTag.length >= 1) {
+        const matchingTags = allUserTags.filter(tag => 
+          tag.includes(currentTag) && tag !== currentTag
+        ).slice(0, 8);
+        
+        showTagSuggestions(input, suggestionsContainer, matchingTags);
+      }
+    }
+  });
 
-// 入力欄にフォーカスが当たったときの処理
-editTagsInput.addEventListener('focus', () => {
-  const value = editTagsInput.value;
-  if (value.trim() === '' && allUserTags.length > 0) {
-    // 空の場合は人気のタグを表示
-    const popularTags = allUserTags.slice(0, 5);
-    showTagSuggestions(editTagsInput, popularTags);
+  // ブラー時の動作（少し遅延）
+  input.addEventListener('blur', () => {
+    hideTimeout = setTimeout(() => {
+      suggestionsContainer.style.display = 'none';
+    }, 200);
+  });
+
+  // Enterキーで最初の候補を選択
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && suggestionsContainer.style.display === 'block') {
+      const firstSuggestion = suggestionsContainer.querySelector('div');
+      if (firstSuggestion) {
+        e.preventDefault();
+        firstSuggestion.click();
+      }
+    } else if (e.key === 'Escape') {
+      suggestionsContainer.style.display = 'none';
+    }
+  });
+}
+
+// 新規投稿とエディットの両方にタグ自動補完を設定
+function initializeTagAutocomplete() {
+  if (allUserTags.length > 0) {
+    // 新規投稿フォーム
+    setupTagAutocomplete(tagsInput, newPostTagSuggestions);
+    
+    // 編集モーダル
+    setupTagAutocomplete(editTagsInput, tagSuggestions);
+    
+    console.log('タグ自動補完機能を初期化:', allUserTags.length, '件のタグ');
   }
-});
+}
 
 // 編集モーダルを開く
 function openEditModal(memoId, memo) {
