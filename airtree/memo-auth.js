@@ -11,7 +11,9 @@ import {
   doc,
   getDoc,
   setDoc,
-  getDocs
+  getDocs,
+  updateDoc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   ref,
@@ -101,6 +103,64 @@ async function checkUsernameExists(username, currentUid = null) {
 async function isProfileComplete(uid) {
   const profile = await getUserProfile(uid);
   return profile && profile.username && profile.username.trim() !== '';
+}
+
+// メモ編集・削除に必要な新しい関数を追加
+async function updateMemoDocument(memoId, updateData) {
+  try {
+    const memoRef = doc(db, "memos", memoId);
+    await updateDoc(memoRef, {
+      ...updateData,
+      updatedAt: serverTimestamp()
+    });
+    return true;
+  } catch (error) {
+    console.error("メモ更新エラー:", error);
+    return false;
+  }
+}
+
+// sharedMemos コレクションとの同期
+async function syncWithSharedMemos(memoId, memoData, isPublic) {
+  try {
+    const sharedMemosRef = collection(db, "sharedMemos");
+    const q = query(sharedMemosRef, where("originalMemoId", "==", memoId));
+    const querySnapshot = await getDocs(q);
+    
+    if (isPublic) {
+      // 公開する場合
+      if (querySnapshot.empty) {
+        // 新規追加
+        const sharedMemoData = { 
+          ...memoData, 
+          originalMemoId: memoId,
+          updatedAt: serverTimestamp()
+        };
+        await addDoc(sharedMemosRef, sharedMemoData);
+        console.log("sharedMemos に新規追加");
+      } else {
+        // 既存を更新
+        const sharedDoc = querySnapshot.docs[0];
+        await updateDoc(doc(db, "sharedMemos", sharedDoc.id), {
+          ...memoData,
+          updatedAt: serverTimestamp()
+        });
+        console.log("sharedMemos を更新");
+      }
+    } else {
+      // 非公開にする場合
+      if (!querySnapshot.empty) {
+        // sharedMemos から削除
+        const sharedDoc = querySnapshot.docs[0];
+        await deleteDoc(doc(db, "sharedMemos", sharedDoc.id));
+        console.log("sharedMemos から削除");
+      }
+    }
+    return true;
+  } catch (error) {
+    console.error("sharedMemos 同期エラー:", error);
+    return false;
+  }
 }
 
 // 認証状態表示の更新
@@ -653,10 +713,97 @@ function deleteMemo(memoId, memo) {
   }
 }
 
-// 編集保存（詳細は段階2-4で実装）
-function saveEdit() {
-  editStatusMessage.textContent = '保存機能は段階2-4で実装予定です。';
-  editStatusMessage.style.color = 'orange';
+// 編集保存（段階2：公開設定変更機能）
+async function saveEdit() {
+  if (!currentEditingMemoId || !currentEditingMemo) {
+    editStatusMessage.textContent = 'エラー: 編集データが見つかりません。';
+    editStatusMessage.style.color = 'red';
+    return;
+  }
+
+  // 公開設定を変更する場合のプロフィールチェック
+  const newIsPublic = editIsPublicCheckbox.checked;
+  const oldIsPublic = currentEditingMemo.isPublic;
+  
+  if (newIsPublic && !oldIsPublic) {
+    // 非公開→公開にする場合、ユーザーネーム設定をチェック
+    const profileComplete = await isProfileComplete(currentUID);
+    if (!profileComplete) {
+      editStatusMessage.textContent = '公開投稿にはユーザーネーム設定が必要です。';
+      editStatusMessage.style.color = 'orange';
+      return;
+    }
+  }
+
+  saveEditBtn.disabled = true;
+  saveEditBtn.textContent = '保存中...';
+  editStatusMessage.textContent = '変更を保存しています...';
+  editStatusMessage.style.color = 'blue';
+
+  try {
+    // 更新データを準備
+    const content = editContentInput.value.trim();
+    const tagsRaw = editTagsInput.value.trim();
+    const tags = tagsRaw ? tagsRaw.split(",").map(tag => tag.trim().toLowerCase()).filter(tag => tag !== "") : [];
+    
+    // 基本的な更新データ
+    const updateData = {
+      content,
+      tags,
+      isPublic: newIsPublic,
+      updatedAt: serverTimestamp()
+    };
+
+    // TODO: 段階4で画像更新機能を実装
+    // 現在は既存の画像情報を保持
+    if (currentEditingMemo.imageUrl) {
+      updateData.imageUrl = currentEditingMemo.imageUrl;
+      updateData.imageStoragePath = currentEditingMemo.imageStoragePath;
+    }
+
+    // ユーザー情報を取得して authorName を更新
+    const currentUserProfile = await getUserProfile(currentUID);
+    updateData.authorName = currentUserProfile ? currentUserProfile.displayName : '匿名ユーザー';
+
+    // メモを更新
+    const memoUpdateSuccess = await updateMemoDocument(currentEditingMemoId, updateData);
+    
+    if (!memoUpdateSuccess) {
+      throw new Error('メモの更新に失敗しました');
+    }
+
+    // sharedMemos コレクションと同期
+    const syncSuccess = await syncWithSharedMemos(currentEditingMemoId, updateData, newIsPublic);
+    
+    if (!syncSuccess) {
+      console.warn('sharedMemos の同期に失敗しましたが、メモの更新は成功しました');
+    }
+
+    // 成功メッセージ
+    let successMessage = 'メモが正常に更新されました！';
+    if (newIsPublic !== oldIsPublic) {
+      successMessage += newIsPublic ? ' (公開されました)' : ' (非公開になりました)';
+    }
+
+    editStatusMessage.textContent = successMessage;
+    editStatusMessage.style.color = 'green';
+
+    // 2秒後にモーダルを閉じる
+    setTimeout(() => {
+      closeEditModal();
+      statusMessage.textContent = successMessage;
+      statusMessage.style.color = 'green';
+      setTimeout(() => { statusMessage.textContent = ""; }, 3000);
+    }, 2000);
+
+  } catch (error) {
+    console.error('メモ更新エラー:', error);
+    editStatusMessage.textContent = `更新に失敗しました: ${error.message}`;
+    editStatusMessage.style.color = 'red';
+  } finally {
+    saveEditBtn.disabled = false;
+    saveEditBtn.textContent = '💾 変更を保存';
+  }
 }
 
 // イベントリスナー
