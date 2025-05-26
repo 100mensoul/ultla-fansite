@@ -588,3 +588,84 @@ authReady.then(async (user) => {
   memoListContainer.innerHTML = '<p>認証中にエラーが発生しました。</p>';
   loadingMessage.style.display = 'none';
 });
+
+// === メモ編集・削除機能 ===
+
+// 編集モーダル関連要素
+const editMemoModal = document.getElementById('editMemoModal');
+const currentImageSection = document.getElementById('currentImageSection');
+const currentImage = document.getElementById('currentImage');
+const editImageInput = document.getElementById('editImageInput');
+const editContentInput = document.getElementById('editContentInput');
+const editTagsInput = document.getElementById('editTagsInput');
+const editIsPublicCheckbox = document.getElementById('editIsPublicCheckbox');
+const editStatusMessage = document.getElementById('editStatusMessage');
+const saveEditBtn = document.getElementById('saveEditBtn');
+const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+let currentEditingMemoId = null;
+let currentEditingMemo = null;
+
+// 編集モーダルを開く
+function openEditModal(memoId, memo) {
+  currentEditingMemoId = memoId;
+  currentEditingMemo = memo;
+  
+  // 現在の値をフォームに設定
+  editContentInput.value = memo.content || '';
+  editTagsInput.value = memo.tags ? memo.tags.join(', ') : '';
+  editIsPublicCheckbox.checked = memo.isPublic || false;
+  
+  // 現在の画像を表示
+  if (memo.imageUrl) {
+    currentImage.src = memo.imageUrl;
+    currentImageSection.style.display = 'block';
+  } else {
+    currentImageSection.style.display = 'none';
+  }
+  
+  // 新しい画像選択をクリア
+  editImageInput.value = '';
+  editStatusMessage.textContent = '';
+  
+  editMemoModal.style.display = 'block';
+}
+
+// 編集モーダルを閉じる
+function closeEditModal() {
+  editMemoModal.style.display = 'none';
+  currentEditingMemoId = null;
+  currentEditingMemo = null;
+  editStatusMessage.textContent = '';
+}
+
+// メモ削除（確認ダイアログ付き）
+function deleteMemo(memoId, memo) {
+  const confirmMessage = memo.content ? 
+    `「${memo.content.substring(0, 30)}...」を削除しますか？` : 
+    'このメモを削除しますか？';
+  
+  if (confirm(confirmMessage + '\n\n※この操作は取り消せません。')) {
+    // 実際の削除処理は段階5で実装
+    statusMessage.textContent = '削除機能は段階5で実装予定です。';
+    statusMessage.style.color = 'orange';
+    setTimeout(() => { statusMessage.textContent = ""; }, 3000);
+  }
+}
+
+// 編集保存（詳細は段階2-4で実装）
+function saveEdit() {
+  editStatusMessage.textContent = '保存機能は段階2-4で実装予定です。';
+  editStatusMessage.style.color = 'orange';
+}
+
+// イベントリスナー
+saveEditBtn.addEventListener('click', saveEdit);
+cancelEditBtn.addEventListener('click', closeEditModal);
+
+// モーダル外クリックで閉じる
+editMemoModal.addEventListener('click', (e) => {
+  if (e.target === editMemoModal) {
+    closeEditModal();
+  }
+});
