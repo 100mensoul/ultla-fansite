@@ -1,232 +1,245 @@
-// auth-test.js - ログイン機能のテスト用ファイル
-import { auth } from './firebase.js';
-import {
-  signInWithPopup,
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signInAnonymously,
-  signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-// DOM要素の取得
-const statusMessage = document.getElementById('statusMessage');
-const loginSection = document.getElementById('loginSection');
-const userInfo = document.getElementById('userInfo');
-
-const googleLoginBtn = document.getElementById('googleLoginBtn');
-const emailToggleBtn = document.getElementById('emailToggleBtn');
-const emailForm = document.getElementById('emailForm');
-const anonymousLoginBtn = document.getElementById('anonymousLoginBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-
-const emailInput = document.getElementById('emailInput');
-const passwordInput = document.getElementById('passwordInput');
-const loginEmailBtn = document.getElementById('loginEmailBtn');
-const registerEmailBtn = document.getElementById('registerEmailBtn');
-
-const userId = document.getElementById('userId');
-const authProvider = document.getElementById('authProvider');
-const userEmail = document.getElementById('userEmail');
-const displayName = document.getElementById('displayName');
-
-// ステータスメッセージを表示する関数
-function showStatus(message, type = 'info') {
-  statusMessage.textContent = message;
-  statusMessage.className = `status-message status-${type}`;
-  statusMessage.style.display = 'block';
-  
-  // 5秒後に自動で非表示
-  setTimeout(() => {
-    statusMessage.style.display = 'none';
-  }, 5000);
-}
-
-// ユーザー情報を表示する関数
-function displayUserInfo(user) {
-  console.log('ログインユーザー:', user);
-  
-  loginSection.style.display = 'none';
-  userInfo.style.display = 'block';
-  
-  userId.textContent = user.uid;
-  userEmail.textContent = user.email || '未設定';
-  displayName.textContent = user.displayName || '未設定';
-  
-  // 認証プロバイダーを判定
-  let provider = '不明';
-  if (user.isAnonymous) {
-    provider = '匿名認証';
-  } else if (user.providerData && user.providerData.length > 0) {
-    const providerInfo = user.providerData[0];
-    switch (providerInfo.providerId) {
-      case 'google.com':
-        provider = 'Google';
-        break;
-      case 'password':
-        provider = 'メールアドレス';
-        break;
-      default:
-        provider = providerInfo.providerId;
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ログインテスト - AIRTREE</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', Meiryo, 'メイリオ', Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+      color: #333;
     }
-  }
-  authProvider.textContent = provider;
-  
-  showStatus(`${provider}でログインしました！`, 'success');
-}
 
-// ログアウト処理
-function handleLogout() {
-  loginSection.style.display = 'block';
-  userInfo.style.display = 'none';
-  showStatus('ログアウトしました', 'info');
-}
-
-// Googleログイン
-async function signInWithGoogle() {
-  try {
-    showStatus('Googleログイン中...', 'info');
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    console.log('Googleログイン成功:', result.user);
-  } catch (error) {
-    console.error('Googleログインエラー:', error);
-    showStatus(`Googleログインに失敗しました: ${error.message}`, 'error');
-  }
-}
-
-// メールアドレスでログイン
-async function signInWithEmail() {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  
-  if (!email || !password) {
-    showStatus('メールアドレスとパスワードを入力してください', 'error');
-    return;
-  }
-  
-  try {
-    showStatus('ログイン中...', 'info');
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    console.log('メールログイン成功:', result.user);
-    emailInput.value = '';
-    passwordInput.value = '';
-  } catch (error) {
-    console.error('メールログインエラー:', error);
-    let errorMessage = 'ログインに失敗しました';
-    
-    switch (error.code) {
-      case 'auth/user-not-found':
-        errorMessage = 'このメールアドレスは登録されていません';
-        break;
-      case 'auth/wrong-password':
-        errorMessage = 'パスワードが間違っています';
-        break;
-      case 'auth/invalid-email':
-        errorMessage = 'メールアドレスの形式が正しくありません';
-        break;
-      case 'auth/too-many-requests':
-        errorMessage = 'ログイン試行回数が多すぎます。しばらく待ってから再試行してください';
-        break;
+    .container {
+      max-width: 400px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
-    
-    showStatus(errorMessage, 'error');
-  }
-}
 
-// メールアドレスで新規登録
-async function registerWithEmail() {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  
-  if (!email || !password) {
-    showStatus('メールアドレスとパスワードを入力してください', 'error');
-    return;
-  }
-  
-  if (password.length < 6) {
-    showStatus('パスワードは6文字以上で入力してください', 'error');
-    return;
-  }
-  
-  try {
-    showStatus('新規登録中...', 'info');
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    console.log('新規登録成功:', result.user);
-    emailInput.value = '';
-    passwordInput.value = '';
-  } catch (error) {
-    console.error('新規登録エラー:', error);
-    let errorMessage = '新規登録に失敗しました';
-    
-    switch (error.code) {
-      case 'auth/email-already-in-use':
-        errorMessage = 'このメールアドレスは既に使用されています';
-        break;
-      case 'auth/invalid-email':
-        errorMessage = 'メールアドレスの形式が正しくありません';
-        break;
-      case 'auth/weak-password':
-        errorMessage = 'パスワードが弱すぎます。より強力なパスワードを入力してください';
-        break;
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
     }
+
+    .auth-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      background-color: #fafafa;
+    }
+
+    .auth-section h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #555;
+    }
+
+    .auth-button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.2s ease;
+    }
+
+    .google-btn {
+      background-color: #4285f4;
+      color: white;
+    }
+
+    .google-btn:hover {
+      background-color: #357ae8;
+    }
+
+    .email-btn {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .email-btn:hover {
+      background-color: #218838;
+    }
+
+    .anonymous-btn {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .anonymous-btn:hover {
+      background-color: #5a6268;
+    }
+
+    .status-message {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .status-success {
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .status-error {
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .status-info {
+      background-color: #d1ecf1;
+      border: 1px solid #bee5eb;
+      color: #0c5460;
+    }
+
+    .user-info {
+      background-color: #e2f3ff;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .user-info h4 {
+      margin-top: 0;
+      color: #0066cc;
+    }
+
+    .user-info p {
+      margin: 5px 0;
+      word-break: break-all;
+    }
+
+    .logout-btn {
+      background-color: #dc3545;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .logout-btn:hover {
+      background-color: #c82333;
+    }
+
+    .email-form {
+      display: none;
+      margin-top: 15px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+    }
+
+    .email-form input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .email-form button {
+      width: 48%;
+      padding: 8px;
+      margin-right: 4%;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .email-form button:last-child {
+      margin-right: 0;
+    }
+
+    .login-btn {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .register-btn {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .back-link a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌳 AIRTREE ログインテスト</h1>
     
-    showStatus(errorMessage, 'error');
-  }
-}
+    <div id="statusMessage" class="status-message"></div>
+    
+    <div id="loginSection">
+      <div class="auth-section">
+        <h3>🔑 ログイン方法を選択</h3>
+        
+        <button id="googleLoginBtn" class="auth-button google-btn">
+          📧 Googleアカウントでログイン
+        </button>
+        
+        <button id="emailToggleBtn" class="auth-button email-btn">
+          ✉️ メールアドレスでログイン/登録
+        </button>
+        
+        <div id="emailForm" class="email-form">
+          <input type="email" id="emailInput" placeholder="メールアドレス" />
+          <input type="password" id="passwordInput" placeholder="パスワード" />
+          <button id="loginEmailBtn" class="login-btn">ログイン</button>
+          <button id="registerEmailBtn" class="register-btn">新規登録</button>
+        </div>
+        
+        <button id="anonymousLoginBtn" class="auth-button anonymous-btn">
+          👤 匿名でログイン（現在の方式）
+        </button>
+      </div>
+    </div>
+    
+    <div id="userInfo" class="user-info">
+      <h4>✅ ログイン成功！</h4>
+      <p><strong>ユーザーID:</strong> <span id="userId"></span></p>
+      <p><strong>認証方法:</strong> <span id="authProvider"></span></p>
+      <p><strong>メール:</strong> <span id="userEmail"></span></p>
+      <p><strong>表示名:</strong> <span id="displayName"></span></p>
+      <button id="logoutBtn" class="logout-btn">ログアウト</button>
+    </div>
+    
+    <div class="back-link">
+      <a href="memo.html">← メモアプリに戻る</a>
+    </div>
+  </div>
 
-// 匿名ログイン
-async function signInAnonymous() {
-  try {
-    showStatus('匿名ログイン中...', 'info');
-    const result = await signInAnonymously(auth);
-    console.log('匿名ログイン成功:', result.user);
-  } catch (error) {
-    console.error('匿名ログインエラー:', error);
-    showStatus(`匿名ログインに失敗しました: ${error.message}`, 'error');
-  }
-}
-
-// ログアウト
-async function logout() {
-  try {
-    await signOut(auth);
-    console.log('ログアウト成功');
-  } catch (error) {
-    console.error('ログアウトエラー:', error);
-    showStatus(`ログアウトに失敗しました: ${error.message}`, 'error');
-  }
-}
-
-// イベントリスナーの設定
-googleLoginBtn.addEventListener('click', signInWithGoogle);
-
-emailToggleBtn.addEventListener('click', () => {
-  emailForm.style.display = emailForm.style.display === 'none' ? 'block' : 'none';
-});
-
-loginEmailBtn.addEventListener('click', signInWithEmail);
-registerEmailBtn.addEventListener('click', registerWithEmail);
-anonymousLoginBtn.addEventListener('click', signInAnonymous);
-logoutBtn.addEventListener('click', logout);
-
-// Enterキーでログイン
-emailInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') signInWithEmail();
-});
-passwordInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') signInWithEmail();
-});
-
-// 認証状態の監視
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    displayUserInfo(user);
-  } else {
-    handleLogout();
-  }
-});
-
-console.log('認証テストページが読み込まれました');
-showStatus('認証テストページが準備できました。ログイン方法を選択してください。', 'info');
+  <script type="module" src="./firebase.js"></script>
+  <script type="module" src="./auth-test.js"></script>
+</body>
+</html>
