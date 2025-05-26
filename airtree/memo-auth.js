@@ -265,6 +265,7 @@ function createMemoElement(memo, memoId) {
   const memoElement = document.createElement('div');
   memoElement.classList.add('memo-item');
   memoElement.setAttribute('data-id', memoId);
+  memoElement.style.position = 'relative';
 
   let htmlContent = `<h3>メモ内容:</h3><p>${escapeHTML(memo.content) || '記載なし'}</p>`;
 
@@ -276,7 +277,7 @@ function createMemoElement(memo, memoId) {
     htmlContent += `<h4>タグ:</h4><p>${memo.tags.map(tag => `<span class="tag">${escapeHTML(tag)}</span>`).join(' ')}</p>`;
   }
 
-  htmlContent += `<p><small>公開設定: ${memo.isPublic ? '公開' : '非公開'}</small></p>`;
+  htmlContent += `<p><small>公開設定: ${memo.isPublic ? '🌟 公開中' : '🔒 非公開'}</small></p>`;
 
   if (memo.project) {
     htmlContent += `<p><small>プロジェクト: ${escapeHTML(memo.project)}</small></p>`;
@@ -292,7 +293,47 @@ function createMemoElement(memo, memoId) {
     }
   }
 
+  // 編集・削除ボタンを追加（本人の投稿のみ）
+  if (memo.uid === currentUID) {
+    htmlContent += `
+      <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; text-align: right;">
+        <button class="edit-memo-btn" data-memo-id="${memoId}" style="
+          padding: 6px 12px; 
+          background: #17a2b8; 
+          color: white; 
+          border: none; 
+          border-radius: 4px; 
+          cursor: pointer; 
+          font-size: 12px;
+          margin-right: 8px;
+        ">✏️ 編集</button>
+        <button class="delete-memo-btn" data-memo-id="${memoId}" style="
+          padding: 6px 12px; 
+          background: #dc3545; 
+          color: white; 
+          border: none; 
+          border-radius: 4px; 
+          cursor: pointer; 
+          font-size: 12px;
+        ">🗑️ 削除</button>
+      </div>
+    `;
+  }
+
   memoElement.innerHTML = htmlContent;
+  
+  // ボタンのイベントリスナーを追加
+  const editBtn = memoElement.querySelector('.edit-memo-btn');
+  const deleteBtn = memoElement.querySelector('.delete-memo-btn');
+  
+  if (editBtn) {
+    editBtn.addEventListener('click', () => openEditModal(memoId, memo));
+  }
+  
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', () => deleteMemo(memoId, memo));
+  }
+
   return memoElement;
 }
 
