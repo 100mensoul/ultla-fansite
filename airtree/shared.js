@@ -1,4 +1,4 @@
-// shared.js（新版・シェア機能）
+// shared.js（新版v3・シェア機能）
 import { db, authReady, auth } from './firebase-test.js';
 import {
   collection,
@@ -119,18 +119,25 @@ function createSharedMemoElement(memo, memoId) {
 
 // フィルターに基づいて投稿を表示
 function displayFilteredMemos() {
-  const tagFilter = tagFilterInput.value.trim().toLowerCase();
+  const searchKeyword = tagFilterInput.value.trim().toLowerCase();
   const myOnly = myOnlyCheckbox.checked;
 
   let filteredMemos = allSharedMemos;
 
-  // タグフィルター
-  if (tagFilter) {
-    const filterTags = tagFilter.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+  // キーワード検索（タグ + メモ内容）
+  if (searchKeyword) {
+    const searchTerms = searchKeyword.split(',').map(term => term.trim()).filter(term => term !== '');
     filteredMemos = filteredMemos.filter(memo => {
-      return memo.data.tags && memo.data.tags.some(tag => 
-        filterTags.some(filterTag => tag.toLowerCase().includes(filterTag))
+      // タグでの検索
+      const tagMatch = memo.data.tags && memo.data.tags.some(tag => 
+        searchTerms.some(searchTerm => tag.toLowerCase().includes(searchTerm))
       );
+      
+      // メモ内容での検索
+      const contentMatch = memo.data.content && 
+        searchTerms.some(searchTerm => memo.data.content.toLowerCase().includes(searchTerm));
+      
+      return tagMatch || contentMatch;
     });
   }
 
@@ -140,7 +147,8 @@ function displayFilteredMemos() {
   }
 
   // 投稿件数表示
-  postsCount.textContent = `${filteredMemos.length}件の投稿が見つかりました`;
+  const searchInfo = searchKeyword ? ` (「${searchKeyword}」で検索)` : '';
+  postsCount.textContent = `${filteredMemos.length}件の投稿が見つかりました${searchInfo}`;
 
   // 表示更新
   sharedMemosContainer.innerHTML = '';
@@ -148,7 +156,10 @@ function displayFilteredMemos() {
 
   if (filteredMemos.length === 0) {
     const emptyMessage = document.createElement('p');
-    emptyMessage.textContent = '条件に一致する投稿がありません。';
+    const message = searchKeyword ? 
+      `「${searchKeyword}」に一致する投稿がありません。` : 
+      '条件に一致する投稿がありません。';
+    emptyMessage.textContent = message;
     emptyMessage.style.textAlign = 'center';
     emptyMessage.style.color = '#666';
     emptyMessage.style.padding = '40px 20px';
