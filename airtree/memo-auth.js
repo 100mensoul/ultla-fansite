@@ -103,11 +103,23 @@ async function isProfileComplete(uid) {
 }
 
 // 認証状態表示の更新
-function updateAuthDisplay(user) {
+async function updateAuthDisplay(user) {
   if (user) {
-    const displayText = user.email || `匿名ユーザー (${user.uid.substring(0, 8)}...)`;
-    const authMethod = user.isAnonymous ? '匿名' : (user.providerData[0]?.providerId === 'google.com' ? 'Google' : 'メール');
-    currentUser.textContent = `${displayText} (${authMethod}認証)`;
+    // ユーザープロフィールを取得してユーザーネームを表示
+    const profile = await getUserProfile(user.uid);
+    let displayText;
+    let authMethod;
+    
+    if (profile && profile.username) {
+      displayText = `${profile.username}さん、こんにちは！`;
+    } else {
+      const email = user.email || `匿名ユーザー (${user.uid.substring(0, 8)}...)`;
+      displayText = email;
+    }
+    
+    authMethod = user.isAnonymous ? '匿名' : (user.providerData[0]?.providerId === 'google.com' ? 'Google' : 'メール');
+    
+    currentUser.innerHTML = `${displayText} <small style="color: #666;">(${authMethod}認証)</small>`;
     loginInfo.style.display = 'block';
     notLoginInfo.style.display = 'none';
   } else {
