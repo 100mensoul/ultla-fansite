@@ -74,6 +74,36 @@ function displayUserInfo(user) {
   authProvider.textContent = provider;
   
   showStatus(`${provider}でログインしました！`, 'success');
+  
+  // 自動リダイレクト機能（3秒後にメモアプリに移動）
+  let countdown = 3;
+  const redirectMessage = document.createElement('p');
+  redirectMessage.style.textAlign = 'center';
+  redirectMessage.style.color = '#007bff';
+  redirectMessage.style.fontWeight = 'bold';
+  redirectMessage.style.marginTop = '15px';
+  redirectMessage.innerHTML = `<span id="countdown">${countdown}</span>秒後にメモアプリに移動します...<br><button id="redirectNow" style="margin-top: 10px; padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">今すぐ移動</button>`;
+  
+  userInfo.appendChild(redirectMessage);
+  
+  // カウントダウン処理
+  const countdownElement = document.getElementById('countdown');
+  const redirectNowBtn = document.getElementById('redirectNow');
+  
+  const countdownTimer = setInterval(() => {
+    countdown--;
+    countdownElement.textContent = countdown;
+    if (countdown <= 0) {
+      clearInterval(countdownTimer);
+      window.location.href = 'memo.html';
+    }
+  }, 1000);
+  
+  // 今すぐ移動ボタン
+  redirectNowBtn.addEventListener('click', () => {
+    clearInterval(countdownTimer);
+    window.location.href = 'memo.html';
+  });
 }
 
 // ログアウト処理
