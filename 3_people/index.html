@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ULTLA人 - かまくらULTLAプログラム</title>
   <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     /* Page-specific styles for people.html */
     
@@ -23,7 +24,7 @@
       height: 4px;
       background: linear-gradient(90deg, var(--ultla-red), var(--ultla-green), var(--ultla-blue));
       opacity: 0;
-      transition: opacity var(--transition-normal);
+      transition: opacity 0.3s ease;
     }
     
     .people-card:hover::before {
@@ -32,7 +33,7 @@
     
     .people-card h3 {
       font-size: 1.5rem;
-      margin-bottom: var(--spacing-md);
+      margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
       gap: 0.8rem;
@@ -46,7 +47,7 @@
     
     .people-card .description {
       color: var(--text-secondary);
-      margin-bottom: var(--spacing-lg);
+      margin-bottom: 2rem;
       font-size: 1rem;
       line-height: 1.6;
     }
@@ -58,14 +59,15 @@
     
     .person-item {
       background: var(--bg-light);
-      margin: var(--spacing-sm) 0;
-      padding: var(--spacing-md);
-      border-radius: var(--radius-md);
-      transition: all var(--transition-normal);
+      margin: 1rem 0;
+      padding: 1.5rem;
+      border-radius: 12px;
+      transition: all 0.3s ease;
       border-left: 4px solid transparent;
     }
     
     .person-item:hover {
+      background: rgba(0,163,217,0.05);
       transform: translateX(5px);
     }
     
@@ -73,7 +75,7 @@
       font-weight: 500;
       color: var(--text-primary);
       font-size: 1.1rem;
-      margin-bottom: var(--spacing-xs);
+      margin-bottom: 0.5rem;
     }
     
     .person-description {
@@ -106,6 +108,19 @@
     .family h3 { color: var(--ultla-red); }
     .family .person-item { border-left-color: var(--ultla-red); }
     .family .person-item:hover { background: rgba(231,76,60,0.05); }
+    
+    /* Ensure proper spacing */
+    .intro-section {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    
+    .people-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
   </style>
 </head>
 <body>
@@ -119,7 +134,7 @@
         <a href="../4_map/index.html">マップ</a>
         <a href="../5_recipe/index.html">レシピ</a>
         <a href="../6_chat/index.html">チャット</a>
-        <a href="../7_mypage/index.html">マイページ</a>
+        <a href="../7_mypage/index.html">自分学</a>
         <a href="../8_lab/index.html">ラボ</a>
         <a href="../9_archive/index.html">アーカイブ</a>
         <a href="../10_contact/index.html">お問い合わせ</a>
@@ -129,7 +144,7 @@
 
   <main>
     <div class="container">
-      <section class="text-center mb-5">
+      <section class="intro-section">
         <div class="intro-card">
           <p>このページでは、ULTLAに関わる地域や人について紹介します。</p>
           <h2 class="page-title">ULTLA人</h2>
@@ -138,12 +153,12 @@
       </section>
 
       <div class="people-grid">
-        <section class="card people-card kids">
+        <section class="people-card kids">
           <h3><span class="icon">🌟</span>1. キッズ</h3>
           <p class="description">ULTLAの主役。遊ぶように学び、世界と出会い、自分を知る旅へ出る冒険者たち。</p>
         </section>
 
-        <section class="card people-card paisen">
+        <section class="people-card paisen">
           <h3><span class="icon">🚀</span>2. パイセン</h3>
           <p class="description">かつてキッズだった先輩たち。今もULTLA的に探究を続けるリーダー的な存在。</p>
           <ul class="person-list">
@@ -154,7 +169,7 @@
           </ul>
         </section>
 
-        <section class="card people-card navigator">
+        <section class="people-card navigator">
           <h3><span class="icon">🧭</span>3. ナビゲーター</h3>
           <p class="description">特別なエッセンスを注ぎ、学びを大きく変身させてくれるULTLA人。</p>
           <ul class="person-list">
@@ -176,7 +191,7 @@
           </ul>
         </section>
 
-        <section class="card people-card coordinator">
+        <section class="people-card coordinator">
           <h3><span class="icon">🤝</span>4. コーディネーター</h3>
           <p class="description">ULTLAを地域で実現するために、場に入り、学びのタネを育む人たち。</p>
           <ul class="person-list">
@@ -207,12 +222,12 @@
           </ul>
         </section>
 
-        <section class="card people-card communicator">
+        <section class="people-card communicator">
           <h3><span class="icon">💬</span>5. コミュニケーター</h3>
           <p class="description">ULTLA当日に、あたたかく！豊かな学びの場をともに作ってくれる仲間。</p>
         </section>
 
-        <section class="card people-card family">
+        <section class="people-card family">
           <h3><span class="icon">❤️</span>6. ULTLAファミリー</h3>
           <p class="description">ULTLAというタネを最初に産み落としてくれた人たち。</p>
           <ul class="person-list">
