@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ULTLAラボ - かまくらULTLAプログラム</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    /* Page-specific styles for lab.html */
+    
+    /* Hero Section */
+    .hero-section {
+      background: linear-gradient(135deg, var(--ultla-blue) 0%, var(--ultla-green) 50%, var(--ultla-red) 100%);
+      color: white;
+      padding: var(--spacing-2xl) 0;
+      text-align: center;
+      margin-bottom: var(--spacing-2xl);
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.1);
+      z-index: 1;
+    }
+    
+    .hero-section .container {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .hero-title {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      margin-bottom: var(--spacing-md);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.2rem;
+      opacity: 1;
+      color: rgba(255, 255, 255, 0.95);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+      font-weight: 400;
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .hero-taglines {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-lg);
+      flex-wrap: wrap;
+      margin-top: var(--spacing-lg);
+    }
+    
+    .tagline {
+      background: rgba(255,255,255,0.2);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-xl);
+      font-size: 0.95rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    /* Section Headers */
+    .section-header {
+      text-align: center;
+      margin-bottom: var(--spacing-2xl);
+    }
+    
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      color: var(--ultla-blue);
+      margin-bottom: var(--spacing-sm);
+      font-weight: 500;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--ultla-blue), var(--ultla-green));
+      border-radius: 2px;
+    }
+    
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+    }
+    
+    /* Program Overview Cards */
+    .program-overview {
+      margin-bottom: var(--spacing-2xl);
+    }
+    
+    .overview-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-2xl);
+    }
+    
+    .stat-card {
+      background: var(--bg-card);
+      padding: var(--spacing-lg);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      box-shadow: var(--shadow-md);
+      transition: all var(--transition-normal);
+      border: 1px solid var(--border-light);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: var(--ultla-blue);
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+    
+    /* Status Progress */
+    .status-section {
+      background: var(--bg-card);
+      padding: var(--spacing-2xl);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-2xl);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .status-list {
+      list-style: none;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .status-item {
+      display: flex;
+      align-items: center;
+      padding: var(--spacing-md);
+      margin: var(--spacing-sm) 0;
+      background: var(--bg-light);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-normal);
+    }
+    
+    .status-item:hover {
+      background: rgba(0,163,217,0.05);
+    }
+    
+    .status-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    
+    .status-done .status-icon {
+      color: var(--ultla-green);
+    }
+    
+    .status-progress .status-icon {
+      color: var(--ultla-blue);
+    }
+    
+    .status-pending .status-icon {
+      color: var(--text-muted);
+    }
+    
+    /* Day Cards */
+    .day-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-2xl);
+    }
+    
+    .day-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: all var(--transition-normal);
+      border: 1px solid var(--border-light);
+    }
+    
+    .day-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .day-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: linear-gradient(135deg, var(--ultla-blue), var(--ultla-green));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+    
+    .day-content {
+      padding: var(--spacing-lg);
+    }
+    
+    .day-title {
+      font-size: 1.3rem;
+      font-weight: 500;
+      margin-bottom: var(--spacing-sm);
+      color: var(--text-primary);
+    }
+    
+    .day-meta {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+    
+    .day-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .day-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--ultla-blue);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color var(--transition-fast);
+    }
+    
+    .day-link:hover {
+      color: var(--ultla-green);
+    }
+    
+    .day-link::after {
+      content: "→";
+      margin-left: var(--spacing-xs);
+      transition: transform var(--transition-fast);
+    }
+    
+    .day-link:hover::after {
+      transform: translateX(4px);
+    }
+    
+    /* Archive Section */
+    .archive-section {
+      background: var(--bg-card);
+      padding: var(--spacing-2xl);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .archive-item {
+      background: var(--bg-light);
+      padding: var(--spacing-lg);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-md);
+      border-left: 4px solid var(--ultla-blue);
+    }
+    
+    .archive-title {
+      font-weight: 500;
+      margin-bottom: var(--spacing-xs);
+      color: var(--text-primary);
+    }
+    
+    .archive-date {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .archive-summary {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .archive-link {
+      color: var(--ultla-blue);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    
+    .archive-link:hover {
+      color: var(--ultla-green);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-taglines {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .overview-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .day-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>ULTLAラボ</h1>
+      <nav>
+        <a href="../1_news/index.html">ニュース</a>
+        <a href="../2_about/index.html">ULTLAとは</a>
+        <a href="../3_people/index.html">ULTLA人</a>
+        <a href="../4_map/index.html">マップ</a>
+        <a href="../5_recipe/index.html">レシピ</a>
+        <a href="../6_chat/index.html">チャット</a>
+        <a href="../7_mypage/index.html">自分学</a>
+        <a href="../8_lab/index.html">ラボ</a>
+        <a href="../9_archive/index.html">アーカイブ</a>
+        <a href="../10_contact/index.html">お問い合わせ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <div class="container">
+          <h2 class="hero-title">ULTLAは、つくれる</h2>
+          <p class="hero-subtitle">学びのプロセスを見せる"ファンサイト"がオープンしました。</p>
+          <div class="hero-taglines">
+            <span class="tagline">だれでも、どこでも、ULTLA</span>
+            <span class="tagline">ULTLAをまちにひらく</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Program Overview -->
+      <section class="program-overview">
+        <div class="section-header">
+          <h2 class="section-title">2025年プログラム概要</h2>
+          <p class="section-subtitle">海エリア＋森エリア / 各2日間 / 全4日間の構成</p>
+        </div>
+
+        <div class="overview-stats">
+          <div class="stat-card">
+            <div class="stat-number">16</div>
+            <div class="stat-label">コマ構成</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">4</div>
+            <div class="stat-label">日間開催</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">2</div>
+            <div class="stat-label">エリア展開</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">20</div>
+            <div class="stat-label">定員（目安）</div>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="status-section">
+          <div class="section-header">
+            <h3 class="section-title" style="font-size: 1.8rem;">進捗状況</h3>
+          </div>
+          <ul class="status-list">
+            <li class="status-item status-done">
+              <span class="status-icon">✓</span>
+              <span>初期シナリオ作成完了</span>
+            </li>
+            <li class="status-item status-progress">
+              <span class="status-icon">○</span>
+              <span>ナビゲーター選定中</span>
+            </li>
+            <li class="status-item status-progress">
+              <span class="status-icon">○</span>
+              <span>開催場所調整中</span>
+            </li>
+            <li class="status-item status-progress">
+              <span class="status-icon">○</span>
+              <span>プログラム詳細構成中</span>
+            </li>
+            <li class="status-item status-pending">
+              <span class="status-icon">○</span>
+              <span>チラシ制作・申込準備</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Day Programs -->
+      <section>
+        <div class="section-header">
+          <h2 class="section-title">プログラム詳細</h2>
+          <p class="section-subtitle">各日程の構成とテーマ</p>
+        </div>
+
+        <div class="day-cards">
+          <div class="day-card">
+            <div class="day-image">DAY1 海</div>
+            <div class="day-content">
+              <h3 class="day-title">海エリア 1日目</h3>
+              <div class="day-meta">
+                <span>📅 9月中旬予定</span>
+                <span>📍 由比ヶ浜周辺</span>
+              </div>
+              <p class="day-description">自分学入門から始まり、「気」のワーク、森のうまみ体験、電気の秘密まで。身体と心、見えないものを感じる一日。</p>
+              <a href="day1.html" class="day-link">詳細を見る</a>
+            </div>
+          </div>
+
+          <div class="day-card">
+            <div class="day-image">DAY2 海</div>
+            <div class="day-content">
+              <h3 class="day-title">海エリア 2日目</h3>
+              <div class="day-meta">
+                <span>📅 9月下旬予定</span>
+                <span>📍 由比ヶ浜周辺</span>
+              </div>
+              <p class="day-description">海との関わりを深め、船や波、海流を通して自然のリズムと自分のリズムを探究します。</p>
+              <a href="day2.html" class="day-link">詳細を見る</a>
+            </div>
+          </div>
+
+          <div class="day-card">
+            <div class="day-image">DAY3 森</div>
+            <div class="day-content">
+              <h3 class="day-title">森エリア 1日目</h3>
+              <div class="day-meta">
+                <span>📅 10月中旬予定</span>
+                <span>📍 浄智寺周辺</span>
+              </div>
+              <p class="day-description">森の中で木々と対話し、樹木医と共に生命のネットワークを体感。薬膳ランチで内側からも森を取り入れます。</p>
+              <a href="day3.html" class="day-link">詳細を見る</a>
+            </div>
+          </div>
+
+          <div class="day-card">
+            <div class="day-image">DAY4 森</div>
+            <div class="day-content">
+              <h3 class="day-title">森エリア 2日目</h3>
+              <div class="day-meta">
+                <span>📅 10月下旬予定</span>
+                <span>📍 浄智寺周辺</span>
+              </div>
+              <p class="day-description">木製楽器づくりや即興音楽を通して、森の響きと自分の声を重ね合わせる創造的な体験。</p>
+              <a href="day4.html" class="day-link">詳細を見る</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Meeting Archive -->
+      <section class="archive-section">
+        <div class="section-header">
+          <h2 class="section-title" style="font-size: 1.8rem;">制作プロセス記録</h2>
+          <p class="section-subtitle">会議議事録とプロセス共有</p>
+        </div>
+
+        <div class="archive-item">
+          <h3 class="archive-title">第1回 定例会議</h3>
+          <div class="archive-date">2025年5月20日（火） 15:30〜17:00</div>
+          <p class="archive-summary">定員調整方針、チラシ制作スケジュール、海・森プログラムの基本構成、ナビゲーター候補について協議。馬ワークや船ワーク等の具体的な企画も検討。</p>
+          <a href="meetings/2025-05-20.html" class="archive-link">詳細議事録を見る</a>
+        </div>
+
+        <div class="archive-item">
+          <h3 class="archive-title">第2回 定例会議</h3>
+          <div class="archive-date">2025年6月10日（火） 予定</div>
+          <p class="archive-summary">議事録は会議後に公開予定です。</p>
+          <a href="meetings/archive.html" class="archive-link">議事録アーカイブ</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <small>© 2025 ULTLA Fan Community</small>
+    </div>
+  </footer>
+
+  <!-- 共通JSを読み込み -->
+  <script src="../shared/navigation.js"></script>
+</body>
+</html>
