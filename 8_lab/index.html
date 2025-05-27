@@ -62,19 +62,20 @@
     }
     
     .tagline {
-      background: rgba(255,255,255,0.9);
-      color: var(--ultla-blue);
+      background: rgba(255,255,255,0.15);
+      color: white;
       padding: var(--spacing-sm) var(--spacing-md);
       border-radius: var(--radius-xl);
       font-size: 0.95rem;
-      font-weight: 500;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      font-weight: 400;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.25);
       transition: all var(--transition-normal);
     }
     
     .tagline:hover {
+      background: rgba(255,255,255,0.25);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     }
     
     /* Section Headers */
@@ -239,6 +240,7 @@
       color: white;
       font-size: 1.5rem;
       font-weight: 500;
+      position: relative;
     }
     
     .day-image.sea {
@@ -419,10 +421,10 @@
       <section class="hero-section">
         <div class="container">
           <h2 class="hero-title">ULTLAは、つくれる</h2>
-          <p class="hero-subtitle">0→1の創造プロセスを可視化し、ULTLAづくりのノウハウを共有する実験室。</p>
+          <p class="hero-subtitle">0→1の創造プロセスを可視化し、ULTLAを解剖する実験室。</p>
           <div class="hero-taglines">
-            <span class="tagline">プロセスの見える化</span>
-            <span class="tagline">ULTLAを深めたい</span>
+            <span class="tagline">だれでも、どこでも、ULTLA</span>
+            <span class="tagline">ULTLAをまちにひらく</span>
           </div>
         </div>
       </section>
@@ -436,16 +438,16 @@
 
         <div class="overview-stats">
           <div class="stat-card">
-            <div class="stat-number">合計</div>
-            <div class="stat-label">コマ数</div>
+            <div class="stat-number">8</div>
+            <div class="stat-label">コマ構成</div>
           </div>
           <div class="stat-card">
-            <div class="stat-number">4</div>
-            <div class="stat-label">日間開催</div>
+            <div class="stat-number">2</div>
+            <div class="stat-label">日間</div>
           </div>
           <div class="stat-card">
-            <div class="stat-number">海・森</div>
-            <div class="stat-label">テーマ</div>
+            <div class="stat-number">2</div>
+            <div class="stat-label">エリア（海／森）</div>
           </div>
           <div class="stat-card">
             <div class="stat-number">20</div>
