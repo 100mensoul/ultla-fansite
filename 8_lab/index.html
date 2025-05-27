@@ -41,6 +41,7 @@
       margin-bottom: var(--spacing-md);
       font-weight: 500;
       letter-spacing: 0.02em;
+      white-space: nowrap;
     }
     
     .hero-subtitle {
@@ -61,12 +62,19 @@
     }
     
     .tagline {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.9);
+      color: var(--ultla-blue);
       padding: var(--spacing-sm) var(--spacing-md);
       border-radius: var(--radius-xl);
       font-size: 0.95rem;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.3);
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all var(--transition-normal);
+    }
+    
+    .tagline:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     }
     
     /* Section Headers */
@@ -163,10 +171,12 @@
       background: var(--bg-light);
       border-radius: var(--radius-md);
       transition: all var(--transition-normal);
+      border: 1px solid rgba(0,163,217,0.1);
     }
     
     .status-item:hover {
-      background: rgba(0,163,217,0.05);
+      background: rgba(0,163,217,0.08);
+      border-color: rgba(0,163,217,0.2);
     }
     
     .status-icon {
@@ -177,6 +187,7 @@
       align-items: center;
       justify-content: center;
       font-size: 1.2rem;
+      font-weight: bold;
     }
     
     .status-done .status-icon {
@@ -188,7 +199,12 @@
     }
     
     .status-pending .status-icon {
-      color: var(--text-muted);
+      color: var(--ultla-red);
+    }
+    
+    .status-text {
+      font-weight: 500;
+      color: var(--text-primary);
     }
     
     /* Day Cards */
@@ -217,13 +233,20 @@
       width: 100%;
       height: 200px;
       object-fit: cover;
-      background: linear-gradient(135deg, var(--ultla-blue), var(--ultla-green));
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       font-size: 1.5rem;
       font-weight: 500;
+    }
+    
+    .day-image.sea {
+      background: linear-gradient(135deg, var(--ultla-blue), #0077BE);
+    }
+    
+    .day-image.forest {
+      background: linear-gradient(135deg, var(--ultla-green), #228B22);
     }
     
     .day-content {
@@ -322,6 +345,11 @@
     
     /* Responsive */
     @media (max-width: 768px) {
+      .hero-title {
+        white-space: normal;
+        font-size: clamp(2rem, 8vw, 2.5rem);
+      }
+      
       .hero-taglines {
         flex-direction: column;
         align-items: center;
@@ -331,8 +359,37 @@
         grid-template-columns: repeat(2, 1fr);
       }
       
+      .status-item {
+        padding: var(--spacing-sm) var(--spacing-md);
+        margin: calc(var(--spacing-xs) / 2) 0;
+      }
+      
       .day-cards {
         grid-template-columns: 1fr;
+      }
+      
+      .archive-section {
+        padding: var(--spacing-lg);
+      }
+      
+      .archive-item {
+        padding: var(--spacing-md);
+      }
+    }
+    
+    @media (min-width: 769px) {
+      .day-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .day-cards .day-card:nth-child(1),
+      .day-cards .day-card:nth-child(2) {
+        order: 1;
+      }
+      
+      .day-cards .day-card:nth-child(3),
+      .day-cards .day-card:nth-child(4) {
+        order: 2;
       }
     }
   </style>
@@ -362,10 +419,10 @@
       <section class="hero-section">
         <div class="container">
           <h2 class="hero-title">ULTLAは、つくれる</h2>
-          <p class="hero-subtitle">学びのプロセスを見せる"ファンサイト"がオープンしました。</p>
+          <p class="hero-subtitle">0→1の創造プロセスを可視化し、ULTLAづくりのノウハウを共有する実験室。</p>
           <div class="hero-taglines">
-            <span class="tagline">だれでも、どこでも、ULTLA</span>
-            <span class="tagline">ULTLAをまちにひらく</span>
+            <span class="tagline">プロセスの見える化</span>
+            <span class="tagline">ULTLAを深めたい</span>
           </div>
         </div>
       </section>
@@ -379,16 +436,16 @@
 
         <div class="overview-stats">
           <div class="stat-card">
-            <div class="stat-number">16</div>
-            <div class="stat-label">コマ構成</div>
+            <div class="stat-number">合計</div>
+            <div class="stat-label">コマ数</div>
           </div>
           <div class="stat-card">
             <div class="stat-number">4</div>
             <div class="stat-label">日間開催</div>
           </div>
           <div class="stat-card">
-            <div class="stat-number">2</div>
-            <div class="stat-label">エリア展開</div>
+            <div class="stat-number">海・森</div>
+            <div class="stat-label">テーマ</div>
           </div>
           <div class="stat-card">
             <div class="stat-number">20</div>
@@ -404,23 +461,23 @@
           <ul class="status-list">
             <li class="status-item status-done">
               <span class="status-icon">✓</span>
-              <span>初期シナリオ作成完了</span>
+              <span class="status-text">初期シナリオ作成完了</span>
             </li>
             <li class="status-item status-progress">
               <span class="status-icon">○</span>
-              <span>ナビゲーター選定中</span>
+              <span class="status-text">ナビゲーター選定中</span>
             </li>
             <li class="status-item status-progress">
               <span class="status-icon">○</span>
-              <span>開催場所調整中</span>
+              <span class="status-text">開催場所調整中</span>
             </li>
             <li class="status-item status-progress">
               <span class="status-icon">○</span>
-              <span>プログラム詳細構成中</span>
+              <span class="status-text">プログラム詳細構成中</span>
             </li>
             <li class="status-item status-pending">
               <span class="status-icon">○</span>
-              <span>チラシ制作・申込準備</span>
+              <span class="status-text">チラシ制作・申込準備</span>
             </li>
           </ul>
         </div>
