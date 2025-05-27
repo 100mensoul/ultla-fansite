@@ -2,53 +2,187 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>ULTLAファンサイト</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <title>ニュース - かまくらULTLAプログラム</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    /* Page-specific styles for news.html */
+    
+    .news-list {
+      list-style: none;
+      margin-top: 2rem;
+    }
+    
+    .news-item {
+      background: var(--bg-card);
+      margin: var(--spacing-lg) 0;
+      padding: var(--spacing-lg);
+      border-radius: var(--radius-lg);
+      border-left: 4px solid var(--ultla-blue);
+      transition: all var(--transition-normal);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .news-item:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-left-color: var(--ultla-green);
+    }
+    
+    .news-item:nth-child(even) {
+      border-left-color: var(--ultla-green);
+    }
+    
+    .news-item:nth-child(even):hover {
+      border-left-color: var(--ultla-red);
+    }
+    
+    .news-item:nth-child(3n) {
+      border-left-color: var(--ultla-red);
+    }
+    
+    .news-item:nth-child(3n):hover {
+      border-left-color: var(--ultla-blue);
+    }
+    
+    .news-title {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .news-title a {
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+    
+    .news-title a:hover {
+      color: var(--ultla-blue);
+    }
+    
+    .news-description {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .news-date {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    
+    .hero-section {
+      background: linear-gradient(135deg, var(--ultla-blue) 0%, var(--ultla-green) 50%, var(--ultla-red) 100%);
+      color: white;
+      padding: var(--spacing-xl) 0;
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.1);
+      z-index: 1;
+    }
+    
+    .hero-section .container {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .hero-title {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      margin-bottom: var(--spacing-sm);
+      font-weight: 500;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+  </style>
 </head>
-  
 <body>
   <header>
-    <h1>ULTLAファンサイト</h1>
-    <nav> 
-      <a href="../index.html">ホーム</a> 
-      <a href="../1_news/index.html">ニュース</a> 
-      <a href="../2_about/index.html">ULTLAとは</a> 
-      <a href="../3_people/index.html">ULTLA人</a> 
-      <a href="../4_map/index.html">マップ</a> 
-      <a href="../5_recipe/index.html">レシピ</a> 
-      <a href="../6_chat/index.html">チャット</a>
-      <a href="../7_mypage/index.html">マイページ</a>
-      <a href="../8_lab/index.html">ラボ</a> 
-      <a href="../9_archive/index.html">アーカイブ</a> 
-      <a href="../10_contact/index.html">お問い合わせ</a> 
-    </nav>
+    <div class="container">
+      <h1>ニュース</h1>
+      <nav>
+        <a href="../1_news/index.html">ニュース</a>
+        <a href="../2_about/index.html">ULTLAとは</a>
+        <a href="../3_people/index.html">ULTLA人</a>
+        <a href="../4_map/index.html">マップ</a>
+        <a href="../5_recipe/index.html">レシピ</a>
+        <a href="../6_chat/index.html">チャット</a>
+        <a href="../7_mypage/index.html">自分学</a>
+        <a href="../8_lab/index.html">ラボ</a>
+        <a href="../9_archive/index.html">アーカイブ</a>
+        <a href="../10_contact/index.html">お問い合わせ</a>
+      </nav>
+    </div>
   </header>
-  
+
   <main>
-    <h2>ULTLAは、つくれる</h2>
-    <p>学びのプロセスを見せる"ファンサイト"がオープンしました。</p>
+    <div class="container">
+      <section class="hero-section">
+        <div class="container">
+          <h2 class="hero-title">ULTLAは、つくれる</h2>
+          <p class="hero-subtitle">学びのプロセスを見せる"ファンサイト"がオープンしました。</p>
+        </div>
+      </section>
+
+      <section class="text-center mb-4">
+        <div class="intro-card">
+          <h2 class="page-title">最新ニュース</h2>
+          <p class="page-subtitle">ULTLAの最新情報をお届けします</p>
+        </div>
+      </section>
+
+      <ul class="news-list">
+        <li class="news-item">
+          <h3 class="news-title">
+            <a href="news-kito-ki.html">【2025年4月3日】今年度のテーマが「木と気」に決定！</a>
+          </h3>
+          <p class="news-description">種を育むコーディネーターチームが始動しました。</p>
+          <span class="news-date">2025年4月3日</span>
+        </li>
+        
+        <li class="news-item">
+          <h3 class="news-title">
+            <a href="news-kamakura-school.html">【2025年4月12日】鎌倉市多様化学校「由比ヶ浜中学校」開校式が開催！</a>
+          </h3>
+          <p class="news-description">文科省の定める学びの多様化学校の新教科として、ULTLAが教育現場での実践を開始します！</p>
+          <span class="news-date">2025年4月12日</span>
+        </li>
+        
+        <li class="news-item">
+          <h3 class="news-title">
+            <a href="essay_yuigahama.html">種は、鎌倉の風にのって──由比ガ浜中学校 開校</a>
+          </h3>
+          <p class="news-description">新しい学びの場として生まれ変わった由比ガ浜中学校での取り組みをご紹介します。</p>
+          <span class="news-date">2025年4月13日</span>
+        </li>
+      </ul>
+    </div>
   </main>
 
-  <ul>
-    <li>
-      <a href="news-kito-ki.html">【2025年4月3日】今年度のテーマが「木と気」に決定！</a><br>
-      <small>種を育むコーディネーターチームが始動しました。</small>
-    </li>
-    <li>
-      <a href="news-kamakura-school.html">【2025年4月12日】鎌倉市多様化学校「由比ヶ浜中学校」開校式が開催！</a><br>
-      <small>文科省の定める学びの多様化学校の新教科として、ULTLAが教育現場での実践を開始します！</small>
-    </li>
-    <li>
-      <a href="essay_yuigahama.html">種は、鎌倉の風にのって──由比ガ浜中学校 開校</a><br>
-      <span class="news-date">2025年4月13日</span>
-    </li>
-  </ul>
-
   <footer>
-    <small>© 2025 ULTLA Fan Community</small>
+    <div class="container">
+      <small>© 2025 ULTLA Fan Community</small>
+    </div>
   </footer>
-  
+
+  <!-- 共通JSを読み込み -->
+  <script src="../shared/navigation.js"></script>
 </body>
 </html>
-
