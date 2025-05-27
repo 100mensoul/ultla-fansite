@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ULTLA人 - かまくらULTLAプログラム</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Page-specific styles for people.html */
+    
+    /* People Card specific styling */
+    .people-card {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .people-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--ultla-red), var(--ultla-green), var(--ultla-blue));
+      opacity: 0;
+      transition: opacity var(--transition-normal);
+    }
+    
+    .people-card:hover::before {
+      opacity: 1;
+    }
+    
+    .people-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-weight: 500;
+    }
+    
+    .people-card h3 .icon {
+      font-size: 1.8rem;
+      opacity: 0.8;
+    }
+    
+    .people-card .description {
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-lg);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    
+    /* Person List */
+    .person-list {
+      list-style: none;
+    }
+    
+    .person-item {
+      background: var(--bg-light);
+      margin: var(--spacing-sm) 0;
+      padding: var(--spacing-md);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-normal);
+      border-left: 4px solid transparent;
+    }
+    
+    .person-item:hover {
+      transform: translateX(5px);
+    }
+    
+    .person-name {
+      font-weight: 500;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .person-description {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    
+    /* Role-specific styling */
+    .kids h3 { color: var(--ultla-red); }
+    .kids .person-item { border-left-color: var(--ultla-red); }
+    .kids .person-item:hover { background: rgba(231,76,60,0.05); }
+    
+    .paisen h3 { color: var(--ultla-green); }
+    .paisen .person-item { border-left-color: var(--ultla-green); }
+    .paisen .person-item:hover { background: rgba(0,184,148,0.05); }
+    
+    .navigator h3 { color: var(--ultla-blue); }
+    .navigator .person-item { border-left-color: var(--ultla-blue); }
+    .navigator .person-item:hover { background: rgba(0,163,217,0.05); }
+    
+    .coordinator h3 { color: var(--ultla-green); }
+    .coordinator .person-item { border-left-color: var(--ultla-green); }
+    .coordinator .person-item:hover { background: rgba(0,184,148,0.05); }
+    
+    .communicator h3 { color: var(--ultla-blue); }
+    .communicator .person-item { border-left-color: var(--ultla-blue); }
+    .communicator .person-item:hover { background: rgba(0,163,217,0.05); }
+    
+    .family h3 { color: var(--ultla-red); }
+    .family .person-item { border-left-color: var(--ultla-red); }
+    .family .person-item:hover { background: rgba(231,76,60,0.05); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>ULTLA人</h1>
+      <nav>
+        <a href="index.html">トップページ</a>
+        <a href="news.html">ニュース</a>
+        <a href="about.html">ULTLAとは</a>
+        <a href="people.html" class="current">ULTLA人</a>
+        <a href="map.html">マップ</a>
+        <a href="recipe.html">レシピ</a>
+        <a href="chat.html">チャット</a>
+        <a href="mypage.html">マイページ</a>
+        <a href="lab.html">ラボ</a>
+        <a href="archive.html">アーカイブ</a>
+        <a href="contact.html">お問い合わせ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <section class="text-center mb-5">
+        <div class="intro-card">
+          <p>このページでは、ULTLAに関わる地域や人について紹介します。</p>
+          <h2 class="page-title">ULTLA人</h2>
+          <p class="page-subtitle">ULTLAに関わる人々は、さまざまな役割を通じて学びの場をつくり、育てています。</p>
+        </div>
+      </section>
+
+      <div class="people-grid">
+        <section class="card people-card kids">
+          <h3><span class="icon">🌟</span>1. キッズ</h3>
+          <p class="description">ULTLAの主役。遊ぶように学び、世界と出会い、自分を知る旅へ出る冒険者たち。</p>
+        </section>
+
+        <section class="card people-card paisen">
+          <h3><span class="icon">🚀</span>2. パイセン</h3>
+          <p class="description">かつてキッズだった先輩たち。今もULTLA的に探究を続けるリーダー的な存在。</p>
+          <ul class="person-list">
+            <li class="person-item">
+              <div class="person-name">Ms.2n（ミズ・ツーナ）</div>
+              <div class="person-description">探究のあまり四国まで旅に出たULTLAお姉さん。</div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="card people-card navigator">
+          <h3><span class="icon">🧭</span>3. ナビゲーター</h3>
+          <p class="description">特別なエッセンスを注ぎ、学びを大きく変身させてくれるULTLA人。</p>
+          <ul class="person-list">
+            <li class="person-item">
+              <div class="person-name">ニエゾウ</div>
+              <div class="person-description">もう1人のULTLAの父。</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">エ・オン</div>
+              <div class="person-description">ULTLAの父ならぬグランパ。</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">ユウカサン</div>
+              <div class="person-description">ULTLAものづくりのマザー。</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">ヨウカイ</div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="card people-card coordinator">
+          <h3><span class="icon">🤝</span>4. コーディネーター</h3>
+          <p class="description">ULTLAを地域で実現するために、場に入り、学びのタネを育む人たち。</p>
+          <ul class="person-list">
+            <li class="person-item">
+              <div class="person-name">カナエッティ</div>
+              <div class="person-description">網のようにつなぐ人</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">マリア</div>
+              <div class="person-description">乙女心がギャップだよ</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">ダビデマル</div>
+              <div class="person-description">ULTLAお兄さんは漁に出る</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">ユキンコ</div>
+              <div class="person-description">鎌倉へ繋いでくれた妖精</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">ライリー</div>
+              <div class="person-description">世界を鮮やかに見せてくれる</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">タカサン</div>
+              <div class="person-description">名古屋で変身中！</div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="card people-card communicator">
+          <h3><span class="icon">💬</span>5. コミュニケーター</h3>
+          <p class="description">ULTLA当日に、あたたかく！豊かな学びの場をともに作ってくれる仲間。</p>
+        </section>
+
+        <section class="card people-card family">
+          <h3><span class="icon">❤️</span>6. ULTLAファミリー</h3>
+          <p class="description">ULTLAというタネを最初に産み落としてくれた人たち。</p>
+          <ul class="person-list">
+            <li class="person-item">
+              <div class="person-name">ガンチャン</div>
+              <div class="person-description">ULTLAの父</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">リーラ</div>
+              <div class="person-description">ULTLAの母</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">イワチャン</div>
+              <div class="person-description">ULTLA太郎</div>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <small>© 2025 ULTLA Fan Community</small>
+    </div>
+  </footer>
+</body>
+</html>
