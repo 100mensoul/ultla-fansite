@@ -2,87 +2,467 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>ULTLA人</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ULTLA人 - かまくらULTLAプログラム</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ULTLAブランドカラー */
+    :root {
+      --ultla-blue: #00A3D9;      /* CMYK 92/16/20/0 相当 */
+      --ultla-red: #E74C3C;       /* CMYK 0/85/86/0 相当 */
+      --ultla-green: #00B894;     /* CMYK 96/5/74/0 相当 */
+      --ultla-gray: #E6E6E6;      /* CMYK 0/0/0/10 相当 */
+      --ultla-white: #FFFFFF;
+      --ultla-black: #000000;
+      --bg-light: #FAFBFC;
+      --text-primary: #2D3748;
+      --text-secondary: #718096;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.7;
+      color: var(--text-primary);
+      background-color: var(--bg-light);
+      font-weight: 400;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, var(--ultla-blue) 0%, var(--ultla-green) 50%, var(--ultla-red) 100%);
+      color: white;
+      padding: 2.5rem 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.1);
+      z-index: 1;
+    }
+
+    header .container {
+      position: relative;
+      z-index: 2;
+    }
+
+    header h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-bottom: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    /* Navigation */
+    nav {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      font-weight: 400;
+      font-size: 0.9rem;
+    }
+
+    nav a:hover, nav a.current {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    /* Main Content */
+    main {
+      padding: 4rem 0;
+    }
+
+    .intro-section {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .intro-card {
+      background: white;
+      padding: 3rem 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+      border: 1px solid rgba(0,163,217,0.1);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .intro-card p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      margin-bottom: 1rem;
+      color: var(--ultla-blue);
+      font-weight: 500;
+      position: relative;
+      display: inline-block;
+    }
+
+    .page-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--ultla-blue), var(--ultla-green));
+      border-radius: 2px;
+    }
+
+    .page-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    /* People Grid */
+    .people-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .people-card {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      transition: all 0.4s ease;
+      border: 1px solid rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .people-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--ultla-red), var(--ultla-green), var(--ultla-blue));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .people-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+    }
+
+    .people-card:hover::before {
+      opacity: 1;
+    }
+
+    .people-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-weight: 500;
+    }
+
+    .people-card h3 .icon {
+      font-size: 1.8rem;
+      opacity: 0.8;
+    }
+
+    .people-card .description {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* Person List */
+    .person-list {
+      list-style: none;
+    }
+
+    .person-item {
+      background: var(--bg-light);
+      margin: 1rem 0;
+      padding: 1.5rem;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      border-left: 4px solid transparent;
+    }
+
+    .person-item:hover {
+      background: rgba(0,163,217,0.05);
+      transform: translateX(5px);
+    }
+
+    .person-name {
+      font-weight: 500;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .person-description {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Role-specific styling */
+    .kids h3 { color: var(--ultla-red); }
+    .kids .person-item { border-left-color: var(--ultla-red); }
+    .kids .person-item:hover { background: rgba(231,76,60,0.05); }
+
+    .paisen h3 { color: var(--ultla-green); }
+    .paisen .person-item { border-left-color: var(--ultla-green); }
+    .paisen .person-item:hover { background: rgba(0,184,148,0.05); }
+
+    .navigator h3 { color: var(--ultla-blue); }
+    .navigator .person-item { border-left-color: var(--ultla-blue); }
+    .navigator .person-item:hover { background: rgba(0,163,217,0.05); }
+
+    .coordinator h3 { color: var(--ultla-green); }
+    .coordinator .person-item { border-left-color: var(--ultla-green); }
+    .coordinator .person-item:hover { background: rgba(0,184,148,0.05); }
+
+    .communicator h3 { color: var(--ultla-blue); }
+    .communicator .person-item { border-left-color: var(--ultla-blue); }
+    .communicator .person-item:hover { background: rgba(0,163,217,0.05); }
+
+    .family h3 { color: var(--ultla-red); }
+    .family .person-item { border-left-color: var(--ultla-red); }
+    .family .person-item:hover { background: rgba(231,76,60,0.05); }
+
+    /* Footer */
+    footer {
+      background: var(--text-primary);
+      color: white;
+      text-align: center;
+      padding: 3rem 0;
+      margin-top: 6rem;
+    }
+
+    footer small {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header {
+        padding: 2rem 0;
+      }
+
+      nav {
+        gap: 0.5rem;
+      }
+
+      nav a {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+      }
+
+      .people-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .people-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .intro-card {
+        padding: 2rem 1.5rem;
+      }
+
+      main {
+        padding: 3rem 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 15px;
+      }
+
+      .people-card {
+        padding: 1.5rem;
+      }
+
+      .person-item {
+        padding: 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1>ULTLA人</h1>
-    <nav>
-      <a href="index.html">ホーム</a> |
-      <a href="about.html">ULTLAとは</a> |
-      <a href="people.html">ULTLA人</a> |
-      <a href="map.html">マップ</a> |
-      <a href="recipe.html">レシピ</a> |
-      <a href="chat.html">チャット</a> |
-      <a href="mypage.html">マイページ</a> |
-      <a href="lab.html">ラボ</a> |
-      <a href="archive.html">アーカイブ</a>
-       <a href="contact.html">お問い合わせ</a>
-    </nav>
+    <div class="container">
+      <h1>ULTLA人</h1>
+      <nav>
+        <a href="index.html">ニュース</a>
+        <a href="about.html">ULTLAとは</a>
+        <a href="people.html" class="current">ULTLA人</a>
+        <a href="map.html">マップ</a>
+        <a href="recipe.html">レシピ</a>
+        <a href="chat.html">チャット</a>
+        <a href="mypage.html">自分学</a>
+        <a href="lab.html">ラボ</a>
+        <a href="archive.html">アーカイブ</a>
+        <a href="contact.html">お問い合わせ</a>
+      </nav>
+    </div>
   </header>
+
   <main>
-    <p>このページでは、ULTLAに関わる地域や人について紹介します。</p>
+    <div class="container">
+      <section class="intro-section">
+        <div class="intro-card">
+          <p>このページでは、ULTLAに関わる地域や人について紹介します。</p>
+          <h2 class="page-title">ULTLA人</h2>
+          <p class="page-subtitle">ULTLAに関わる人々は、さまざまな役割を通じて学びの場をつくり、育てています。</p>
+        </div>
+      </section>
+
+      <div class="people-grid">
+        <section class="people-card kids">
+          <h3><span class="icon">🌟</span>1. キッズ</h3>
+          <p class="description">ULTLAの主役。遊ぶように学び、世界と出会い、自分を知る旅へ出る冒険者たち。</p>
+        </section>
+
+        <section class="people-card paisen">
+          <h3><span class="icon">🚀</span>2. パイセン</h3>
+          <p class="description">かつてキッズだった先輩たち。今もULTLA的に探究を続けるリーダー的な存在。</p>
+          <ul class="person-list">
+            <li class="person-item">
+              <div class="person-name">Ms.2n（ミズ・ツーナ）</div>
+              <div class="person-description">探究のあまり四国まで旅に出たULTLAお姉さん。</div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="people-card navigator">
+          <h3><span class="icon">🧭</span>3. ナビゲーター</h3>
+          <p class="description">特別なエッセンスを注ぎ、学びを大きく変身させてくれるULTLA人。</p>
+          <ul class="person-list">
+            <li class="person-item">
+              <div class="person-name">ニエゾウ</div>
+              <div class="person-description">もう1人のULTLAの父。</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">エ・オン</div>
+              <div class="person-description">ULTLAの父ならぬグランパ。</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">ユウカサン</div>
+              <div class="person-description">ULTLAものづくりのマザー。</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">ヨウカイ</div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="people-card coordinator">
+          <h3><span class="icon">🤝</span>4. コーディネーター</h3>
+          <p class="description">ULTLAを地域で実現するために、場に入り、学びのタネを育む人たち。</p>
+          <ul class="person-list">
+            <li class="person-item">
+              <div class="person-name">カナエッティ</div>
+              <div class="person-description">網のようにつなぐ人</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">マリア</div>
+              <div class="person-description">乙女心がギャップだよ</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">ダビデマル</div>
+              <div class="person-description">ULTLAお兄さんは漁に出る</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">ユキンコ</div>
+              <div class="person-description">鎌倉へ繋いでくれた妖精</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">ライリー</div>
+              <div class="person-description">世界を鮮やかに見せてくれる</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">タカサン</div>
+              <div class="person-description">名古屋で変身中！</div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="people-card communicator">
+          <h3><span class="icon">💬</span>5. コミュニケーター</h3>
+          <p class="description">ULTLA当日に、あたたかく！豊かな学びの場をともに作ってくれる仲間。</p>
+        </section>
+
+        <section class="people-card family">
+          <h3><span class="icon">❤️</span>6. ULTLAファミリー</h3>
+          <p class="description">ULTLAというタネを最初に産み落としてくれた人たち。</p>
+          <ul class="person-list">
+            <li class="person-item">
+              <div class="person-name">ガンチャン</div>
+              <div class="person-description">ULTLAの父</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">リーラ</div>
+              <div class="person-description">ULTLAの母</div>
+            </li>
+            <li class="person-item">
+              <div class="person-name">イワチャン</div>
+              <div class="person-description">ULTLA太郎</div>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
   </main>
 
-  <h2>ULTLA人</h2>
-<p>ULTLAに関わる人々は、さまざまな役割を通じて学びの場をつくり、育てています。</p>
-
-<section>
-  <h3>1. キッズ</h3>
-  <p>ULTLAの主役。遊ぶように学び、世界と出会い、自分を知る旅へ出る冒険者たち。</p>
-</section>
-
-<section>
-  <h3>2. パイセン</h3>
-  <p>かつてキッズだった先輩たち。今もULTLA的に探究を続けるリーダー的な存在。</p>
-  <ul>
-    <li><strong>Ms.2n</strong>（ミズ・ツーナ）・・・探究のあまり四国まで旅に出たULTLAお姉さん。</li>
-  </ul>
-</section>
-
-<section>
-  <h3>3. ナビゲーター</h3>
-  <p>特別なエッセンスを注ぎ、学びを大きく変身させてくれるULTLA人。</p>
-  <ul>
-    <li><strong>ニエゾウ</strong>・・・もう1人のULTLAの父。</li>
-    <li><strong>エ・オン</strong>・・・ULTLAの父ならぬグランパ。</li>
-     <li><strong>ユウカサン</strong>・・・ULTLAものづくりのマザー。</li>
-    <li><strong>ヨウカイ</strong></li>
-  </ul>
-</section>
-
-<section>
-  <h3>4. コーディネーター</h3>
-  <p>ULTLAを地域で実現するために、場に入り、学びのタネを育む人たち。</p>
-  <ul>
-    <li><strong>カナエッティ</strong>・・・網のようにつなぐ人</li>
-    <li><strong>マリア</strong>・・・乙女心がギャップだよ</li>
-    <li><strong>ダビデマル</strong>・・・ULTLAお兄さんは漁に出る</li>
-    <li><strong>ユキンコ</strong>・・・鎌倉へ繋いでくれた妖精</li>
-    <li><strong>ライリー</strong>・・・世界を鮮やかに見せてくれる</li>
-    <li><strong>タカサン</strong>・・・名古屋で変身中！</li>
-  </ul>
-</section>
-
-<section>
-  <h3>5. コミュニケーター</h3>
-  <p>ULTLA当日に、あたたかく！豊かな学びの場をともに作ってくれる仲間。</p>
-</section>
-
-<section>
-  <h3>6. ULTLAファミリー</h3>
-  <p>ULTLAというタネを最初に産み落としてくれた人たち。</p>
-  <ul>
-    <li><strong>ガンチャン</strong>・・・ULTLAの父</li>
-    <li><strong>リーラ</strong>・・・ULTLAの母</li>
-    <li><strong>イワチャン</strong>・・・ULTLA太郎</li>
-  </ul>
-</section>
-
-  
   <footer>
-    <small>© 2025 ULTLA Fan Community</small>
+    <div class="container">
+      <small>© 2025 ULTLA Fan Community</small>
+    </div>
   </footer>
 </body>
 </html>
