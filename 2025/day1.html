@@ -5,87 +5,281 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ULTLA DAY1 - 海エリア</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* スマホ対応のレスポンシブレイアウト */
+    
+    /* TODO・関係人物セクションのレスポンシブ */
+    .todo-section, .people-section {
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .todo-section ul, .people-section ul {
+      padding-left: var(--spacing-md);
+    }
+    
+    .todo-section li, .people-section li {
+      margin-bottom: var(--spacing-xs);
+      line-height: 1.6;
+    }
+    
+    /* プログラムカードのレスポンシブレイアウト */
+    .program-cards {
+      margin-bottom: var(--spacing-2xl);
+    }
+    
+    .program-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      transition: all var(--transition-normal);
+    }
+    
+    .program-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    /* デスクトップレイアウト */
+    @media (min-width: 769px) {
+      .program-card {
+        display: flex;
+        align-items: flex-start;
+        padding: var(--spacing-lg);
+      }
+      
+      .thumb {
+        flex-shrink: 0;
+        margin-right: var(--spacing-lg);
+      }
+      
+      .thumb img {
+        width: 180px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: var(--radius-md);
+      }
+      
+      .program-card > div:last-child {
+        flex: 1;
+      }
+    }
+    
+    /* スマホレイアウト */
+    @media (max-width: 768px) {
+      .program-card {
+        display: block;
+        padding: 0;
+      }
+      
+      .thumb {
+        width: 100%;
+        margin-bottom: 0;
+      }
+      
+      .thumb img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+      }
+      
+      .program-card > div:last-child {
+        padding: var(--spacing-md);
+      }
+      
+      /* ヘッダーの調整 */
+      header {
+        padding: var(--spacing-lg) 0;
+      }
+      
+      header h1 {
+        font-size: clamp(1.8rem, 6vw, 2.5rem);
+        line-height: 1.2;
+      }
+      
+      header p {
+        font-size: 1rem;
+        margin-top: var(--spacing-xs);
+      }
+      
+      /* セクションタイトルの調整 */
+      .todo-section h2,
+      .people-section h2,
+      .program-cards h2 {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        margin-bottom: var(--spacing-md);
+      }
+      
+      /* プログラムカード内のタイトル */
+      .program-card h3 {
+        font-size: 1.2rem;
+        line-height: 1.3;
+        margin-bottom: var(--spacing-xs);
+      }
+      
+      /* プログラムカード内のテキスト */
+      .program-card p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: var(--spacing-xs);
+      }
+      
+      .program-card p:last-child {
+        margin-bottom: 0;
+      }
+      
+      /* TODOとULTLA人のリスト調整 */
+      .todo-section ul, .people-section ul {
+        padding-left: var(--spacing-md);
+      }
+      
+      .todo-section li, .people-section li {
+        font-size: 0.95rem;
+        margin-bottom: var(--spacing-xs);
+      }
+    }
+    
+    /* 極小画面（iPhone SE等）の調整 */
+    @media (max-width: 480px) {
+      .container, main {
+        padding-left: var(--spacing-sm);
+        padding-right: var(--spacing-sm);
+      }
+      
+      .thumb img {
+        height: 160px;
+      }
+      
+      .program-card > div:last-child {
+        padding: var(--spacing-sm);
+      }
+      
+      .program-card h3 {
+        font-size: 1.1rem;
+      }
+      
+      .program-card p {
+        font-size: 0.85rem;
+      }
+      
+      header h1 {
+        font-size: clamp(1.5rem, 7vw, 2rem);
+      }
+    }
+    
+    /* フッターの調整 */
+    footer {
+      margin-top: var(--spacing-2xl);
+      text-align: center;
+      padding: var(--spacing-lg) 0;
+    }
+    
+    footer a {
+      display: inline-block;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--ultla-blue);
+      color: white;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+    
+    footer a:hover {
+      background: var(--ultla-green);
+      transform: translateY(-2px);
+    }
+  </style>
 </head>
 <body>
 
 <header>
-  <h1>ULTLA 2025 - DAY1（海）</h1>
-  <p>2025年10月12日（土）＠由比ヶ浜周辺</p>
+  <div class="container">
+    <h1>ULTLA 2025 - DAY1（海）</h1>
+    <p>2025年10月12日（土）＠由比ヶ浜周辺</p>
+  </div>
 </header>
 
-<section class="todo-section">
-  <h2>TODO</h2>
-  <ul>
-    <li>馬ワークの可否確認（かまんま）</li>
-    <li>マリーナ仮押さえ（船ワーク）</li>
-    <li>チラシ原案FIXと市教育委員会との合意</li>
-  </ul>
-</section>
+<main>
+  <div class="container">
+    <section class="todo-section">
+      <h2>TODO</h2>
+      <ul>
+        <li>馬ワークの可否確認（かまんま）</li>
+        <li>マリーナ仮押さえ（船ワーク）</li>
+        <li>チラシ原案FIXと市教育委員会との合意</li>
+      </ul>
+    </section>
 
-<section class="people-section">
-  <h2>関係ULTLA人（候補）</h2>
-  <ul>
-    <li>吉井孝（気の専門家）</li>
-    <li>賛川先生？（電気系）</li>
-    <li>かまんま（馬ワーク）</li>
-    <li>漁師・即興ダンサー（午後プログラム候補）</li>
-  </ul>
-</section>
+    <section class="people-section">
+      <h2>関係ULTLA人（候補）</h2>
+      <ul>
+        <li>吉井孝（気の専門家）</li>
+        <li>賛川先生？（電気系）</li>
+        <li>かまんま（馬ワーク）</li>
+        <li>漁師・即興ダンサー（午後プログラム候補）</li>
+      </ul>
+    </section>
 
-<section class="program-cards">
-  <h2>プログラム構成</h2>
+    <section class="program-cards">
+      <h2>プログラム構成</h2>
 
-<div class="program-card">
-  <div class="thumb">
-    <img src="characters.jpg" alt="君もULTLA" />
+      <div class="program-card">
+        <div class="thumb">
+          <img src="characters.jpg" alt="君もULTLA" />
+        </div>
+        <div>
+          <h3>君もULTLA ─ 自分学入門</h3>
+          <p><strong>時間：</strong>10:00–10:30</p>
+          <p><strong>ウルトラ人：</strong>福本理恵</p>
+          <p><strong>概要：</strong>自分の姿は自分では見えないから、自分を知る機会は実は少ない。自分の特徴をいろんな角度から写す鏡があれば、自分のことをもう少し理解できるのかもしれない。そんな鏡を手に入れて、自分が生き生きと生きられる場所、人、ものごとが何かを探す旅をはじめるのがULTLAプログラム！</p>
+          <p><strong>コーディネート：</strong>ナビ：福本、場所：由比ヶ浜中学校</p>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="thumb">
+          <img src="kamakura_sea.jpg" alt="気のワーク" />
+        </div>
+        <div>
+          <h3>勇気、活気、本気。あなたはどんな「気」？</h3>
+          <p><strong>概要：</strong>目に見えない「気」を感じるワーク。身体・感情・言葉の関係を体験。</p>
+          <p><strong>コーディネート：</strong>ナビ：吉井孝、場所：屋外または体育館</p>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="thumb">
+          <img src="sushi_salt.jpg" alt="森のうまみ" />
+        </div>
+        <div>
+          <h3>森のうまみ、木のこ三昧</h3>
+          <p><strong>概要：</strong>きのこの多様性と生態系。うまみとは何か？五感で味わう。</p>
+          <p><strong>コーディネート：</strong>ナビ：キノコ博士、場所：屋外 or 仮設テント</p>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="thumb">
+          <img src="horse.jpg" alt="電気の秘密" />
+        </div>
+        <div>
+          <h3>電気を生み出す空気の秘密</h3>
+          <p><strong>概要：</strong>空気から電気が生まれる仕組みと、神経や心とのつながり。</p>
+          <p><strong>コーディネート：</strong>ナビ：賛川先生？、場所：教室または実験スペース</p>
+        </div>
+      </div>
+    </section>
   </div>
-  <div>
-    <h3>君もULTLA ─ 自分学入門</h3>
-    <p><strong>時間：</strong>10:00–10:30</p>
-    <p><strong>ウルトラ人：</strong>福本理恵</p>
-    <p><strong>概要：</strong>自分の姿は自分では見えないから、自分を知る機会は実は少ない。自分の特徴をいろんな角度から写す鏡があれば、自分のことをもう少し理解できるのかもしれない。そんな鏡を手に入れて、自分が生き生きと生きられる場所、人、ものごとが何かを探す旅をはじめるのがULTLAプログラム！</p>
-    <p><strong>コーディネート：</strong>ナビ：福本、場所：由比ヶ浜中学校</p>
-  </div>
-</div>
-
-
-  <div class="program-card">
-    <div class="thumb">
-      <img src="kamakura_sea.jpg" alt="気のワーク" />
-    </div>
-    <div>
-      <h3>勇気、活気、本気。あなたはどんな「気」？</h3>
-      <p><strong>概要：</strong>目に見えない「気」を感じるワーク。身体・感情・言葉の関係を体験。</p>
-      <p><strong>コーディネート：</strong>ナビ：吉井孝、場所：屋外または体育館</p>
-    </div>
-  </div>
-
-  <div class="program-card">
-    <div class="thumb">
-      <img src="sushi_salt.jpg" alt="森のうまみ" />
-    </div>
-    <div>
-      <h3>森のうまみ、木のこ三昧</h3>
-      <p><strong>概要：</strong>きのこの多様性と生態系。うまみとは何か？五感で味わう。</p>
-      <p><strong>コーディネート：</strong>ナビ：キノコ博士、場所：屋外 or 仮設テント</p>
-    </div>
-  </div>
-
-  <div class="program-card">
-    <div class="thumb">
-      <img src="horse.jpg" alt="電気の秘密" />
-    </div>
-    <div>
-      <h3>電気を生み出す空気の秘密</h3>
-      <p><strong>概要：</strong>空気から電気が生まれる仕組みと、神経や心とのつながり。</p>
-      <p><strong>コーディネート：</strong>ナビ：賛川先生？、場所：教室または実験スペース</p>
-    </div>
-  </div>
-
-</section>
+</main>
 
 <footer>
-  <p><a href="index.html">← ラボトップに戻る</a></p>
+  <div class="container">
+    <p><a href="index.html">← ラボトップに戻る</a></p>
+  </div>
 </footer>
 
 </body>
