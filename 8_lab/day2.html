@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ULTLA DAY2 - 海エリア</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* スマホ対応のレスポンシブレイアウト */
+    
+    /* TODO・関係人物セクションのレスポンシブ */
+    .todo-section, .people-section {
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .todo-section ul, .people-section ul {
+      padding-left: var(--spacing-md);
+    }
+    
+    .todo-section li, .people-section li {
+      margin-bottom: var(--spacing-xs);
+      line-height: 1.6;
+    }
+    
+    /* プログラムカードのレスポンシブレイアウト */
+    .program-cards {
+      margin-bottom: var(--spacing-2xl);
+    }
+    
+    .program-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      transition: all var(--transition-normal);
+    }
+    
+    .program-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    /* デスクトップレイアウト */
+    @media (min-width: 769px) {
+      .program-card {
+        display: flex;
+        align-items: flex-start;
+        padding: var(--spacing-lg);
+      }
+      
+      .thumb {
+        flex-shrink: 0;
+        margin-right: var(--spacing-lg);
+      }
+      
+      .thumb img {
+        width: 180px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: var(--radius-md);
+      }
+      
+      .program-card > div:last-child {
+        flex: 1;
+      }
+    }
+    
+    /* スマホレイアウト */
+    @media (max-width: 768px) {
+      .program-card {
+        display: block;
+        padding: 0;
+      }
+      
+      .thumb {
+        width: 100%;
+        margin-bottom: 0;
+      }
+      
+      .thumb img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+      }
+      
+      .program-card > div:last-child {
+        padding: var(--spacing-md);
+      }
+      
+      /* ヘッダーの調整 */
+      header {
+        padding: var(--spacing-lg) 0;
+      }
+      
+      header h1 {
+        font-size: clamp(1.8rem, 6vw, 2.5rem);
+        line-height: 1.2;
+      }
+      
+      header p {
+        font-size: 1rem;
+        margin-top: var(--spacing-xs);
+      }
+      
+      /* セクションタイトルの調整 */
+      .todo-section h2,
+      .people-section h2,
+      .program-cards h2 {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        margin-bottom: var(--spacing-md);
+      }
+      
+      /* プログラムカード内のタイトル */
+      .program-card h3 {
+        font-size: 1.2rem;
+        line-height: 1.3;
+        margin-bottom: var(--spacing-xs);
+      }
+      
+      /* プログラムカード内のテキスト */
+      .program-card p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: var(--spacing-xs);
+      }
+      
+      .program-card p:last-child {
+        margin-bottom: 0;
+      }
+      
+      /* TODOとULTLA人のリスト調整 */
+      .todo-section ul, .people-section ul {
+        padding-left: var(--spacing-md);
+      }
+      
+      .todo-section li, .people-section li {
+        font-size: 0.95rem;
+        margin-bottom: var(--spacing-xs);
+      }
+    }
+    
+    /* 極小画面（iPhone SE等）の調整 */
+    @media (max-width: 480px) {
+      .container, main {
+        padding-left: var(--spacing-sm);
+        padding-right: var(--spacing-sm);
+      }
+      
+      .thumb img {
+        height: 160px;
+      }
+      
+      .program-card > div:last-child {
+        padding: var(--spacing-sm);
+      }
+      
+      .program-card h3 {
+        font-size: 1.1rem;
+      }
+      
+      .program-card p {
+        font-size: 0.85rem;
+      }
+      
+      header h1 {
+        font-size: clamp(1.5rem, 7vw, 2rem);
+      }
+    }
+    
+    /* フッターの調整 */
+    footer {
+      margin-top: var(--spacing-2xl);
+      text-align: center;
+      padding: var(--spacing-lg) 0;
+    }
+    
+    footer a {
+      display: inline-block;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--ultla-blue);
+      color: white;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+    
+    footer a:hover {
+      background: var(--ultla-green);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>ULTLA 2025 - DAY2（海）</h1>
+    <p>候補日：2025年9月13日（土）＠由比ガ浜 or 鎌倉マリーナ＆小坪</p>
+    <p>時間：10:00–16:00（予定）</p>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <section class="program-cards">
+      <h2>プログラム構成</h2>
+
+      <div class="program-card">
+        <div class="thumb">
+          <img src="day2_sea.jpg" alt="船はなぜ動く？見えない気の正体" />
+        </div>
+        <div>
+          <h3>船はなぜ動く？見えない「気」の正体</h3>
+          <p><strong>コマ：</strong>2-1</p>
+          <p><strong>時間：</strong>9:30–12:30</p>
+          <p><strong>ウルトラ人：</strong>ダビデさん？</p>
+          <p><strong>場所：</strong>海上・マリーナ</p>
+          <p><strong>概要：</strong>風や天気、漁師の気力など、船を動かす様々な「気」の力を体感する。</p>
+          <p><strong>内容：</strong>海をスーッと動く船。でも、船はどうやって動いているのかな。昔の人は風をつかまえ、今はエンジンが船を動かす。そんな今でも、大しけの時と、凪の時では船を動かす力も変わってくるはず。昔と今と、天気や漁師の気力、様々に変化する「気」がきっと船を動かしているはず。船を動かす見えない気を追ってみよう。</p>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="thumb">
+          <img src="day2_sea.jpg" alt="食べられる海の木を探そう" />
+        </div>
+        <div>
+          <h3>食べられる海の木を探そう！</h3>
+          <p><strong>コマ：</strong>2-2（L）</p>
+          <p><strong>時間：</strong>12:30–14:00</p>
+          <p><strong>ウルトラ人：</strong>海藻の専門家</p>
+          <p><strong>場所：</strong>鎌倉マリーナ or ウィズ鎌倉</p>
+          <p><strong>概要：</strong>海中の「木」＝海藻の多様性を発見し、食べて味わう体験。</p>
+          <p><strong>内容：</strong>海にもぐると、そこに広がるもう一つの世界。ぐんぐん伸びて、ゆらゆら揺れる。海の中にも育つ「木」たち。岩にくっついたり、砂の中から伸びてたり、見た目も育ち方もふしぎいっぱい。木は木でも、海の木は食べられる！？ 海の木を探して、味わってみよう！</p>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="thumb">
+          <img src="day2_sea.jpg" alt="海とわたしを結ぶ由比ガ浜のエネルギー" />
+        </div>
+        <div>
+          <h3>海とわたしを結ぶ由比ガ浜のエネルギー</h3>
+          <p><strong>コマ：</strong>2-3</p>
+          <p><strong>時間：</strong>14:00–15:00</p>
+          <p><strong>ウルトラ人：</strong>マクラメ作家</p>
+          <p><strong>場所：</strong>由比ガ浜海岸</p>
+          <p><strong>概要：</strong>鎌倉の海を通じた「結」の精神を、マクラメ作品作りを通して体感する。</p>
+          <p><strong>内容：</strong>海を通じて栄えた鎌倉。交易を行う船、魚を獲る人々。商人も漁師も町人も、様々な人たちの「気」が混ざり合って、鎌倉という街の文化が生まれた。そんな由比ガ浜で漁師たちが助け合った「結」の精神とはなんだろう。海とあなたを繋ぐ「結び」のエネルギーを形にしてみよう。</p>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="thumb">
+          <img src="day2_sea.jpg" alt="音の波動で大気のドームを感じよう" />
+        </div>
+        <div>
+          <h3>音の波動で大気のドームを感じよう</h3>
+          <p><strong>コマ：</strong>2-4</p>
+          <p><strong>時間：</strong>15:00–16:00</p>
+          <p><strong>ウルトラ人：</strong>Monk Beat studio、即興ダンサー？</p>
+          <p><strong>場所：</strong>由比ガ浜海岸</p>
+          <p><strong>概要：</strong>波動スピーカーを使い、音と波動が作る大気の空間を体感する。</p>
+          <p><strong>内容：</strong>波動スピーカーってなんだろう。海の波と波動とは同じなのか、違うのか。空気が動き、波ができ、それが音になって伝播するのはどんな仕組み？ 波動スピーカーの仕組みを探り、音と波動が作り出す大気のドームで一体になろう。</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p><a href="index.html">← ラボトップに戻る</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
