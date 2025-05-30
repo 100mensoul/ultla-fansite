@@ -447,3 +447,29 @@ footer a:hover {
   background: var(--ultla-green);
   transform: translateY(-2px);
 }
+
+.day-tabs {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tab-item {
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.tab-item:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.tab-item.active {
+  background: white;
+  color: #333;
+  font-weight: bold;
+}
