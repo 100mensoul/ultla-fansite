@@ -473,3 +473,21 @@ footer a:hover {
   color: #333;
   font-weight: bold;
 }
+
+/* デスクトップ表示 */
+.tab-item .full-text {
+  display: inline;
+}
+.tab-item .short-text {
+  display: none;
+}
+
+/* スマホ表示（768px以下） */
+@media (max-width: 768px) {
+  .tab-item .full-text {
+    display: none;
+  }
+  .tab-item .short-text {
+    display: inline;
+  }
+}
