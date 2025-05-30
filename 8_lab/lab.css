@@ -476,18 +476,18 @@ footer a:hover {
 
 /* デスクトップ表示 */
 .tab-item .full-text {
-  display: inline;
+  display: inline;!important;
 }
 .tab-item .short-text {
-  display: none;
+  display: none;!important;
 }
 
 /* スマホ表示（768px以下） */
 @media (max-width: 768px) {
   .tab-item .full-text {
-    display: none;
+    display: none;!important;
   }
   .tab-item .short-text {
-    display: inline;
+    display: inline;!important;
   }
 }
