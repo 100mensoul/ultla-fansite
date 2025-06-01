@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>つくるページ | ULTLAラボ</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    /* つくるページ専用スタイル */
+    
+    .detail-header {
+      background: linear-gradient(135deg, var(--ultla-blue) 0%, #007BB8 100%);
+      color: white;
+      padding: var(--spacing-2xl) 0;
+      margin-bottom: var(--spacing-2xl);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .detail-header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 30% 40%, rgba(255,255,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 80%, rgba(0,163,217,0.3) 0%, transparent 40%);
+      z-index: 1;
+    }
+    
+    .detail-header .container {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .detail-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-bottom: var(--spacing-sm);
+      font-weight: 500;
+    }
+    
+    .detail-subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .detail-meta {
+      display: flex;
+      gap: var(--spacing-lg);
+      flex-wrap: wrap;
+      font-size: 0.95rem;
+    }
+    
+    .meta-item {
+      background: rgba(255,255,255,0.2);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-md);
+      backdrop-filter: blur(10px);
+    }
+    
+    /* 検索・フィルター */
+    .search-filter-section {
+      background: var(--bg-card);
+      padding: var(--spacing-xl);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-xl);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .search-container {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+      flex-wrap: wrap;
+    }
+    
+    .search-input {
+      flex: 1;
+      min-width: 250px;
+      padding: var(--spacing-md);
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      transition: border-color var(--transition-normal);
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--ultla-blue);
+    }
+    
+    .search-btn {
+      padding: var(--spacing-md) var(--spacing-lg);
+      background: var(--ultla-blue);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition-normal);
+    }
+    
+    .search-btn:hover {
+      background: var(--ultla-green);
+    }
+    
+    /* タグフィルター */
+    .tag-filters {
+      display: flex;
+      gap: var(--spacing-xs);
+      flex-wrap: wrap;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .tag-filter {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: var(--bg-light);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      user-select: none;
+    }
+    
+    .tag-filter:hover {
+      background: rgba(0,163,217,0.1);
+      border-color: var(--ultla-blue);
+    }
+    
+    .tag-filter.active {
+      background: var(--ultla-blue);
+      color: white;
+      border-color: var(--ultla-blue);
+    }
+    
+    .tag-filter.category {
+      background: var(--ultla-green);
+      color: white;
+      border-color: var(--ultla-green);
+    }
+    
+    .tag-filter.area {
+      background: var(--ultla-blue);
+      color: white;
+      border-color: var(--ultla-blue);
+    }
+    
+    .tag-filter.theme {
+      background: var(--ultla-red);
+      color: white;
+      border-color: var(--ultla-red);
+    }
+    
+    /* 議事録カード */
+    .minutes-grid {
+      display: grid;
+      gap: var(--spacing-lg);
+    }
+    
+    .minutes-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-light);
+      transition: all var(--transition-normal);
+      position: relative;
+    }
+    
+    .minutes-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .minutes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .minutes-date {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      background: var(--bg-light);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-sm);
+    }
+    
+    .minutes-title {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .minutes-participants {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .minutes-content {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .minutes-tags {
+      display: flex;
+      gap: var(--spacing-xs);
+      flex-wrap: wrap;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .minutes-tag {
+      font-size: 0.75rem;
+      padding: 2px var(--spacing-xs);
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+    }
+    
+    .tag-area { background: rgba(0,163,217,0.1); color: var(--ultla-blue); }
+    .tag-category { background: rgba(0,184,148,0.1); color: var(--ultla-green); }
+    .tag-theme { background: rgba(255,107,107,0.1); color: var(--ultla-red); }
+    .tag-program { background: rgba(108,99,255,0.1); color: #6C63FF; }
+    
+    .minutes-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .view-detail-btn {
+      color: var(--ultla-blue);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      transition: color var(--transition-fast);
+    }
+    
+    .view-detail-btn:hover {
+      color: var(--ultla-green);
+    }
+    
+    .view-detail-btn::after {
+      content: "→";
+      transition: transform var(--transition-fast);
+    }
+    
+    .view-detail-btn:hover::after {
+      transform: translateX(2px);
+    }
+    
+    /* 結果表示 */
+    .results-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-lg);
+      padding: var(--spacing-md);
+      background: var(--bg-light);
+      border-radius: var(--radius-md);
+    }
+    
+    .results-count {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    .sort-select {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      background: white;
+    }
+    
+    /* レスポンシブ */
+    @media (max-width: 768px) {
+      .search-container {
+        flex-direction: column;
+      }
+      
+      .search-input {
+        min-width: unset;
+      }
+      
+      .minutes-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+      }
+      
+      .results-info {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+      }
+      
+      .tag-filters {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>ULTLAラボ</h1>
+      <nav>
+        <a href="../1_news/index.html">ニュース</a>
+        <a href="../2_about/index.html">ULTLAとは</a>
+        <a href="../3_people/index.html">ULTLA人</a>
+        <a href="../4_map/index.html">マップ</a>
+        <a href="../5_recipe/index.html">レシピ</a>
+        <a href="../6_chat/index.html">チャット</a>
+        <a href="../7_mypage/index.html">自分学</a>
+        <a href="../8_lab/index.html">ラボ</a>
+        <a href="../9_archive/index.html">アーカイブ</a>
+        <a href="../10_contact/index.html">お問い合わせ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- プログラム詳細ヘッダー -->
+    <section class="detail-header">
+      <div class="container">
+        <h1 class="detail-title">つくるページ</h1>
+        <p class="detail-subtitle">ULTLAプログラムの制作プロセスを可視化する実験室</p>
+        <div class="detail-meta">
+          <span class="meta-item">📋 全議事録管理</span>
+          <span class="meta-item">🔍 横断検索対応</span>
+          <span class="meta-item">🏷️ タグ分類システム</span>
+          <span class="meta-item">📊 プロセス可視化</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <!-- 検索・フィルター -->
+      <section class="search-filter-section">
+        <div class="search-container">
+          <input type="text" class="search-input" placeholder="議事録を検索（フリーワード）" id="searchInput">
+          <button class="search-btn" onclick="performSearch()">検索</button>
+        </div>
+        
+        <div class="tag-filters">
+          <span class="tag-filter active" data-tag="all">すべて</span>
+          <span class="tag-filter area" data-tag="海">海</span>
+          <span class="tag-filter area" data-tag="森">森</span>
+          <span class="tag-filter category" data-tag="広報">広報</span>
+          <span class="tag-filter category" data-tag="事務">事務</span>
+          <span class="tag-filter theme" data-tag="身体">身体</span>
+          <span class="tag-filter theme" data-tag="霊性">霊性</span>
+          <span class="tag-filter theme" data-tag="発散">発散</span>
+          <span class="tag-filter theme" data-tag="収束">収束</span>
+          <span class="tag-filter theme" data-tag="内省">内省</span>
+          <span class="tag-filter program" data-tag="コマ1">コマ1</span>
+          <span class="tag-filter program" data-tag="コマ2">コマ2</span>
+          <span class="tag-filter program" data-tag="コマ3">コマ3</span>
+          <span class="tag-filter program" data-tag="コマ4">コマ4</span>
+          <span class="tag-filter program" data-tag="全体">全体</span>
+        </div>
+      </section>
+
+      <!-- 検索結果情報 -->
+      <div class="results-info">
+        <span class="results-count" id="resultsCount">18件の議事録が見つかりました</span>
+        <select class="sort-select" id="sortSelect" onchange="sortResults()">
+          <option value="date-desc">新しい順</option>
+          <option value="date-asc">古い順</option>
+          <option value="relevance">関連度順</option>
+        </select>
+      </div>
+
+      <!-- 議事録カード一覧 -->
+      <section class="minutes-grid" id="minutesGrid">
+        
+        <!-- 議事録カード1 -->
+        <article class="minutes-card" data-tags="海,事務,広報,コマ1">
+          <div class="minutes-header">
+            <div>
+              <h3 class="minutes-title">第3回 定例会議</h3>
+              <p class="minutes-participants">参加者: 田中、佐藤、鎌倉市・山田氏</p>
+            </div>
+            <span class="minutes-date">2025年5月28日</span>
+          </div>
+          
+          <div class="minutes-content">
+            海エリアDAY1のプログラム詳細を協議。自分学入門の進行方法、気のワークにおける安全性確保、参加者募集のチラシデザインについて決定。由比ヶ浜での実施許可申請の進捗確認。
+          </div>
+          
+          <div class="minutes-tags">
+            <span class="minutes-tag tag-area">海</span>
+            <span class="minutes-tag tag-category">事務</span>
+            <span class="minutes-tag tag-category">広報</span>
+            <span class="minutes-tag tag-program">コマ1</span>
+          </div>
+          
+          <div class="minutes-actions">
+            <a href="minutes/2025-05-28.html" class="view-detail-btn">詳細を見る</a>
+          </div>
+        </article>
+
+        <!-- 議事録カード2 -->
+        <article class="minutes-card" data-tags="海,身体,霊性,コマ1">
+          <div class="minutes-header">
+            <div>
+              <h3 class="minutes-title">ナビゲーター打合せ - 気のワーク</h3>
+              <p class="minutes-participants">参加者: 田中、気功師・林氏</p>
+            </div>
+            <span class="minutes-date">2025年5月25日</span>
+          </div>
+          
+          <div class="minutes-content">
+            気のワークの具体的な進行方法について協議。初心者向けのアプローチ、海辺での実施における注意点、参加者の身体的・精神的安全性の確保について詳細に検討。20分間のセッション構成を確定。
+          </div>
+          
+          <div class="minutes-tags">
+            <span class="minutes-tag tag-area">海</span>
+            <span class="minutes-tag tag-theme">身体</span>
+            <span class="minutes-tag tag-theme">霊性</span>
+            <span class="minutes-tag tag-program">コマ1</span>
+          </div>
+          
+          <div class="minutes-actions">
+            <a href="minutes/2025-05-25.html" class="view-detail-btn">詳細を見る</a>
+          </div>
+        </article>
+
+        <!-- 議事録カード3 -->
+        <article class="minutes-card" data-tags="海,森,事務,コマ1,コマ2">
+          <div class="minutes-header">
+            <div>
+              <h3 class="minutes-title">第2回 定例会議</h3>
+              <p class="minutes-participants">参加者: 田中、佐藤、高橋、鎌倉市・山田氏、中村氏</p>
+            </div>
+            <span class="minutes-date">2025年5月20日</span>
+          </div>
+          
+          <div class="minutes-content">
+            全体スケジュールの最終調整。海エリアと森エリアの日程確定、各ナビゲーターとのスケジュール調整結果報告。参加費の設定と支払い方法について協議。保険加入手続きの進捗確認。
+          </div>
+          
+          <div class="minutes-tags">
+            <span class="minutes-tag tag-area">海</span>
+            <span class="minutes-tag tag-area">森</span>
+            <span class="minutes-tag tag-category">事務</span>
+            <span class="minutes-tag tag-program">コマ1</span>
+            <span class="minutes-tag tag-program">コマ2</span>
+          </div>
+          
+          <div class="minutes-actions">
+            <a href="minutes/2025-05-20.html" class="view-detail-btn">詳細を見る</a>
+          </div>
+        </article>
+
+        <!-- 議事録カード4 -->
+        <article class="minutes-card" data-tags="海,発散,内省,コマ2">
+          <div class="minutes-header">
+            <div>
+              <h3 class="minutes-title">ナビゲーター打合せ - 森のうまみ体験</h3>
+              <p class="minutes-participants">参加者: 佐藤、料理研究家・森田氏</p>
+            </div>
+            <span class="minutes-date">2025年5月22日</span>
+          </div>
+          
+          <div class="minutes-content">
+            森のうまみ体験の食材選定と調理方法について詳細協議。地元食材の調達方法、アレルギー対応、野外調理での安全性確保について検討。参加者が自然の恵みを体感できる構成を確定。
+          </div>
+          
+          <div class="minutes-tags">
+            <span class="minutes-tag tag-area">海</span>
+            <span class="minutes-tag tag-theme">発散</span>
+            <span class="minutes-tag tag-theme">内省</span>
+            <span class="minutes-tag tag-program">コマ2</span>
+          </div>
+          
+          <div class="minutes-actions">
+            <a href="minutes/2025-05-22.html" class="view-detail-btn">詳細を見る</a>
+          </div>
+        </article>
+
+        <!-- 議事録カード6 - 森エリア -->
+        <article class="minutes-card" data-tags="森,身体,霊性,コマ3">
+          <div class="minutes-header">
+            <div>
+              <h3 class="minutes-title">ナビゲーター打合せ - 樹木医との森歩き</h3>
+              <p class="minutes-participants">参加者: 高橋、樹木医・中川氏</p>
+            </div>
+            <span class="minutes-date">2025年5月30日</span>
+          </div>
+          
+          <div class="minutes-content">
+            森エリアDAY1における樹木医との森歩きの詳細プログラム協議。参加者が木々との対話を体感できるルート設定、安全性の確保、雨天時の代替案について検討。浄智寺周辺の植生特徴を活かした構成を確定。
+          </div>
+          
+          <div class="minutes-tags">
+            <span class="minutes-tag tag-area">森</span>
+            <span class="minutes-tag tag-theme">身体</span>
+            <span class="minutes-tag tag-theme">霊性</span>
+            <span class="minutes-tag tag-program">コマ3</span>
+          </div>
+          
+          <div class="minutes-actions">
+            <a href="minutes/2025-05-30.html" class="view-detail-btn">詳細を見る</a>
+          </div>
+        </article>
+
+        <!-- 議事録カード7 - 全体管理 -->
+        <article class="minutes-card" data-tags="全体,事務,広報">
+          <div class="minutes-header">
+            <div>
+              <h3 class="minutes-title">第4回 定例会議 - 全体進捗確認</h3>
+              <p class="minutes-participants">参加者: 田中、佐藤、高橋、鎌倉市・山田氏、中村氏</p>
+            </div>
+            <span class="minutes-date">2025年6月1日</span>
+          </div>
+          
+          <div class="minutes-content">
+            全4日間のプログラム進捗状況総合確認。参加者募集状況、ナビゲーター確定状況、会場確保状況を包括的に報告。年度末報告書に向けた記録整理方針についても協議。
+          </div>
+          
+          <div class="minutes-tags">
+            <span class="minutes-tag tag-program">全体</span>
+            <span class="minutes-tag tag-category">事務</span>
+            <span class="minutes-tag tag-category">広報</span>
+          </div>
+          
+          <div class="minutes-actions">
+            <a href="minutes/2025-06-01.html" class="view-detail-btn">詳細を見る</a>
+          </div>
+        </article>
+
+        <!-- 議事録カード8 - 森エリア調理 -->
+        <article class="minutes-card" data-tags="森,発散,収束,コマ4">
+          <div class="minutes-header">
+            <div>
+              <h3 class="minutes-title">ナビゲーター打合せ - 木製楽器づくり</h3>
+              <p class="minutes-participants">参加者: 佐藤、楽器職人・石井氏</p>
+            </div>
+            <span class="minutes-date">2025年5月27日</span>
+          </div>
+          
+          <div class="minutes-content">
+            森エリアDAY2の木製楽器づくりワークショップの詳細設計。使用する木材の選定、工具の安全使用方法、初心者でも楽しめる楽器設計について協議。即興音楽セッションとの連携についても検討。
+          </div>
+          
+          <div class="minutes-tags">
+            <span class="minutes-tag tag-area">森</span>
+            <span class="minutes-tag tag-theme">発散</span>
+            <span class="minutes-tag tag-theme">収束</span>
+            <span class="minutes-tag tag-program">コマ4</span>
+          </div>
+          
+          <div class="minutes-actions">
+            <a href="minutes/2025-05-27.html" class="view-detail-btn">詳細を見る</a>
+          </div>
+        </article>
+
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <small>© 2025 ULTLA Fan Community</small>
+    </div>
+  </footer>
+
+  <script>
+    // タグフィルター機能
+    document.querySelectorAll('.tag-filter').forEach(tag => {
+      tag.addEventListener('click', function() {
+        // アクティブ状態の切り替え
+        document.querySelectorAll('.tag-filter').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        const selectedTag = this.dataset.tag;
+        filterByTag(selectedTag);
+      });
+    });
+    
+    function filterByTag(tag) {
+      const cards = document.querySelectorAll('.minutes-card');
+      let visibleCount = 0;
+      
+      cards.forEach(card => {
+        if (tag === 'all' || card.dataset.tags.includes(tag)) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      updateResultsCount(visibleCount);
+    }
+    
+    function performSearch() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.minutes-card');
+      let visibleCount = 0;
+      
+      cards.forEach(card => {
+        const content = card.textContent.toLowerCase();
+        if (content.includes(searchTerm)) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      updateResultsCount(visibleCount);
+      
+      // 検索後はタグフィルターをリセット
+      document.querySelectorAll('.tag-filter').forEach(t => t.classList.remove('active'));
+      document.querySelector('[data-tag="all"]').classList.add('active');
+    }
+    
+    function sortResults() {
+      const sortBy = document.getElementById('sortSelect').value;
+      const grid = document.getElementById('minutesGrid');
+      const cards = Array.from(grid.querySelectorAll('.minutes-card'));
+      
+      cards.sort((a, b) => {
+        if (sortBy === 'date-desc') {
+          const dateA = new Date(a.querySelector('.minutes-date').textContent);
+          const dateB = new Date(b.querySelector('.minutes-date').textContent);
+          return dateB - dateA;
+        } else if (sortBy === 'date-asc') {
+          const dateA = new Date(a.querySelector('.minutes-date').textContent);
+          const dateB = new Date(b.querySelector('.minutes-date').textContent);
+          return dateA - dateB;
+        }
+        return 0;
+      });
+      
+      // カードを再配置
+      cards.forEach(card => grid.appendChild(card));
+    }
+    
+    function updateResultsCount(count) {
+      document.getElementById('resultsCount').textContent = `${count}件の議事録が見つかりました`;
+    }
+    
+    // 検索入力でEnterキー対応
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+  </script>
+</body>
+</html>
