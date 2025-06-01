@@ -6,13 +6,134 @@
   <title>ULTLA DAY1 - 海エリア</title>
   <link rel="stylesheet" href="../style.css" />
   <link rel="stylesheet" href="lab.css" />
+  <style>
+    /* プログラムカードリンクのスタイル */
+    .program-card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: all var(--transition-normal);
+    }
+    
+    .program-card-link:hover {
+      color: inherit;
+      transform: translateY(-4px);
+    }
+    
+    .program-card-link:hover .program-card {
+      box-shadow: 0 8px 24px rgba(0,163,217,0.2);
+      border-color: var(--ultla-blue);
+    }
+    
+    .program-card-link .program-card {
+      transition: all var(--transition-normal);
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    
+    /* プロセス表示インジケーター */
+    .process-indicator {
+      color: var(--ultla-blue);
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0.8;
+      transition: all var(--transition-fast);
+    }
+    
+    .program-card-link:hover .process-indicator {
+      opacity: 1;
+      color: var(--ultla-green);
+    }
+    .process-link {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--ultla-blue), var(--ultla-green));
+      color: white;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-top: var(--spacing-sm);
+      transition: all var(--transition-normal);
+      box-shadow: 0 2px 8px rgba(0,163,217,0.25);
+    }
+    
+    .process-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,163,217,0.35);
+      color: white;
+    }
+    
+    .process-link::after {
+      content: " →";
+      margin-left: 4px;
+      transition: transform var(--transition-fast);
+    }
+    
+    .process-link:hover::after {
+      transform: translateX(2px);
+    }
+    
+    /* ヘッダー内のつくるページリンク */
+    .header-process-link {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-size: 0.85rem;
+      margin-left: var(--spacing-md);
+      transition: all var(--transition-normal);
+      backdrop-filter: blur(10px);
+    }
+    
+    .header-process-link:hover {
+      background: rgba(255,255,255,0.3);
+      color: white;
+    }
+    
+    /* プログラムカードの調整 */
+    .program-card {
+      position: relative;
+    }
+    
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: var(--spacing-md);
+      padding-top: var(--spacing-sm);
+      border-top: 1px solid var(--border-light);
+    }
+    
+    .card-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    
+    @media (max-width: 768px) {
+      .card-actions {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        align-items: stretch;
+      }
+      
+      .process-link {
+        text-align: center;
+      }
+    }
+  </style>
 </head>
 <body>
 
 <header>
   <div class="container">
     <h1>ULTLA 2025 - DAY1（海）</h1>
-    <p style="color: white;">9月6日（土）or 9月7日（日）＠由比ヶ浜周辺</p>
+    <p style="color: white;">
+      9月6日（土）or 9月7日（日）＠由比ヶ浜周辺
+      <a href="make/index.html" class="header-process-link">つくるページを見る</a>
+    </p>
    <nav class="day-tabs">
       <a href="day1.html" class="tab-item active">
         <span class="full-text">海-day1</span>
@@ -61,50 +182,71 @@
         <p class="section-subtitle">鎌倉の海を舞台にしたプログラム1日目</p>
       </div>
 
-      <div class="program-card">
-        <div class="thumb">
-          <img src="image/characters.jpg" alt="君もULTLA" />
+      <a href="make/index.html?filter=コマ1" class="program-card-link">
+        <div class="program-card">
+          <div class="thumb">
+            <img src="image/characters.jpg" alt="君もULTLA" />
+          </div>
+          <div>
+            <h3>君もULTLA ─ 自分学入門</h3>
+            <p><strong>コマ：</strong>1-1</p>
+            <p><strong>時間：</strong>10:00-10:30</p>
+            <p><strong>ウルトラ人：</strong>福本理恵</p>
+            <p><strong>場所：</strong>由比ヶ浜中学校</p>
+            <p><strong>概要：</strong>自己探究のスタート。自分にとっての「心地よさ」や「芯」を発見する入門編。</p>
+            <p><strong>内容：</strong>自分の姿は自分では見えないから、自分を知る機会は実は少ない。自分の特徴をいろんな角度から写す鏡があれば、自分のことをもう少し理解できるのかもしれない。そんな鏡を手に入れて、自分が生き生きと生きられる場所、人、ものごとが何かを探す旅をはじめるのがULTLAプログラム！</p>
+            
+            <div class="card-actions">
+              <span class="card-meta">コマ1-1 関連の制作プロセス</span>
+              <span class="process-indicator">つくるページで詳細を見る →</span>
+            </div>
+          </div>
         </div>
-        <div>
-          <h3>君もULTLA ─ 自分学入門</h3>
-          <p><strong>コマ：</strong>1-1</p>
-          <p><strong>時間：</strong>10:00-10:30</p>
-          <p><strong>ウルトラ人：</strong>福本理恵</p>
-          <p><strong>場所：</strong>由比ヶ浜中学校</p>
-          <p><strong>概要：</strong>自己探究のスタート。自分にとっての「心地よさ」や「芯」を発見する入門編。</p>
-          <p><strong>内容：</strong>自分の姿は自分では見えないから、自分を知る機会は実は少ない。自分の特徴をいろんな角度から写す鏡があれば、自分のことをもう少し理解できるのかもしれない。そんな鏡を手に入れて、自分が生き生きと生きられる場所、人、ものごとが何かを探す旅をはじめるのがULTLAプログラム！</p>
-        </div>
-      </div>
+      </a>
 
-      <div class="program-card">
-        <div class="thumb">
-          <img src="image/kamakura_sea.jpg" alt="森の木が海を動かす" />
+      <a href="make/index.html?filter=コマ1" class="program-card-link">
+        <div class="program-card">
+          <div class="thumb">
+            <img src="image/kamakura_sea.jpg" alt="森の木が海を動かす" />
+          </div>
+          <div>
+            <h3>森の木が海を動かす！？</h3>
+            <p><strong>コマ：</strong>1-2</p>
+            <p><strong>時間：</strong>10:30–12:30</p>
+            <p><strong>ウルトラ人：</strong>気流の専門家：吉井孝</p>
+            <p><strong>場所：</strong>屋外または体育館</p>
+            <p><strong>概要：</strong>目に見えない「気」を感じるワーク。身体・感情・言葉の関係を体験。</p>
+            <p><strong>内容：</strong>海と森。森から海へ、海から森へ。大気は切れ目なく繋がっている。森に生える木たちは空気をつくり、風をうみ、水を動かす。それが海に届くとどうなるのかな。木がない海と、木にもられた海、比べてみたら違うかも。森の木が海を動かす！？ さあ、森と海のつながりを体で感じてみよう。</p>
+            
+            <div class="card-actions">
+              <span class="card-meta">コマ1-2 関連の制作プロセス</span>
+              <span class="process-indicator">つくるページで詳細を見る →</span>
+            </div>
+          </div>
         </div>
-        <div>
-          <h3>森の木が海を動かす！？</h3>
-          <p><strong>コマ：</strong>1-2</p>
-          <p><strong>時間：</strong>10:30–12:30</p>
-          <p><strong>ウルトラ人：</strong>気流の専門家：吉井孝</p>
-          <p><strong>場所：</strong>屋外または体育館</p>
-          <p><strong>概要：</strong>目に見えない「気」を感じるワーク。身体・感情・言葉の関係を体験。</p>
-          <p><strong>内容：</strong>海と森。森から海へ、海から森へ。大気は切れ目なく繋がっている。森に生える木たちは空気をつくり、風をうみ、水を動かす。それが海に届くとどうなるのかな。木がない海と、木にもられた海、比べてみたら違うかも。森の木が海を動かす！？ さあ、森と海のつながりを体で感じてみよう。</p>
-        </div>
-      </div>
+      </a>
 
-      <div class="program-card">
-        <div class="thumb">
-          <img src="image/sushi_salt.jpg" alt="気をめぐらす海のごちそう" />
+      <a href="make/index.html?filter=コマ1" class="program-card-link">
+        <div class="program-card">
+          <div class="thumb">
+            <img src="image/sushi_salt.jpg" alt="気をめぐらす海のごちそう" />
+          </div>
+          <div>
+            <h3>気をめぐらす海のごちそう</h3>
+            <p><strong>コマ：</strong>1-3（L）</p>
+            <p><strong>時間：</strong>12:30–13:30</p>
+            <p><strong>ウルトラ人：</strong>薬膳寿司？</p>
+            <p><strong>場所：</strong>屋外 or 仮設テント</p>
+            <p><strong>概要：</strong>きのこの多様性と生態系。うまみとは何か？五感で味わう。</p>
+            <p><strong>内容：</strong>キラキラ光る、海のごちそう。波にゆられて育った魚や回想、ミネラルたっぷりの海の幸。昔の人は、旬の食べものを食べることで、気分をあげたり、気持ちを落ち着けたりしていたみたい。そんな「海のチカラ」を体に取り込むと、どんな気が満ちてくる？ 目で見て、香りをかいで、かみしめて。気持ちが変わるごはんってどんな味？</p>
+            
+            <div class="card-actions">
+              <span class="card-meta">コマ1-3 関連の制作プロセス</span>
+              <span class="process-indicator">つくるページで詳細を見る →</span>
+            </div>
+          </div>
         </div>
-        <div>
-          <h3>気をめぐらす海のごちそう</h3>
-          <p><strong>コマ：</strong>1-3（L）</p>
-          <p><strong>時間：</strong>12:30–13:30</p>
-          <p><strong>ウルトラ人：</strong>薬膳寿司？</p>
-          <p><strong>場所：</strong>屋外 or 仮設テント</p>
-          <p><strong>概要：</strong>きのこの多様性と生態系。うまみとは何か？五感で味わう。</p>
-          <p><strong>内容：</strong>キラキラ光る、海のごちそう。波にゆられて育った魚や回想、ミネラルたっぷりの海の幸。昔の人は、旬の食べものを食べることで、気分をあげたり、気持ちを落ち着けたりしていたみたい。そんな「海のチカラ」を体に取り込むと、どんな気が満ちてくる？ 目で見て、香りをかいで、かみしめて。気持ちが変わるごはんってどんな味？</p>
-        </div>
-      </div>
+      </a>
 
       <div class="program-card">
         <div class="thumb">
@@ -118,7 +260,22 @@
           <p><strong>場所：</strong>由比ヶ浜海浜公園</p>
           <p><strong>概要：</strong>空気から電気が生まれる仕組みと、神経や心とのつながりを感じる。</p>
           <p><strong>内容：</strong>とっても繊細で優しい馬は、人の気持ちがわかるみたい。不安な時は不安なように、楽しい時は楽しいように、人の気持ちを察知して、馬はその場の気を読み、そう振る舞う。馬とあなたの気が合った時、馬とあなたは一体となり、すごい馬力を感じるかも。</p>
+          
+          <div class="card-actions">
+            <span class="card-meta">コマ1-4 関連の制作プロセス</span>
+            <a href="make/index.html?filter=コマ1" class="process-link">つくるページで詳細を見る</a>
+          </div>
         </div>
+      </div>
+    </section>
+    
+    <!-- つくるページへの総合リンク -->
+    <section style="text-align: center; margin: var(--spacing-2xl) 0;">
+      <div style="background: var(--bg-card); padding: var(--spacing-xl); border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+        <h3 style="color: var(--ultla-blue); margin-bottom: var(--spacing-md);">制作プロセスを見る</h3>
+        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">DAY1の制作過程や会議記録をすべて確認できます</p>
+        <a href="make/index.html?filter=海" class="process-link" style="margin-right: var(--spacing-md);">海エリア関連の議事録</a>
+        <a href="make/index.html" class="process-link">すべての制作記録を見る</a>
       </div>
     </section>
   </div>
