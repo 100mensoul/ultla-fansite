@@ -1,10 +1,33 @@
-<!DOCTYPE html>
+<!-- 議事録カード5 -->
+        <article class="minutes-card" data-tags="海,広報,事務">
+          <div class="minutes-header">
+            <div>
+              <h3 class="minutes-title">広報戦略会議</h3>
+              <p class="minutes-participants">参加者: 田中、佐藤、デザイナー・青木氏</p>
+            </div>
+            <span class="minutes-date">2025年5月18日</span>
+          </div>
+          
+          <div class="minutes-content">
+            チラシデザインの最終確認、SNS投稿戦略、ウェブサイト更新内容について協議。ターゲット層の明確化と効果的なリーチ方法について検討。申込フォームの最終調整も実施。
+          </div>
+          
+          <div class="minutes-tags">
+            <span class="minutes-tag tag-area">海</span>
+            <span class="minutes-tag tag-category">広報</span>
+            <span class="minutes-tag tag-category">事務</span>
+          </div>
+          
+          <div class="minutes-actions">
+            <a href="minutes/2025-05-18.html" class="view-detail-btn">詳細を見る</a>
+          </div>
+        </article><!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>つくるページ | ULTLAラボ</title>
-  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../../style.css">
   <style>
     /* つくるページ専用スタイル */
     
@@ -315,16 +338,16 @@
     <div class="container">
       <h1>ULTLAラボ</h1>
       <nav>
-        <a href="../1_news/index.html">ニュース</a>
-        <a href="../2_about/index.html">ULTLAとは</a>
-        <a href="../3_people/index.html">ULTLA人</a>
-        <a href="../4_map/index.html">マップ</a>
-        <a href="../5_recipe/index.html">レシピ</a>
-        <a href="../6_chat/index.html">チャット</a>
-        <a href="../7_mypage/index.html">自分学</a>
-        <a href="../8_lab/index.html">ラボ</a>
-        <a href="../9_archive/index.html">アーカイブ</a>
-        <a href="../10_contact/index.html">お問い合わせ</a>
+        <a href="../../1_news/index.html">ニュース</a>
+        <a href="../../2_about/index.html">ULTLAとは</a>
+        <a href="../../3_people/index.html">ULTLA人</a>
+        <a href="../../4_map/index.html">マップ</a>
+        <a href="../../5_recipe/index.html">レシピ</a>
+        <a href="../../6_chat/index.html">チャット</a>
+        <a href="../../7_mypage/index.html">自分学</a>
+        <a href="../index.html">ラボ</a>
+        <a href="../../9_archive/index.html">アーカイブ</a>
+        <a href="../../10_contact/index.html">お問い合わせ</a>
       </nav>
     </div>
   </header>
@@ -406,7 +429,7 @@
           </div>
           
           <div class="minutes-actions">
-            <a href="minutes/2025-05-28.html" class="view-detail-btn">詳細を見る</a>
+            <span class="view-detail-btn" style="color: var(--text-muted); cursor: default;">詳細準備中</span>
           </div>
         </article>
 
@@ -577,6 +600,22 @@
   </footer>
 
   <script>
+    // 初期化時にURLパラメータをチェック
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const filterTag = urlParams.get('filter');
+      
+      if (filterTag) {
+        // URLパラメータで指定されたタグでフィルタリング
+        const targetTag = document.querySelector(`[data-tag="${filterTag}"]`);
+        if (targetTag) {
+          document.querySelectorAll('.tag-filter').forEach(t => t.classList.remove('active'));
+          targetTag.classList.add('active');
+          filterByTag(filterTag);
+        }
+      }
+    });
+    
     // タグフィルター機能
     document.querySelectorAll('.tag-filter').forEach(tag => {
       tag.addEventListener('click', function() {
