@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>つくるページ | ULTLAラボ</title>
+  <link rel="stylesheet" href="../../style.css">
+  <style>
+    /* 既存のスタイルはそのまま保持 */
+    
+    .detail-header {
+      background: linear-gradient(135deg, var(--ultla-blue) 0%, #007BB8 100%);
+      color: white;
+      padding: var(--spacing-2xl) 0;
+      margin-bottom: var(--spacing-2xl);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .detail-header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 30% 40%, rgba(255,255,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 80%, rgba(0,163,217,0.3) 0%, transparent 40%);
+      z-index: 1;
+    }
+    
+    .detail-header .container {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .detail-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-bottom: var(--spacing-sm);
+      font-weight: 500;
+    }
+    
+    .detail-subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .detail-meta {
+      display: flex;
+      gap: var(--spacing-lg);
+      flex-wrap: wrap;
+      font-size: 0.95rem;
+    }
+    
+    .meta-item {
+      background: rgba(255,255,255,0.2);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-md);
+      backdrop-filter: blur(10px);
+    }
+
+    /* 認証状態表示 */
+    .auth-section {
+      background: var(--bg-card);
+      padding: var(--spacing-lg);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-xl);
+      box-shadow: var(--shadow-md);
+      text-align: center;
+    }
+
+    .login-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .logout-btn {
+      background: var(--ultla-red);
+      color: white;
+      border: none;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all var(--transition-fast);
+    }
+
+    .logout-btn:hover {
+      background: #c92a2a;
+    }
+
+    .login-prompt {
+      color: var(--text-secondary);
+    }
+
+    .login-link {
+      color: var(--ultla-blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .login-link:hover {
+      color: var(--ultla-green);
+    }
+
+    /* 議事録投稿セクション */
+    .upload-section {
+      background: var(--bg-card);
+      padding: var(--spacing-xl);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-xl);
+      box-shadow: var(--shadow-md);
+      border: 2px dashed var(--border-light);
+      transition: all var(--transition-normal);
+      display: none; /* 初期状態では非表示 */
+    }
+    
+    .upload-section.show {
+      display: block;
+    }
+    
+    .upload-section.dragover {
+      border-color: var(--ultla-blue);
+      background: rgba(0,163,217,0.05);
+    }
+    
+    .upload-form {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .form-group {
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: var(--spacing-xs);
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: var(--spacing-sm);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: border-color var(--transition-fast);
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--ultla-blue);
+      box-shadow: 0 0 0 3px rgba(0,163,217,0.1);
+    }
+    
+    .file-drop-zone {
+      border: 2px dashed var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-2xl);
+      text-align: center;
+      transition: all var(--transition-normal);
+      cursor: pointer;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .file-drop-zone.dragover {
+      border-color: var(--ultla-blue);
+      background: rgba(0,163,217,0.05);
+    }
+    
+    .file-info {
+      background: var(--bg-light);
+      padding: var(--spacing-md);
+      border-radius: var(--radius-md);
+      margin-top: var(--spacing-sm);
+      display: none;
+    }
+    
+    .submit-btn {
+      background: linear-gradient(135deg, var(--ultla-blue), var(--ultla-green));
+      color: white;
+      padding: var(--spacing-md) var(--spacing-xl);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      box-shadow: var(--shadow-md);
+      width: 100%;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .submit-btn:disabled {
+      background: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* 検索・フィルター - 既存コードと統合 */
+    .search-filter-section {
+      background: var(--bg-card);
+      padding: var(--spacing-xl);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-xl);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .search-container {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+      flex-wrap: wrap;
+    }
+    
+    .search-input {
+      flex: 1;
+      min-width: 250px;
+      padding: var(--spacing-md);
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      transition: border-color var(--transition-normal);
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--ultla-blue);
+    }
+    
+    .search-btn {
+      padding: var(--spacing-md) var(--spacing-lg);
+      background: var(--ultla-blue);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition-normal);
+    }
+    
+    .search-btn:hover {
+      background: var(--ultla-green);
+    }
+    
+    /* タグフィルター */
+    .tag-filters {
+      display: flex;
+      gap: var(--spacing-xs);
+      flex-wrap: wrap;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .tag-filter {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: var(--bg-light);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      user-select: none;
+    }
+    
+    .tag-filter:hover {
+      background: rgba(0,163,217,0.1);
+      border-color: var(--ultla-blue);
+    }
+    
+    .tag-filter.active {
+      background: var(--ultla-blue);
+      color: white;
+      border-color: var(--ultla-blue);
+    }
+    
+    .tag-filter.category {
+      background: var(--ultla-green);
+      color: white;
+      border-color: var(--ultla-green);
+    }
+    
+    .tag-filter.area {
+      background: var(--ultla-blue);
+      color: white;
+      border-color: var(--ultla-blue);
+    }
+    
+    .tag-filter.theme {
+      background: var(--ultla-red);
+      color: white;
+      border-color: var(--ultla-red);
+    }
+    
+    /* 議事録カード - 既存デザインを保持 */
+    .minutes-grid {
+      display: grid;
+      gap: var(--spacing-lg);
+    }
+    
+    .minutes-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-light);
+      transition: all var(--transition-normal);
+      position: relative;
+    }
+    
+    .minutes-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .minutes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .minutes-date {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      background: var(--bg-light);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-sm);
+    }
+    
+    .minutes-title {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .minutes-participants {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .minutes-content {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .minutes-tags {
+      display: flex;
+      gap: var(--spacing-xs);
+      flex-wrap: wrap;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .minutes-tag {
+      font-size: 0.75rem;
+      padding: 2px var(--spacing-xs);
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+    }
+    
+    .tag-area { background: rgba(0,163,217,0.1); color: var(--ultla-blue); }
+    .tag-category { background: rgba(0,184,148,0.1); color: var(--ultla-green); }
+    .tag-theme { background: rgba(255,107,107,0.1); color: var(--ultla-red); }
+    .tag-program { background: rgba(108,99,255,0.1); color: #6C63FF; }
+    
+    .minutes-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .view-detail-btn {
+      color: var(--ultla-blue);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      transition: color var(--transition-fast);
+    }
+    
+    .view-detail-btn:hover {
+      color: var(--ultla-green);
+    }
+    
+    .view-detail-btn::after {
+      content: "→";
+      transition: transform var(--transition-fast);
+    }
+    
+    .view-detail-btn:hover::after {
+      transform: translateX(2px);
+    }
+
+    .edit-btn, .delete-btn {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-left: var(--spacing-xs);
+      transition: all var(--transition-fast);
+    }
+
+    .edit-btn {
+      background: var(--ultla-blue);
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background: var(--ultla-green);
+    }
+
+    .delete-btn {
+      background: var(--ultla-red);
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background: #c92a2a;
+    }
+    
+    /* 結果表示 */
+    .results-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-lg);
+      padding: var(--spacing-md);
+      background: var(--bg-light);
+      border-radius: var(--radius-md);
+    }
+    
+    .results-count {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    .sort-select {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      background: white;
+    }
+
+    /* ローディング・エラー表示 */
+    .loading-message {
+      text-align: center;
+      padding: var(--spacing-2xl);
+      color: var(--text-muted);
+    }
+
+    .error-message {
+      background: #fee;
+      border: 1px solid #fcc;
+      color: #a00;
+      padding: var(--spacing-md);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .success-message {
+      background: #efe;
+      border: 1px solid #cfc;
+      color: #090;
+      padding: var(--spacing-md);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    /* レスポンシブ */
+    @media (max-width: 768px) {
+      .login-status {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+      }
+      
+      .search-container {
+        flex-direction: column;
+      }
+      
+      .search-input {
+        min-width: unset;
+      }
+      
+      .minutes-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+      }
+      
+      .results-info {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+      }
+      
+      .tag-filters {
+        justify-content: center;
+      }
+
+      .minutes-actions {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>ULTLAラボ</h1>
+      <nav>
+        <a href="../../1_news/index.html">ニュース</a>
+        <a href="../../2_about/index.html">ULTLAとは</a>
+        <a href="../../3_people/index.html">ULTLA人</a>
+        <a href="../../4_map/index.html">マップ</a>
+        <a href="../../5_recipe/index.html">レシピ</a>
+        <a href="../../6_chat/index.html">チャット</a>
+        <a href="../../7_mypage/index.html">自分学</a>
+        <a href="../index.html">ラボ</a>
+        <a href="../../9_archive/index.html">アーカイブ</a>
+        <a href="../../10_contact/index.html">お問い合わせ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- プログラム詳細ヘッダー -->
+    <section class="detail-header">
+      <div class="container">
+        <h1 class="detail-title">つくるページ</h1>
+        <p class="detail-subtitle">ULTLAプログラムの制作プロセスを可視化する実験室</p>
+        <div class="detail-meta">
+          <span class="meta-item">📋 全議事録管理</span>
+          <span class="meta-item">🔍 横断検索対応</span>
+          <span class="meta-item">🏷️ タグ分類システム</span>
+          <span class="meta-item">📊 プロセス可視化</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <!-- 認証状態表示 -->
+      <section class="auth-section">
+        <div id="authStatus">
+          <!-- ログイン状態 -->
+          <div id="loggedInStatus" style="display: none;">
+            <div class="login-status">
+              <div class="user-info">
+                <span style="color: var(--ultla-green); font-weight: bold;">✅ ログイン中:</span>
+                <span id="currentUser"></span>
+              </div>
+              <button id="logoutBtn" class="logout-btn">ログアウト</button>
+            </div>
+            <button id="showUploadBtn" class="search-btn" style="margin-bottom: var(--spacing-md);">📝 新しい議事録を投稿</button>
+          </div>
+          
+          <!-- 未ログイン状態 -->
+          <div id="notLoggedInStatus" style="display: none;">
+            <div class="login-prompt">
+              <p style="margin-bottom: var(--spacing-sm);">⚠️ ログインしていません</p>
+              <p>議事録の投稿・編集にはログインが必要です。</p>
+              <a href="../auth-test.html" class="login-link">ログインページへ →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- メッセージ表示エリア -->
+      <div id="messageArea"></div>
+
+      <!-- 議事録投稿セクション -->
+      <section id="uploadSection" class="upload-section">
+        <div class="section-header">
+          <h2 class="section-title">📁 議事録投稿</h2>
+          <p class="section-subtitle">会議の記録をプロジェクトメンバーと共有しましょう</p>
+        </div>
+
+        <form class="upload-form" id="uploadForm">
+          <div class="form-group">
+            <label for="meetingTitle">会議タイトル <span style="color: var(--ultla-red);">*</span></label>
+            <input type="text" id="meetingTitle" required placeholder="例：第3回 海エリア企画会議">
+          </div>
+
+          <div class="form-group">
+            <label for="meetingDate">会議日付 <span style="color: var(--ultla-red);">*</span></label>
+            <input type="date" id="meetingDate" required>
+          </div>
+
+          <div class="form-group">
+            <label for="meetingParticipants">参加者</label>
+            <input type="text" id="meetingParticipants" placeholder="例：田中、佐藤、鎌倉市・山田氏">
+          </div>
+
+          <div class="form-group">
+            <label for="meetingDescription">内容・概要 <span style="color: var(--ultla-red);">*</span></label>
+            <textarea id="meetingDescription" rows="4" required placeholder="会議の内容や主要な決定事項など"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="meetingTags">タグ（カンマ区切り）</label>
+            <input type="text" id="meetingTags" placeholder="例：海,事務,広報,コマ1">
+            <small style="color: var(--text-muted);">💡 エリア（海・森）、カテゴリ（事務・広報）、テーマ、プログラム（コマ1-4・全体）など</small>
+          </div>
+
+          <div class="form-group">
+            <label for="meetingFile">議事録ファイル（任意）</label>
+            <div class="file-drop-zone" id="fileDropZone">
+              <p>📄 ファイルをドラッグ&ドロップするか、クリックして選択</p>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">対応形式: PDF, Word, Excel, PowerPoint, テキスト</p>
+            </div>
+            <input type="file" id="meetingFile" style="display: none;" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md">
+            <div class="file-info" id="fileInfo"></div>
+          </div>
+
+          <div style="display: flex; gap: var(--spacing-md);">
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>
+              📤 議事録を投稿
+            </button>
+            <button type="button" id="cancelUploadBtn" class="submit-btn" style="background: var(--text-muted); flex: 0 0 auto;">
+              キャンセル
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- 検索・フィルター -->
+      <section class="search-filter-section">
+        <div class="search-container">
+          <input type="text" class="search-input" placeholder="議事録を検索（フリーワード）" id="searchInput">
+          <button class="search-btn" onclick="performSearch()">検索</button>
+        </div>
+        
+        <div class="tag-filters">
+          <span class="tag-filter active" data-tag="all">すべて</span>
+          <span class="tag-filter area" data-tag="海">海</span>
+          <span class="tag-filter area" data-tag="森">森</span>
+          <span class="tag-filter category" data-tag="広報">広報</span>
+          <span class="tag-filter category" data-tag="事務">事務</span>
+          <span class="tag-filter theme" data-tag="身体">身体</span>
+          <span class="tag-filter theme" data-tag="霊性">霊性</span>
+          <span class="tag-filter theme" data-tag="発散">発散</span>
+          <span class="tag-filter theme" data-tag="収束">収束</span>
+          <span class="tag-filter theme" data-tag="内省">内省</span>
+          <span class="tag-filter program" data-tag="コマ1">コマ1</span>
+          <span class="tag-filter program" data-tag="コマ2">コマ2</span>
+          <span class="tag-filter program" data-tag="コマ3">コマ3</span>
+          <span class="tag-filter program" data-tag="コマ4">コマ4</span>
+          <span class="tag-filter program" data-tag="全体">全体</span>
+        </div>
+      </section>
+
+      <!-- 検索結果情報 -->
+      <div class="results-info">
+        <span class="results-count" id="resultsCount">議事録を読み込み中...</span>
+        <select class="sort-select" id="sortSelect" onchange="sortResults()">
+          <option value="date-desc">新しい順</option>
+          <option value="date-asc">古い順</option>
+          <option value="relevance">関連度順</option>
+        </select>
+      </div>
+
+      <!-- 議事録カード一覧 -->
+      <section class="minutes-grid" id="minutesGrid">
+        <div class="loading-message">議事録を読み込んでいます...</div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <small>© 2025 ULTLA Fan Community</small>
+    </div>
+  </footer>
+
+  <!-- Firebase設定（実際のパス構造に合わせて調整） -->
+  <script type="module" src="../firebase-test.js"></script>
+  
+  <!-- 議事録管理機能 -->
+  <script type="module">
+    import { db, storage, authReady, auth } from '../firebase-test.js';
+    import {
+      collection,
+      addDoc,
+      serverTimestamp,
+      query,
+      where,
+      orderBy,
+      onSnapshot,
+      doc,
+      getDoc,
+      setDoc,
+      getDocs,
+      updateDoc,
+      deleteDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import {
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+    import {
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // グローバル変数
+    let currentUID = null;
+    let userProfile = null;
+    let selectedFile = null;
+    let allMeetingRecords = [];
+
+    // DOM要素
+    const loggedInStatus = document.getElementById('loggedInStatus');
+    const notLoggedInStatus = document.getElementById('notLoggedInStatus');
+    const currentUser = document.getElementById('currentUser');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const showUploadBtn = document.getElementById('showUploadBtn');
+    const uploadSection = document.getElementById('uploadSection');
+    const cancelUploadBtn = document.getElementById('cancelUploadBtn');
+    const messageArea = document.getElementById('messageArea');
+    const minutesGrid = document.getElementById('minutesGrid');
+    const resultsCount = document.getElementById('resultsCount');
+
+    // ユーザープロフィール取得
+    async function getUserProfile(uid) {
+      if (!uid) return null;
+      try {
+        const profileRef = doc(db, "userProfiles", uid);
+        const profileSnap = await getDoc(profileRef);
+        return profileSnap.exists() ? profileSnap.data() : null;
+      } catch (error) {
+        console.error("プロフィール取得エラー:", error);
+        return null;
+      }
+    }
+
+    // 認証状態表示更新
+    async function updateAuthDisplay(user) {
+      if (user) {
+        currentUID = user.uid;
+        userProfile = await getUserProfile(user.uid);
+        
+        let displayText;
+        if (userProfile && userProfile.username) {
+          displayText = `${userProfile.username}さん`;
+        } else {
+          const email = user.email || `匿名ユーザー (${user.uid.substring(0, 8)}...)`;
+          displayText = email;
+        }
+        
+        const authMethod = user.isAnonymous ? '匿名' : (user.providerData[0]?.providerId === 'google.com' ? 'Google' : 'メール');
+        currentUser.innerHTML = `${displayText} <small style="color: #666;">(${authMethod}認証)</small>`;
+        
+        loggedInStatus.style.display = 'block';
+        notLoggedInStatus.style.display = 'none';
+      } else {
+        currentUID = null;
+        userProfile = null;
+        loggedInStatus.style.display = 'none';
+        notLoggedInStatus.style.display = 'block';
+      }
+    }
+
+    // メッセージ表示
+    function showMessage(message, type = 'info') {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `${type}-message`;
+      messageDiv.textContent = message;
+      messageArea.innerHTML = '';
+      messageArea.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 5000);
+    }
+
+    // ログアウト処理
+    async function handleLogout() {
+      try {
+        await signOut(auth);
+        showMessage('ログアウトしました', 'success');
+        setTimeout(() => {
+          window.location.href = '../auth-test.html';
+        }, 1000);
+      } catch (error) {
+        console.error("ログアウトエラー:", error);
+        showMessage('ログアウトに失敗しました: ' + error.message, 'error');
+      }
+    }
+
+    // 議事録アップロード表示/非表示
+    function toggleUploadSection() {
+      if (uploadSection.classList.contains('show')) {
+        uploadSection.classList.remove('show');
+        showUploadBtn.textContent = '📝 新しい議事録を投稿';
+      } else {
+        uploadSection.classList.add('show');
+        showUploadBtn.textContent = '📝 投稿フォームを閉じる';
+        document.getElementById('meetingDate').value = new Date().toISOString().split('T')[0];
+      }
+    }
+
+    // ファイル選択処理
+    const fileDropZone = document.getElementById('fileDropZone');
+    const meetingFile = document.getElementById('meetingFile');
+    const fileInfo = document.getElementById('fileInfo');
+    const submitBtn = document.getElementById('submitBtn');
+
+    fileDropZone.addEventListener('click', () => meetingFile.click());
+
+    fileDropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      fileDropZone.classList.add('dragover');
+    });
+
+    fileDropZone.addEventListener('dragleave', () => {
+      fileDropZone.classList.remove('dragover');
+    });
+
+    fileDropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      fileDropZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFileSelect(files[0]);
+      }
+    });
+
+    meetingFile.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFileSelect(e.target.files[0]);
+      }
+    });
+
+    function handleFileSelect(file) {
+      selectedFile = file;
+      fileInfo.style.display = 'block';
+      fileInfo.innerHTML = `
+        <h4>選択されたファイル:</h4>
+        <p><strong>名前:</strong> ${file.name}</p>
+        <p><strong>サイズ:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+        <p><strong>種類:</strong> ${file.type || '不明'}</p>
+      `;
+      updateSubmitButton();
+    }
+
+    function updateSubmitButton() {
+      const title = document.getElementById('meetingTitle').value.trim();
+      const date = document.getElementById('meetingDate').value;
+      const description = document.getElementById('meetingDescription').value.trim();
+      
+      if (title && date && description) {
+        submitBtn.disabled = false;
+      } else {
+        submitBtn.disabled = true;
+      }
+    }
+
+    // フォーム入力監視
+    document.getElementById('meetingTitle').addEventListener('input', updateSubmitButton);
+    document.getElementById('meetingDate').addEventListener('input', updateSubmitButton);
+    document.getElementById('meetingDescription').addEventListener('input', updateSubmitButton);
+
+    // 議事録投稿処理
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (!currentUID) {
+        showMessage('ログインが必要です', 'error');
+        return;
+      }
+
+      const formData = {
+        title: document.getElementById('meetingTitle').value.trim(),
+        meetingDate: new Date(document.getElementById('meetingDate').value),
+        participants: document.getElementById('meetingParticipants').value.trim() || '',
+        description: document.getElementById('meetingDescription').value.trim(),
+        tags: document.getElementById('meetingTags').value.split(',').map(tag => tag.trim()).filter(tag => tag !== '')
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = '📤 投稿中...';
+
+      try {
+        let fileUrl = '';
+        let fileName = '';
+        let fileSize = 0;
+        let fileType = '';
+
+        // ファイルアップロード処理
+        if (selectedFile) {
+          const fileStorageName = `meeting_records/${currentUID}_${Date.now()}_${selectedFile.name}`;
+          const fileRef = ref(storage, fileStorageName);
+          const snapshot = await uploadBytes(fileRef, selectedFile);
+          fileUrl = await getDownloadURL(snapshot.ref);
+          fileName = selectedFile.name;
+          fileSize = selectedFile.size;
+          fileType = selectedFile.type;
+        }
+
+        // Firestoreに保存
+        const recordData = {
+          uid: currentUID,
+          uploaderName: userProfile ? userProfile.displayName : '匿名ユーザー',
+          title: formData.title,
+          meetingDate: formData.meetingDate,
+          participants: formData.participants,
+          description: formData.description,
+          tags: formData.tags,
+          fileUrl,
+          fileName,
+          fileSize,
+          fileType,
+          project: 'ULTLA2025',
+          status: 'published',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        };
+
+        await addDoc(collection(db, "meetingRecords"), recordData);
+        
+        showMessage('議事録が正常に投稿されました！', 'success');
+        
+        // フォームリセット
+        document.getElementById('uploadForm').reset();
+        selectedFile = null;
+        fileInfo.style.display = 'none';
+        toggleUploadSection();
+        updateSubmitButton();
+
+      } catch (error) {
+        console.error('投稿エラー:', error);
+        showMessage('投稿に失敗しました: ' + error.message, 'error');
+      } finally {
+        submitBtn.textContent = '📤 議事録を投稿';
+      }
+    });
+
+    // 議事録一覧表示
+    function displayMeetingRecords() {
+      const recordsRef = collection(db, "meetingRecords");
+      const q = query(recordsRef, where("project", "==", "ULTLA2025"), orderBy("meetingDate", "desc"));
+      
+      onSnapshot(q, (querySnapshot) => {
+        allMeetingRecords = [];
+        
+        querySnapshot.forEach((doc) => {
+          const record = doc.data();
+          allMeetingRecords.push({
+            id: doc.id,
+            ...record
+          });
+        });
+        
+        renderMeetingRecords(allMeetingRecords);
+        updateResultsCount(allMeetingRecords.length);
+      }, (error) => {
+        console.error("議事録読み込みエラー:", error);
+        minutesGrid.innerHTML = '<div class="error-message">議事録の読み込みに失敗しました</div>';
+      });
+    }
+
+    // 議事録カード描画
+    function renderMeetingRecords(records) {
+      if (records.length === 0) {
+        minutesGrid.innerHTML = '<div class="loading-message">議事録がまだありません</div>';
+        return;
+      }
+
+      minutesGrid.innerHTML = '';
+      
+      records.forEach(record => {
+        const cardElement = createMeetingRecordCard(record);
+        minutesGrid.appendChild(cardElement);
+      });
+    }
+
+    // 議事録カード作成
+    function createMeetingRecordCard(record) {
+      const element = document.createElement('article');
+      element.className = 'minutes-card';
+      element.setAttribute('data-tags', record.tags ? record.tags.join(',') : '');
+
+      const meetingDate = record.meetingDate ? 
+        (record.meetingDate.toDate ? record.meetingDate.toDate() : new Date(record.meetingDate)) :
+        new Date();
+
+      const isOwner = record.uid === currentUID;
+
+      element.innerHTML = `
+        <div class="minutes-header">
+          <div>
+            <h3 class="minutes-title">${escapeHTML(record.title)}</h3>
+            ${record.participants ? `<p class="minutes-participants">参加者: ${escapeHTML(record.participants)}</p>` : ''}
+          </div>
+          <span class="minutes-date">${meetingDate.toLocaleDateString('ja-JP')}</span>
+        </div>
+        
+        <div class="minutes-content">
+          ${escapeHTML(record.description)}
+        </div>
+        
+        ${record.tags && record.tags.length > 0 ? `
+          <div class="minutes-tags">
+            ${record.tags.map(tag => {
+              let tagClass = 'tag-theme';
+              if (['海', '森'].includes(tag)) tagClass = 'tag-area';
+              else if (['事務', '広報'].includes(tag)) tagClass = 'tag-category';
+              else if (['コマ1', 'コマ2', 'コマ3', 'コマ4', '全体'].includes(tag)) tagClass = 'tag-program';
+              
+              return `<span class="minutes-tag ${tagClass}">${escapeHTML(tag)}</span>`;
+            }).join('')}
+          </div>
+        ` : ''}
+        
+        <div class="minutes-actions">
+          <div>
+            ${record.fileUrl ? `<a href="${record.fileUrl}" target="_blank" class="view-detail-btn">📄 ファイルを開く</a>` : ''}
+          </div>
+          <div>
+            <small style="color: var(--text-muted);">投稿者: ${escapeHTML(record.uploaderName)}</small>
+            ${isOwner ? `
+              <button class="edit-btn" onclick="editRecord('${record.id}')">編集</button>
+              <button class="delete-btn" onclick="deleteRecord('${record.id}')">削除</button>
+            ` : ''}
+          </div>
+        </div>
+      `;
+
+      return element;
+    }
+
+    // HTMLエスケープ
+    function escapeHTML(str) {
+      if (typeof str !== 'string') return '';
+      return str.replace(/[&<>"']/g, function (match) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;',
+        }[match];
+      });
+    }
+
+    // 結果件数更新
+    function updateResultsCount(count) {
+      resultsCount.textContent = `${count}件の議事録が見つかりました`;
+    }
+
+    // 検索・フィルター機能（既存コードを活用）
+    window.performSearch = function() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      
+      if (!searchTerm.trim()) {
+        renderMeetingRecords(allMeetingRecords);
+        updateResultsCount(allMeetingRecords.length);
+        return;
+      }
+
+      const filteredRecords = allMeetingRecords.filter(record => {
+        const searchableText = `${record.title} ${record.description} ${record.participants || ''} ${(record.tags || []).join(' ')}`.toLowerCase();
+        return searchableText.includes(searchTerm);
+      });
+
+      renderMeetingRecords(filteredRecords);
+      updateResultsCount(filteredRecords.length);
+    };
+
+    // タグフィルター
+    document.querySelectorAll('.tag-filter').forEach(tag => {
+      tag.addEventListener('click', function() {
+        document.querySelectorAll('.tag-filter').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        const selectedTag = this.dataset.tag;
+        filterByTag(selectedTag);
+      });
+    });
+
+    function filterByTag(tag) {
+      if (tag === 'all') {
+        renderMeetingRecords(allMeetingRecords);
+        updateResultsCount(allMeetingRecords.length);
+        return;
+      }
+
+      const filteredRecords = allMeetingRecords.filter(record => {
+        return record.tags && record.tags.includes(tag);
+      });
+
+      renderMeetingRecords(filteredRecords);
+      updateResultsCount(filteredRecords.length);
+    }
+
+    // グローバル関数（編集・削除用）
+    window.editRecord = function(recordId) {
+      showMessage('編集機能は開発中です', 'info');
+    };
+
+    window.deleteRecord = function(recordId) {
+      if (confirm('この議事録を削除しますか？\n※この操作は取り消せません。')) {
+        deleteDoc(doc(db, "meetingRecords", recordId))
+          .then(() => {
+            showMessage('議事録が削除されました', 'success');
+          })
+          .catch((error) => {
+            console.error('削除エラー:', error);
+            showMessage('削除に失敗しました', 'error');
+          });
+      }
+    };
+
+    window.sortResults = function() {
+      const sortBy = document.getElementById('sortSelect').value;
+      const currentRecords = [...allMeetingRecords];
+      
+      currentRecords.sort((a, b) => {
+        if (sortBy === 'date-desc') {
+          const dateA = a.meetingDate?.toDate ? a.meetingDate.toDate() : new Date(a.meetingDate);
+          const dateB = b.meetingDate?.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
+          return dateB - dateA;
+        } else if (sortBy === 'date-asc') {
+          const dateA = a.meetingDate?.toDate ? a.meetingDate.toDate() : new Date(a.meetingDate);
+          const dateB = b.meetingDate?.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
+          return dateA - dateB;
+        }
+        return 0;
+      });
+      
+      renderMeetingRecords(currentRecords);
+    };
+
+    // イベントリスナー設定
+    logoutBtn.addEventListener('click', handleLogout);
+    showUploadBtn.addEventListener('click', toggleUploadSection);
+    cancelUploadBtn.addEventListener('click', toggleUploadSection);
+
+    // 検索入力でEnterキー対応
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+
+    // 初期化時にURLパラメータをチェック（既存機能）
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const filterTag = urlParams.get('filter');
+      
+      if (filterTag) {
+        const targetTag = document.querySelector(`[data-tag="${filterTag}"]`);
+        if (targetTag) {
+          document.querySelectorAll('.tag-filter').forEach(t => t.classList.remove('active'));
+          targetTag.classList.add('active');
+          // filterByTag は displayMeetingRecords 完了後に実行
+        }
+      }
+    });
+
+    // 認証完了後の処理
+    authReady.then(async (user) => {
+      console.log("つくるページ認証完了:", user);
+      await updateAuthDisplay(user);
+      
+      // 議事録一覧を表示
+      displayMeetingRecords();
+      
+      // URLパラメータでのフィルタリング処理（遅延実行）
+      setTimeout(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const filterTag = urlParams.get('filter');
+        if (filterTag && filterTag !== 'all') {
+          filterByTag(filterTag);
+        }
+      }, 1000);
+      
+    }).catch(error => {
+      console.error("つくるページ認証処理エラー:", error);
+      updateAuthDisplay(null);
+      minutesGrid.innerHTML = '<div class="error-message">認証中にエラーが発生しました</div>';
+    });
+
+    console.log("つくるページが初期化されました");
+  </script>
+</body>
+</html>
