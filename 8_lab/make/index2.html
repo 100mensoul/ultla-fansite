@@ -703,7 +703,7 @@
   <!-- Firebase設定（実際のパス構造に合わせて調整） -->
   <script type="module" src="../firebase-test.js"></script>
   
-  <!-- 議事録管理機能 -->
+ <!-- 議事録管理機能 - 完全版 -->
   <script type="module">
     import { db, storage, authReady, auth } from '../firebase-test.js';
     import {
@@ -747,6 +747,27 @@
     const messageArea = document.getElementById('messageArea');
     const minutesGrid = document.getElementById('minutesGrid');
     const resultsCount = document.getElementById('resultsCount');
+
+    // HTMLエスケープ関数
+    function escapeHTML(str) {
+      if (typeof str !== 'string') return '';
+      return str.replace(/[&<>"']/g, function (match) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;',
+        }[match];
+      });
+    }
+
+    // 結果件数更新
+    function updateResultsCount(count) {
+      if (resultsCount) {
+        resultsCount.textContent = `${count}件の議事録が見つかりました`;
+      }
+    }
 
     // ユーザープロフィール取得
     async function getUserProfile(uid) {
@@ -963,234 +984,330 @@
       }
     });
 
-    // 議事録一覧表示（インデックス問題対応版）
-// デバッグ強化版 - 議事録表示修正
-
-// 議事録一覧表示（デバッグ強化版）
-function displayMeetingRecords() {
-  console.log('=== 議事録読み込み開始 ===');
-  
-  try {
-    const recordsRef = collection(db, "meetingRecords");
-    console.log('Collection参照作成成功');
-    
-    // まずシンプルなクエリでテスト
-    console.log('クエリ実行中...');
-    
-    onSnapshot(recordsRef, (querySnapshot) => {
-      console.log('=== Firestore応答受信 ===');
-      console.log('取得件数:', querySnapshot.size);
+    // 議事録一覧表示（デバッグ強化版）
+    function displayMeetingRecords() {
+      console.log('=== 議事録読み込み開始 ===');
       
-      allMeetingRecords = [];
-      
-      querySnapshot.forEach((doc) => {
-        const record = doc.data();
-        console.log('ドキュメントID:', doc.id);
-        console.log('ドキュメントデータ:', record);
+      try {
+        const recordsRef = collection(db, "meetingRecords");
+        console.log('Collection参照作成成功');
         
-        allMeetingRecords.push({
-          id: doc.id,
-          ...record
+        // まずシンプルなクエリでテスト
+        console.log('クエリ実行中...');
+        
+        onSnapshot(recordsRef, (querySnapshot) => {
+          console.log('=== Firestore応答受信 ===');
+          console.log('取得件数:', querySnapshot.size);
+          
+          allMeetingRecords = [];
+          
+          querySnapshot.forEach((doc) => {
+            const record = doc.data();
+            console.log('ドキュメントID:', doc.id);
+            console.log('ドキュメントデータ:', record);
+            
+            allMeetingRecords.push({
+              id: doc.id,
+              ...record
+            });
+          });
+          
+          console.log('全議事録データ:', allMeetingRecords);
+          
+          // プロジェクトフィルタリング
+          const filteredRecords = allMeetingRecords.filter(record => 
+            record.project === 'ULTLA2025'
+          );
+          
+          console.log('ULTLA2025フィルター後:', filteredRecords);
+          
+          // 日付ソート
+          filteredRecords.sort((a, b) => {
+            const dateA = a.meetingDate?.toDate ? a.meetingDate.toDate() : new Date(a.meetingDate);
+            const dateB = b.meetingDate?.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
+            return dateB - dateA;
+          });
+          
+          console.log('ソート後:', filteredRecords);
+          
+          // 表示処理
+          renderMeetingRecords(filteredRecords);
+          updateResultsCount(filteredRecords.length);
+          
+        }, (error) => {
+          console.error("=== Firestore読み込みエラー ===");
+          console.error("エラー詳細:", error);
+          console.error("エラーコード:", error.code);
+          console.error("エラーメッセージ:", error.message);
+          
+          minutesGrid.innerHTML = `
+            <div class="error-message">
+              議事録の読み込みに失敗しました<br>
+              エラー: ${error.message}<br>
+              <button onclick="window.debugDisplayRecords()" style="margin-top: 10px; padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px;">再試行</button>
+            </div>
+          `;
         });
+        
+      } catch (error) {
+        console.error('=== クエリ作成エラー ===');
+        console.error(error);
+        minutesGrid.innerHTML = `
+          <div class="error-message">
+            クエリの作成に失敗しました: ${error.message}
+          </div>
+        `;
+      }
+    }
+
+    // 議事録カード描画（デバッグ強化版）
+    function renderMeetingRecords(records) {
+      console.log('=== レンダリング開始 ===');
+      console.log('レンダリング対象件数:', records.length);
+      
+      if (records.length === 0) {
+        console.log('表示する議事録がありません');
+        minutesGrid.innerHTML = '<div class="loading-message">議事録がまだありません</div>';
+        return;
+      }
+
+      minutesGrid.innerHTML = '';
+      
+      records.forEach((record, index) => {
+        console.log(`カード作成中 ${index + 1}/${records.length}:`, record.title);
+        
+        try {
+          const cardElement = createMeetingRecordCard(record);
+          minutesGrid.appendChild(cardElement);
+          console.log(`カード作成成功: ${record.title}`);
+        } catch (error) {
+          console.error(`カード作成エラー (${record.title}):`, error);
+        }
       });
       
-      console.log('全議事録データ:', allMeetingRecords);
+      console.log('=== レンダリング完了 ===');
+    }
+
+    // 議事録カード作成（エラーハンドリング強化版）
+    function createMeetingRecordCard(record) {
+      console.log('カード作成開始:', record);
       
-      // プロジェクトフィルタリング
-      const filteredRecords = allMeetingRecords.filter(record => 
-        record.project === 'ULTLA2025'
-      );
+      const element = document.createElement('article');
+      element.className = 'minutes-card';
+      element.setAttribute('data-tags', record.tags ? record.tags.join(',') : '');
+
+      let meetingDate;
+      try {
+        meetingDate = record.meetingDate ? 
+          (record.meetingDate.toDate ? record.meetingDate.toDate() : new Date(record.meetingDate)) :
+          new Date();
+      } catch (dateError) {
+        console.error('日付変換エラー:', dateError);
+        meetingDate = new Date();
+      }
+
+      const isOwner = record.uid === currentUID;
       
-      console.log('ULTLA2025フィルター後:', filteredRecords);
-      
-      // 日付ソート
-      filteredRecords.sort((a, b) => {
-        const dateA = a.meetingDate?.toDate ? a.meetingDate.toDate() : new Date(a.meetingDate);
-        const dateB = b.meetingDate?.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
-        return dateB - dateA;
-      });
-      
-      console.log('ソート後:', filteredRecords);
-      
-      // 表示処理
-      renderMeetingRecords(filteredRecords);
-      updateResultsCount(filteredRecords.length);
-      
-    }, (error) => {
-      console.error("=== Firestore読み込みエラー ===");
-      console.error("エラー詳細:", error);
-      console.error("エラーコード:", error.code);
-      console.error("エラーメッセージ:", error.message);
-      
-      minutesGrid.innerHTML = `
-        <div class="error-message">
-          議事録の読み込みに失敗しました<br>
-          エラー: ${error.message}<br>
-          <button onclick="displayMeetingRecords()" style="margin-top: 10px; padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px;">再試行</button>
+      console.log('カードデータ確認:');
+      console.log('- タイトル:', record.title);
+      console.log('- 説明:', record.description);
+      console.log('- 参加者:', record.participants);
+      console.log('- 日付:', meetingDate);
+      console.log('- 投稿者:', record.uploaderName);
+      console.log('- タグ:', record.tags);
+
+      element.innerHTML = `
+        <div class="minutes-header">
+          <div>
+            <h3 class="minutes-title">${escapeHTML(record.title || '無題')}</h3>
+            ${record.participants ? `<p class="minutes-participants">参加者: ${escapeHTML(record.participants)}</p>` : ''}
+          </div>
+          <span class="minutes-date">${meetingDate.toLocaleDateString('ja-JP')}</span>
+        </div>
+        
+        <div class="minutes-content">
+          ${escapeHTML(record.description || '内容なし')}
+        </div>
+        
+        ${record.tags && record.tags.length > 0 ? `
+          <div class="minutes-tags">
+            ${record.tags.map(tag => {
+              let tagClass = 'tag-theme';
+              if (['海', '森'].includes(tag)) tagClass = 'tag-area';
+              else if (['事務', '広報'].includes(tag)) tagClass = 'tag-category';
+              else if (['コマ1', 'コマ2', 'コマ3', 'コマ4', '全体'].includes(tag)) tagClass = 'tag-program';
+              
+              return `<span class="minutes-tag ${tagClass}">${escapeHTML(tag)}</span>`;
+            }).join('')}
+          </div>
+        ` : ''}
+        
+        <div class="minutes-actions">
+          <div>
+            ${record.fileUrl ? `<a href="${record.fileUrl}" target="_blank" class="view-detail-btn">📄 ファイルを開く</a>` : ''}
+          </div>
+          <div>
+            <small style="color: var(--text-muted);">投稿者: ${escapeHTML(record.uploaderName || '不明')}</small>
+            ${isOwner ? `
+              <button class="edit-btn" onclick="editRecord('${record.id}')">編集</button>
+              <button class="delete-btn" onclick="deleteRecord('${record.id}')">削除</button>
+            ` : ''}
+          </div>
         </div>
       `;
-    });
-    
-  } catch (error) {
-    console.error('=== クエリ作成エラー ===');
-    console.error(error);
-    minutesGrid.innerHTML = `
-      <div class="error-message">
-        クエリの作成に失敗しました: ${error.message}
-      </div>
-    `;
-  }
-}
 
-// 議事録カード描画（デバッグ強化版）
-function renderMeetingRecords(records) {
-  console.log('=== レンダリング開始 ===');
-  console.log('レンダリング対象件数:', records.length);
-  
-  if (records.length === 0) {
-    console.log('表示する議事録がありません');
-    minutesGrid.innerHTML = '<div class="loading-message">議事録がまだありません</div>';
-    return;
-  }
-
-  minutesGrid.innerHTML = '';
-  
-  records.forEach((record, index) => {
-    console.log(`カード作成中 ${index + 1}/${records.length}:`, record.title);
-    
-    try {
-      const cardElement = createMeetingRecordCard(record);
-      minutesGrid.appendChild(cardElement);
-      console.log(`カード作成成功: ${record.title}`);
-    } catch (error) {
-      console.error(`カード作成エラー (${record.title}):`, error);
+      return element;
     }
-  });
-  
-  console.log('=== レンダリング完了 ===');
-}
 
-// 議事録カード作成（エラーハンドリング強化版）
-function createMeetingRecordCard(record) {
-  console.log('カード作成開始:', record);
-  
-  const element = document.createElement('article');
-  element.className = 'minutes-card';
-  element.setAttribute('data-tags', record.tags ? record.tags.join(',') : '');
+    // 検索・フィルター機能
+    window.performSearch = function() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      
+      if (!searchTerm.trim()) {
+        renderMeetingRecords(allMeetingRecords.filter(record => record.project === 'ULTLA2025'));
+        updateResultsCount(allMeetingRecords.filter(record => record.project === 'ULTLA2025').length);
+        return;
+      }
 
-  let meetingDate;
-  try {
-    meetingDate = record.meetingDate ? 
-      (record.meetingDate.toDate ? record.meetingDate.toDate() : new Date(record.meetingDate)) :
-      new Date();
-  } catch (dateError) {
-    console.error('日付変換エラー:', dateError);
-    meetingDate = new Date();
-  }
+      const filteredRecords = allMeetingRecords.filter(record => {
+        if (record.project !== 'ULTLA2025') return false;
+        const searchableText = `${record.title} ${record.description} ${record.participants || ''} ${(record.tags || []).join(' ')}`.toLowerCase();
+        return searchableText.includes(searchTerm);
+      });
 
-  const isOwner = record.uid === currentUID;
-  
-  console.log('カードデータ確認:');
-  console.log('- タイトル:', record.title);
-  console.log('- 説明:', record.description);
-  console.log('- 参加者:', record.participants);
-  console.log('- 日付:', meetingDate);
-  console.log('- 投稿者:', record.uploaderName);
-  console.log('- タグ:', record.tags);
+      renderMeetingRecords(filteredRecords);
+      updateResultsCount(filteredRecords.length);
+    };
 
-  element.innerHTML = `
-    <div class="minutes-header">
-      <div>
-        <h3 class="minutes-title">${escapeHTML(record.title || '無題')}</h3>
-        ${record.participants ? `<p class="minutes-participants">参加者: ${escapeHTML(record.participants)}</p>` : ''}
-      </div>
-      <span class="minutes-date">${meetingDate.toLocaleDateString('ja-JP')}</span>
-    </div>
-    
-    <div class="minutes-content">
-      ${escapeHTML(record.description || '内容なし')}
-    </div>
-    
-    ${record.tags && record.tags.length > 0 ? `
-      <div class="minutes-tags">
-        ${record.tags.map(tag => {
-          let tagClass = 'tag-theme';
-          if (['海', '森'].includes(tag)) tagClass = 'tag-area';
-          else if (['事務', '広報'].includes(tag)) tagClass = 'tag-category';
-          else if (['コマ1', 'コマ2', 'コマ3', 'コマ4', '全体'].includes(tag)) tagClass = 'tag-program';
-          
-          return `<span class="minutes-tag ${tagClass}">${escapeHTML(tag)}</span>`;
-        }).join('')}
-      </div>
-    ` : ''}
-    
-    <div class="minutes-actions">
-      <div>
-        ${record.fileUrl ? `<a href="${record.fileUrl}" target="_blank" class="view-detail-btn">📄 ファイルを開く</a>` : ''}
-      </div>
-      <div>
-        <small style="color: var(--text-muted);">投稿者: ${escapeHTML(record.uploaderName || '不明')}</small>
-        ${isOwner ? `
-          <button class="edit-btn" onclick="editRecord('${record.id}')">編集</button>
-          <button class="delete-btn" onclick="deleteRecord('${record.id}')">削除</button>
-        ` : ''}
-      </div>
-    </div>
-  `;
+    // タグフィルター
+    function filterByTag(tag) {
+      if (tag === 'all') {
+        const filteredRecords = allMeetingRecords.filter(record => record.project === 'ULTLA2025');
+        renderMeetingRecords(filteredRecords);
+        updateResultsCount(filteredRecords.length);
+        return;
+      }
 
-  return element;
-}
+      const filteredRecords = allMeetingRecords.filter(record => {
+        return record.project === 'ULTLA2025' && record.tags && record.tags.includes(tag);
+      });
 
-// 認証完了後の処理（デバッグ強化版）
-authReady.then(async (user) => {
-  console.log("=== 認証完了 ===");
-  console.log("ユーザー:", user);
-  
-  await updateAuthDisplay(user);
-  
-  // データベース接続テスト
-  console.log("=== データベース接続テスト ===");
-  try {
-    const testRef = collection(db, "meetingRecords");
-    const testQuery = query(testRef);
-    const testSnapshot = await getDocs(testQuery);
-    console.log("データベース接続成功、総件数:", testSnapshot.size);
-    
-    testSnapshot.forEach(doc => {
-      const data = doc.data();
-      console.log("テストデータ:", doc.id, data.project, data.title);
-    });
-    
-  } catch (dbError) {
-    console.error("データベース接続エラー:", dbError);
-  }
-  
-  // 議事録一覧を表示
-  console.log("=== 議事録表示開始 ===");
-  displayMeetingRecords();
-  
-  // URLパラメータでのフィルタリング処理（遅延実行）
-  setTimeout(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const filterTag = urlParams.get('filter');
-    if (filterTag && filterTag !== 'all') {
-      console.log("URLパラメータフィルター適用:", filterTag);
-      filterByTag(filterTag);
+      renderMeetingRecords(filteredRecords);
+      updateResultsCount(filteredRecords.length);
     }
-  }, 2000); // 少し長めに待機
-  
-}).catch(error => {
-  console.error("=== 認証処理エラー ===");
-  console.error(error);
-  updateAuthDisplay(null);
-  minutesGrid.innerHTML = '<div class="error-message">認証中にエラーが発生しました</div>';
-});
 
-// グローバル関数として公開（デバッグ用）
-window.debugDisplayRecords = displayMeetingRecords;
-window.debugAllRecords = () => console.log('All records:', allMeetingRecords);
+    // タグフィルターイベント
+    document.querySelectorAll('.tag-filter').forEach(tag => {
+      tag.addEventListener('click', function() {
+        document.querySelectorAll('.tag-filter').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        const selectedTag = this.dataset.tag;
+        filterByTag(selectedTag);
+      });
+    });
 
-console.log("=== デバッグ強化版読み込み完了 ===");
+    // ソート機能
+    window.sortResults = function() {
+      const sortBy = document.getElementById('sortSelect').value;
+      const currentRecords = [...allMeetingRecords].filter(record => record.project === 'ULTLA2025');
+      
+      currentRecords.sort((a, b) => {
+        if (sortBy === 'date-desc') {
+          const dateA = a.meetingDate?.toDate ? a.meetingDate.toDate() : new Date(a.meetingDate);
+          const dateB = b.meetingDate?.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
+          return dateB - dateA;
+        } else if (sortBy === 'date-asc') {
+          const dateA = a.meetingDate?.toDate ? a.meetingDate.toDate() : new Date(a.meetingDate);
+          const dateB = b.meetingDate?.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
+          return dateA - dateB;
+        }
+        return 0;
+      });
+      
+      renderMeetingRecords(currentRecords);
+    };
+
+    // グローバル関数（編集・削除用）
+    window.editRecord = function(recordId) {
+      showMessage('編集機能は開発中です', 'info');
+    };
+
+    window.deleteRecord = function(recordId) {
+      if (confirm('この議事録を削除しますか？\n※この操作は取り消せません。')) {
+        deleteDoc(doc(db, "meetingRecords", recordId))
+          .then(() => {
+            showMessage('議事録が削除されました', 'success');
+          })
+          .catch((error) => {
+            console.error('削除エラー:', error);
+            showMessage('削除に失敗しました', 'error');
+          });
+      }
+    };
+
+    // イベントリスナー設定
+    logoutBtn.addEventListener('click', handleLogout);
+    showUploadBtn.addEventListener('click', toggleUploadSection);
+    cancelUploadBtn.addEventListener('click', toggleUploadSection);
+
+    // 検索入力でEnterキー対応
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+
+    // 認証完了後の処理（デバッグ強化版）
+    authReady.then(async (user) => {
+      console.log("=== 認証完了 ===");
+      console.log("ユーザー:", user);
+      
+      await updateAuthDisplay(user);
+      
+      // データベース接続テスト
+      console.log("=== データベース接続テスト ===");
+      try {
+        const testRef = collection(db, "meetingRecords");
+        const testQuery = query(testRef);
+        const testSnapshot = await getDocs(testQuery);
+        console.log("データベース接続成功、総件数:", testSnapshot.size);
+        
+        testSnapshot.forEach(doc => {
+          const data = doc.data();
+          console.log("テストデータ:", doc.id, data.project, data.title);
+        });
+        
+      } catch (dbError) {
+        console.error("データベース接続エラー:", dbError);
+      }
+      
+      // 議事録一覧を表示
+      console.log("=== 議事録表示開始 ===");
+      displayMeetingRecords();
+      
+      // URLパラメータでのフィルタリング処理（遅延実行）
+      setTimeout(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const filterTag = urlParams.get('filter');
+        if (filterTag && filterTag !== 'all') {
+          console.log("URLパラメータフィルター適用:", filterTag);
+          filterByTag(filterTag);
+        }
+      }, 2000); // 少し長めに待機
+      
+    }).catch(error => {
+      console.error("=== 認証処理エラー ===");
+      console.error(error);
+      updateAuthDisplay(null);
+      minutesGrid.innerHTML = '<div class="error-message">認証中にエラーが発生しました</div>';
+    });
+
+    // グローバル関数として公開（デバッグ用）
+    window.debugDisplayRecords = displayMeetingRecords;
+    window.debugAllRecords = () => console.log('All records:', allMeetingRecords);
+
+    console.log("=== デバッグ強化版読み込み完了 ===");
   </script>
 </body>
 </html>
