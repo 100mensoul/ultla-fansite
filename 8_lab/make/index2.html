@@ -963,10 +963,11 @@
       }
     });
 
-    // 議事録一覧表示
+    // 議事録一覧表示（インデックス問題対応版）
     function displayMeetingRecords() {
       const recordsRef = collection(db, "meetingRecords");
-      const q = query(recordsRef, where("project", "==", "ULTLA2025"), orderBy("meetingDate", "desc"));
+      // シンプルなクエリに変更（インデックス不要）
+      const q = query(recordsRef, where("project", "==", "ULTLA2025"));
       
       onSnapshot(q, (querySnapshot) => {
         allMeetingRecords = [];
@@ -977,6 +978,13 @@
             id: doc.id,
             ...record
           });
+        });
+        
+        // フロントエンドで日付ソート
+        allMeetingRecords.sort((a, b) => {
+          const dateA = a.meetingDate?.toDate ? a.meetingDate.toDate() : new Date(a.meetingDate);
+          const dateB = b.meetingDate?.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
+          return dateB - dateA; // 新しい順
         });
         
         renderMeetingRecords(allMeetingRecords);
