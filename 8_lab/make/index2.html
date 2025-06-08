@@ -968,25 +968,73 @@ TODO: チラシデザインを田中さんが9月15日まで作成
     function extractNaturalLanguageTasks(text, meetingDate) {
       const tasks = [];
       
-      const actionPatterns = [
+      // 強化版: より柔軟な動詞パターン
+      const enhancedActionPatterns = [
+        // 基本パターン（既存）
         /([^\s。、]+?)([さん|氏|君]?)が\s*([^\s。、]+?)[を|に]\s*(確認|調整|検討|準備|作成|実施|対応|連絡)[する|します|した]?/g,
-        /([^\s。、]+?)[を|に]\s*(確認|調整|検討|準備|作成|実施|対応|連絡)[する|します|が必要]/g,
-        /([^\s。、]+?)について\s*(確認|調整|検討|準備|作成|実施|対応)[する|します]?/g
+        
+        // 新しい柔軟なパターン
+        /([^\s。、]+?)[が|は]\s*([^\s。、]+?)[を|に]\s*(実装|開発|作成|準備|確認|調整|検討|実施|対応|連絡)[する|します|してもらう]/g,
+        
+        // 期限付きタスクパターン
+        /(明日|今日|今週|来週|[0-9]+日|[0-9]+月[0-9]+日)までに[、,]?\s*([^\s。、]+?)[が|は]?\s*([^\s。、]+?)[を|に]\s*(実装|開発|作成|準備|確認|調整|検討|実施|対応|連絡)/g,
+        
+        // ヒアリング・相談パターン
+        /([^\s。、]+?)から\s*([^\s。、]+?)[を|に|について]\s*(ヒアリング|相談|確認|聞く)/g,
+        
+        // 依頼パターン
+        /([^\s。、]+?)[に|へ]\s*([^\s。、]+?)[を|について]\s*(依頼|お願い|要請)/g
       ];
       
-      for (const pattern of actionPatterns) {
+      for (const pattern of enhancedActionPatterns) {
         let match;
         while ((match = pattern.exec(text)) !== null) {
+          let assignee = null;
+          let content = match[0].trim();
+          let deadline = null;
+          let deadlineText = null;
+          let priority = 'medium';
+          
+          // パターン別の処理
+          if (pattern.source.includes('までに')) {
+            // 期限付きパターン
+            deadlineText = match[1];
+            deadline = extractDeadline(match[1], meetingDate);
+            assignee = extractAssignee(match[2]);
+            content = `${match[3]}${match[4]}`;
+            
+            // 期限による優先度判定
+            if (match[1].includes('今日') || match[1].includes('明日')) {
+              priority = 'high';
+            }
+          } else if (pattern.source.includes('から')) {
+            // ヒアリングパターン
+            assignee = extractAssignee(match[1]);
+            content = `${match[2]}について${match[3]}`;
+          } else if (pattern.source.includes('に|へ')) {
+            // 依頼パターン
+            assignee = extractAssignee(match[1]);
+            content = `${match[2]}を${match[3]}`;
+          } else {
+            // 基本パターン
+            assignee = extractAssignee(match[1]);
+          }
+          
+          // 緊急度キーワードチェック
+          if (content.includes('緊急') || content.includes('急ぎ') || content.includes('今すぐ') || content.includes('ASAP')) {
+            priority = 'urgent';
+          }
+          
           const task = {
             id: generateTaskId(),
-            content: match[0].trim(),
+            content: content,
             type: 'task',
             status: 'todo',
-            priority: 'medium',
-            assignee: match[1] && !match[1].includes('を') && !match[1].includes('に') ? match[1].replace(/さん|氏|君/, '') : null,
-            deadline: null,
-            deadlineText: null,
-            source: 'natural_language',
+            priority: priority,
+            assignee: assignee,
+            deadline: deadline,
+            deadlineText: deadlineText,
+            source: 'natural_language_enhanced',
             createdAt: new Date()
           };
           
