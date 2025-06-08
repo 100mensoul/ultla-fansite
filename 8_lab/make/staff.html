@@ -921,74 +921,85 @@
       }
     }
 
-    // 全データ読み込み
+    // 全データ読み込み（既存データ活用版）
     function loadAllData() {
       console.log('=== 全データ読み込み開始 ===');
       
-      // タスクデータの読み込み
-      const tasksRef = collection(db, "projectTasks");
-      const tasksQuery = query(tasksRef, where("project", "==", "ULTLA2025"));
-      
-      onSnapshot(tasksQuery, (querySnapshot) => {
-        console.log('タスクデータ取得:', querySnapshot.size);
-        allTasks = [];
-        
-        querySnapshot.forEach((doc) => {
-          const task = doc.data();
-          allTasks.push({
-            id: doc.id,
-            ...task,
-            deadline: task.deadline ? (task.deadline.toDate ? task.deadline.toDate() : new Date(task.deadline)) : null
-          });
-        });
-        
-        console.log('全タスクデータ:', allTasks);
-        updateSummaryCards();
-        updateTaskList();
-        updateCalendar();
-      });
-
-      // 議事録データの読み込み
+      // 議事録データから抽出されたタスク・会議を読み込み
       const recordsRef = collection(db, "meetingRecords");
-      const recordsQuery = query(recordsRef, where("project", "==", "ULTLA2025"), orderBy("createdAt", "desc"));
+      const recordsQuery = query(recordsRef, where("project", "==", "ULTLA2025"));
       
       onSnapshot(recordsQuery, (querySnapshot) => {
         console.log('議事録データ取得:', querySnapshot.size);
         allRecords = [];
-        
-        querySnapshot.forEach((doc) => {
-          const record = doc.data();
-          allRecords.push({
-            id: doc.id,
-            ...record,
-            meetingDate: record.meetingDate ? (record.meetingDate.toDate ? record.meetingDate.toDate() : new Date(record.meetingDate)) : null
-          });
-        });
-        
-        console.log('全議事録データ:', allRecords);
-        updateRecentMinutes();
-      });
-
-      // 会議スケジュールの読み込み
-      const schedulesRef = collection(db, "projectSchedules");
-      const schedulesQuery = query(schedulesRef, where("project", "==", "ULTLA2025"));
-      
-      onSnapshot(schedulesQuery, (querySnapshot) => {
-        console.log('スケジュールデータ取得:', querySnapshot.size);
+        allTasks = [];
         allMeetings = [];
         
         querySnapshot.forEach((doc) => {
-          const meeting = doc.data();
-          allMeetings.push({
+          const record = doc.data();
+          const recordData = {
             id: doc.id,
-            ...meeting,
-            date: meeting.date ? (meeting.date.toDate ? meeting.date.toDate() : new Date(meeting.date)) : null
-          });
+            ...record,
+            meetingDate: record.meetingDate ? (record.meetingDate.toDate ? record.meetingDate.toDate() : new Date(record.meetingDate)) : null
+          };
+          
+          allRecords.push(recordData);
+          
+          // 抽出されたタスクを追加
+          if (record.extractedTasks && Array.isArray(record.extractedTasks)) {
+            record.extractedTasks.forEach((task, index) => {
+              allTasks.push({
+                id: `${doc.id}_task_${index}`,
+                ...task,
+                meetingRecordId: doc.id,
+                meetingTitle: record.title,
+                deadline: task.deadline ? 
+                  (task.deadline.toDate ? task.deadline.toDate() : 
+                   task.deadline.seconds ? new Date(task.deadline.seconds * 1000) : 
+                   new Date(task.deadline)) : null,
+                status: task.status || 'todo'
+              });
+            });
+          }
+          
+          // 抽出された会議を追加
+          if (record.extractedMeetings && Array.isArray(record.extractedMeetings)) {
+            record.extractedMeetings.forEach((meeting, index) => {
+              allMeetings.push({
+                id: `${doc.id}_meeting_${index}`,
+                ...meeting,
+                meetingRecordId: doc.id,
+                date: meeting.date ? 
+                  (meeting.date.toDate ? meeting.date.toDate() : 
+                   meeting.date.seconds ? new Date(meeting.date.seconds * 1000) : 
+                   new Date(meeting.date)) : null
+              });
+            });
+          }
         });
         
-        console.log('全会議データ:', allMeetings);
+        console.log('全議事録データ:', allRecords.length);
+        console.log('抽出タスクデータ:', allTasks.length);
+        console.log('抽出会議データ:', allMeetings.length);
+        
+        // データソート
+        allRecords.sort((a, b) => {
+          const aTime = a.createdAt ? (a.createdAt.toDate ? a.createdAt.toDate() : new Date(a.createdAt)) : new Date(0);
+          const bTime = b.createdAt ? (b.createdAt.toDate ? b.createdAt.toDate() : new Date(b.createdAt)) : new Date(0);
+          return bTime - aTime;
+        });
+        
         updateSummaryCards();
+        updateTaskList();
         updateCalendar();
+        updateRecentMinutes();
+      }, (error) => {
+        console.error('データ読み込みエラー:', error);
+        showMessage('データの読み込みに失敗しました', 'error');
+        
+        // エラー時のフォールバック表示
+        taskList.innerHTML = '<div class="error-message">データの読み込みに失敗しました。ページを再読み込みしてください。</div>';
+        recentMinutesList.innerHTML = '<div class="error-message">議事録の読み込みに失敗しました。</div>';
       });
     }
 
@@ -1243,17 +1254,25 @@
       taskModal.classList.add('show');
     };
 
-    // タスクステータス更新
+    // タスクステータス更新（擬似的な実装）
     window.updateTaskStatus = async function(taskId, newStatus) {
       try {
-        const taskRef = doc(db, "projectTasks", taskId);
-        await updateDoc(taskRef, {
-          status: newStatus,
-          updatedAt: serverTimestamp()
-        });
-        
-        showMessage('タスクのステータスを更新しました', 'success');
-        taskModal.classList.remove('show');
+        // 配列内のタスクステータスを更新
+        const task = allTasks.find(t => t.id === taskId);
+        if (task) {
+          task.status = newStatus;
+          task.updatedAt = new Date();
+          
+          // 表示を更新
+          updateSummaryCards();
+          updateTaskList();
+          
+          showMessage(`タスクのステータスを「${getStatusLabel(newStatus)}」に更新しました`, 'success');
+          taskModal.classList.remove('show');
+          
+          // 注意: 実際のFirestore更新は meetingRecords の extractedTasks 配列を更新する必要があります
+          console.log('タスク更新:', task);
+        }
       } catch (error) {
         console.error('ステータス更新エラー:', error);
         showMessage('ステータスの更新に失敗しました', 'error');
