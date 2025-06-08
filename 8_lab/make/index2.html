@@ -219,6 +219,64 @@
       box-shadow: none;
     }
 
+    /* タスク抽出プレビュー */
+    .task-preview-section {
+      background: #f8f9ff;
+      border: 2px dashed var(--ultla-blue);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      margin-top: var(--spacing-md);
+      display: none;
+    }
+
+    .task-preview-section.show {
+      display: block;
+    }
+
+    .task-preview-title {
+      color: var(--ultla-blue);
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .task-item {
+      background: white;
+      padding: var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--spacing-xs);
+      border-left: 4px solid var(--ultla-green);
+    }
+
+    .meeting-item {
+      background: white;
+      padding: var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--spacing-xs);
+      border-left: 4px solid var(--ultla-blue);
+    }
+
+    .decision-item {
+      background: white;
+      padding: var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--spacing-xs);
+      border-left: 4px solid var(--ultla-red);
+    }
+
+    .item-content {
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .item-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
     /* 検索・フィルター - 既存コードと統合 */
     .search-filter-section {
       background: var(--bg-card);
@@ -386,6 +444,34 @@
     .tag-category { background: rgba(0,184,148,0.1); color: var(--ultla-green); }
     .tag-theme { background: rgba(255,107,107,0.1); color: var(--ultla-red); }
     .tag-program { background: rgba(108,99,255,0.1); color: #6C63FF; }
+
+    /* 抽出タスク表示 */
+    .extracted-tasks {
+      background: rgba(0,163,217,0.05);
+      border: 1px solid rgba(0,163,217,0.2);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      margin-top: var(--spacing-md);
+    }
+
+    .extracted-tasks-title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--ultla-blue);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .extracted-task-item {
+      background: white;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--spacing-xs);
+      font-size: 0.8rem;
+    }
+
+    .extracted-task-item:last-child {
+      margin-bottom: 0;
+    }
     
     .minutes-actions {
       display: flex;
@@ -493,6 +579,23 @@
       border-radius: var(--radius-md);
       margin-bottom: var(--spacing-md);
     }
+
+    /* タスク抽出ボタン */
+    .preview-btn {
+      background: var(--ultla-green);
+      color: white;
+      border: none;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-left: var(--spacing-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .preview-btn:hover {
+      background: #00a86b;
+    }
     
     /* レスポンシブ */
     @media (max-width: 768px) {
@@ -561,6 +664,7 @@
           <span class="meta-item">📋 全議事録管理</span>
           <span class="meta-item">🔍 横断検索対応</span>
           <span class="meta-item">🏷️ タグ分類システム</span>
+          <span class="meta-item">🤖 AI タスク抽出</span>
           <span class="meta-item">📊 プロセス可視化</span>
         </div>
       </div>
@@ -621,7 +725,30 @@
 
           <div class="form-group">
             <label for="meetingDescription">内容・概要 <span style="color: var(--ultla-red);">*</span></label>
-            <textarea id="meetingDescription" rows="4" required placeholder="会議の内容や主要な決定事項など"></textarea>
+            <textarea id="meetingDescription" rows="6" required placeholder="会議の内容や主要な決定事項など
+
+例：
+TODO: チラシデザインを田中さんが9月15日まで作成
+担当: 佐藤さん
+締切: 来週まで
+
+会場予約について確認する必要がある
+決定事項: 参加費を3000円に設定
+次回会議: 9月20日 15:00〜"></textarea>
+            <div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-xs);">
+              <button type="button" id="previewTasksBtn" class="preview-btn">🤖 タスク抽出プレビュー</button>
+              <small style="color: var(--text-muted); align-self: center;">※投稿前にどんなタスクが抽出されるか確認できます</small>
+            </div>
+          </div>
+
+          <!-- タスク抽出プレビュー -->
+          <div id="taskPreviewSection" class="task-preview-section">
+            <div class="task-preview-title">
+              🤖 抽出されるタスク・スケジュール
+            </div>
+            <div id="taskPreviewContent">
+              <!-- プレビュー内容がここに表示されます -->
+            </div>
           </div>
 
           <div class="form-group">
@@ -700,10 +827,10 @@
     </div>
   </footer>
 
-  <!-- Firebase設定（実際のパス構造に合わせて調整） -->
+  <!-- Firebase設定 -->
   <script type="module" src="../firebase-test.js"></script>
   
- <!-- 議事録管理機能 - 完全版 -->
+  <!-- 議事録管理機能 - タスク抽出統合版 -->
   <script type="module">
     import { db, storage, authReady, auth } from '../firebase-test.js';
     import {
@@ -730,11 +857,308 @@
       signOut
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+    // タスク抽出エンジンをインライン化（本来は外部ファイルから読み込み）
+    function extractTasksAndSchedules(content, title = '', meetingDate = new Date()) {
+      const result = {
+        tasks: [],
+        meetings: [],
+        decisions: []
+      };
+
+      if (!content || typeof content !== 'string') {
+        return result;
+      }
+
+      const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+      
+      // Level 1: 明示的パターンの抽出
+      result.tasks.push(...extractExplicitTasks(lines, meetingDate));
+      result.meetings.push(...extractMeetings(lines, meetingDate));
+      result.decisions.push(...extractDecisions(lines));
+      
+      // Level 2: 自然言語パターンの抽出
+      const remainingText = lines.join(' ');
+      result.tasks.push(...extractNaturalLanguageTasks(remainingText, meetingDate));
+      
+      // 重複削除
+      result.tasks = deduplicateTasks(result.tasks);
+      result.meetings = deduplicateMeetings(result.meetings);
+      result.decisions = deduplicateDecisions(result.decisions);
+      
+      return result;
+    }
+
+    function extractExplicitTasks(lines, meetingDate) {
+      const tasks = [];
+      const taskPatterns = [
+        /^TODO[：:]\s*(.+)/i,
+        /^やること[：:]\s*(.+)/i,
+        /^タスク[：:]\s*(.+)/i,
+        /^[⬜☐□▢]\s*(.+)/,
+        /^[-*]\s*\[\s*\]\s*(.+)/,
+        /^担当[：:]\s*(.+)/,
+        /^責任者[：:]\s*(.+)/,
+        /^締切[：:]\s*(.+)/,
+        /^期限[：:]\s*(.+)/,
+        /^期日[：:]\s*(.+)/,
+        /^まで[：:]\s*(.+)/
+      ];
+
+      let currentTask = null;
+      
+      for (const line of lines) {
+        let matched = false;
+        
+        for (const pattern of taskPatterns) {
+          const match = line.match(pattern);
+          if (match) {
+            const content = match[1].trim();
+            
+            if (pattern.source.includes('担当') || pattern.source.includes('責任者')) {
+              if (currentTask) {
+                currentTask.assignee = extractAssignee(content);
+              }
+            } else if (pattern.source.includes('締切') || pattern.source.includes('期限') || pattern.source.includes('まで')) {
+              if (currentTask) {
+                currentTask.deadline = extractDeadline(content, meetingDate);
+                currentTask.deadlineText = content;
+              }
+            } else {
+              currentTask = {
+                id: generateTaskId(),
+                content: content,
+                type: 'task',
+                status: 'todo',
+                priority: 'medium',
+                assignee: null,
+                deadline: null,
+                deadlineText: null,
+                source: 'explicit',
+                createdAt: new Date()
+              };
+              
+              const assigneeMatch = content.match(/(.+?)[を|が]\s*([^\s]+?)[さん|氏|君]?[が|は]\s*(.+)/);
+              if (assigneeMatch) {
+                currentTask.content = assigneeMatch[1].trim() + assigneeMatch[3].trim();
+                currentTask.assignee = assigneeMatch[2].trim();
+              }
+              
+              const deadlineMatch = content.match(/(.+?)\s*([0-9]+月[0-9]+日|来週|今週|今月|来月|[0-9]+日まで)/);
+              if (deadlineMatch) {
+                currentTask.content = deadlineMatch[1].trim();
+                currentTask.deadline = extractDeadline(deadlineMatch[2], meetingDate);
+                currentTask.deadlineText = deadlineMatch[2];
+              }
+              
+              tasks.push(currentTask);
+            }
+            matched = true;
+            break;
+          }
+        }
+        
+        if (!matched) {
+          currentTask = null;
+        }
+      }
+      
+      return tasks;
+    }
+
+    function extractNaturalLanguageTasks(text, meetingDate) {
+      const tasks = [];
+      
+      const actionPatterns = [
+        /([^\s。、]+?)([さん|氏|君]?)が\s*([^\s。、]+?)[を|に]\s*(確認|調整|検討|準備|作成|実施|対応|連絡)[する|します|した]?/g,
+        /([^\s。、]+?)[を|に]\s*(確認|調整|検討|準備|作成|実施|対応|連絡)[する|します|が必要]/g,
+        /([^\s。、]+?)について\s*(確認|調整|検討|準備|作成|実施|対応)[する|します]?/g
+      ];
+      
+      for (const pattern of actionPatterns) {
+        let match;
+        while ((match = pattern.exec(text)) !== null) {
+          const task = {
+            id: generateTaskId(),
+            content: match[0].trim(),
+            type: 'task',
+            status: 'todo',
+            priority: 'medium',
+            assignee: match[1] && !match[1].includes('を') && !match[1].includes('に') ? match[1].replace(/さん|氏|君/, '') : null,
+            deadline: null,
+            deadlineText: null,
+            source: 'natural_language',
+            createdAt: new Date()
+          };
+          
+          tasks.push(task);
+        }
+      }
+      
+      return tasks;
+    }
+
+    function extractMeetings(lines, meetingDate) {
+      const meetings = [];
+      const meetingPatterns = [
+        /^次回[会議|ミーティング|打ち合わせ][：:]\s*(.+)/i,
+        /^会議[予定|日程][：:]\s*(.+)/i,
+        /^[0-9]+月[0-9]+日.*[0-9]+[：:][0-9]+.*[会議|ミーティング|打ち合わせ]/i
+      ];
+      
+      for (const line of lines) {
+        for (const pattern of meetingPatterns) {
+          const match = line.match(pattern);
+          if (match) {
+            const meeting = {
+              id: generateTaskId(),
+              title: '会議予定',
+              content: match[1] || match[0],
+              type: 'meeting',
+              date: extractMeetingDate(match[1] || match[0], meetingDate),
+              source: 'explicit',
+              createdAt: new Date()
+            };
+            meetings.push(meeting);
+          }
+        }
+      }
+      
+      return meetings;
+    }
+
+    function extractDecisions(lines) {
+      const decisions = [];
+      const decisionPatterns = [
+        /^決定[事項]?[：:]\s*(.+)/i,
+        /^決まったこと[：:]\s*(.+)/i,
+        /^合意[事項]?[：:]\s*(.+)/i
+      ];
+      
+      for (const line of lines) {
+        for (const pattern of decisionPatterns) {
+          const match = line.match(pattern);
+          if (match) {
+            const decision = {
+              id: generateTaskId(),
+              content: match[1].trim(),
+              type: 'decision',
+              createdAt: new Date()
+            };
+            decisions.push(decision);
+          }
+        }
+      }
+      
+      return decisions;
+    }
+
+    function extractAssignee(text) {
+      const cleaned = text.replace(/さん|氏|君|様/g, '').trim();
+      const names = cleaned.split(/[、,・]/);
+      return names[0].trim();
+    }
+
+    function extractDeadline(text, baseDate) {
+      const now = new Date(baseDate);
+      
+      const dateMatch = text.match(/([0-9]+)月([0-9]+)日/);
+      if (dateMatch) {
+        const month = parseInt(dateMatch[1]);
+        const day = parseInt(dateMatch[2]);
+        const year = month >= now.getMonth() + 1 ? now.getFullYear() : now.getFullYear() + 1;
+        return new Date(year, month - 1, day);
+      }
+      
+      if (text.includes('今日')) {
+        return new Date(now);
+      } else if (text.includes('明日')) {
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow;
+      } else if (text.includes('今週')) {
+        const endOfWeek = new Date(now);
+        endOfWeek.setDate(endOfWeek.getDate() + (7 - endOfWeek.getDay()));
+        return endOfWeek;
+      } else if (text.includes('来週')) {
+        const nextWeek = new Date(now);
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        return nextWeek;
+      } else if (text.includes('今月')) {
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        return endOfMonth;
+      } else if (text.includes('来月')) {
+        const nextMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0);
+        return nextMonth;
+      }
+      
+      return null;
+    }
+
+    function extractMeetingDate(text, baseDate) {
+      const dateMatch = text.match(/([0-9]+)月([0-9]+)日/);
+      if (dateMatch) {
+        const month = parseInt(dateMatch[1]);
+        const day = parseInt(dateMatch[2]);
+        const year = month >= baseDate.getMonth() + 1 ? baseDate.getFullYear() : baseDate.getFullYear() + 1;
+        
+        const timeMatch = text.match(/([0-9]+)[：:]([0-9]+)/);
+        if (timeMatch) {
+          const hour = parseInt(timeMatch[1]);
+          const minute = parseInt(timeMatch[2]);
+          return new Date(year, month - 1, day, hour, minute);
+        }
+        
+        return new Date(year, month - 1, day);
+      }
+      
+      return null;
+    }
+
+    function deduplicateTasks(tasks) {
+      const seen = new Set();
+      return tasks.filter(task => {
+        const key = `${task.content}_${task.assignee || 'none'}`;
+        if (seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      });
+    }
+
+    function deduplicateMeetings(meetings) {
+      const seen = new Set();
+      return meetings.filter(meeting => {
+        const key = `${meeting.content}_${meeting.date?.getTime() || 'none'}`;
+        if (seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      });
+    }
+
+    function deduplicateDecisions(decisions) {
+      const seen = new Set();
+      return decisions.filter(decision => {
+        if (seen.has(decision.content)) {
+          return false;
+        }
+        seen.add(decision.content);
+        return true;
+      });
+    }
+
+    function generateTaskId() {
+      return 'task_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+    }
+
     // グローバル変数
     let currentUID = null;
     let userProfile = null;
     let selectedFile = null;
     let allMeetingRecords = [];
+    let extractedData = null; // プレビュー用
 
     // DOM要素
     const loggedInStatus = document.getElementById('loggedInStatus');
@@ -747,6 +1171,9 @@
     const messageArea = document.getElementById('messageArea');
     const minutesGrid = document.getElementById('minutesGrid');
     const resultsCount = document.getElementById('resultsCount');
+    const previewTasksBtn = document.getElementById('previewTasksBtn');
+    const taskPreviewSection = document.getElementById('taskPreviewSection');
+    const taskPreviewContent = document.getElementById('taskPreviewContent');
 
     // HTMLエスケープ関数
     function escapeHTML(str) {
@@ -841,11 +1268,90 @@
       if (uploadSection.classList.contains('show')) {
         uploadSection.classList.remove('show');
         showUploadBtn.textContent = '📝 新しい議事録を投稿';
+        taskPreviewSection.classList.remove('show');
       } else {
         uploadSection.classList.add('show');
         showUploadBtn.textContent = '📝 投稿フォームを閉じる';
         document.getElementById('meetingDate').value = new Date().toISOString().split('T')[0];
       }
+    }
+
+    // タスク抽出プレビュー
+    function previewTasks() {
+      const title = document.getElementById('meetingTitle').value.trim();
+      const content = document.getElementById('meetingDescription').value.trim();
+      const dateValue = document.getElementById('meetingDate').value;
+      const meetingDate = dateValue ? new Date(dateValue) : new Date();
+
+      if (!content) {
+        showMessage('内容・概要を入力してからプレビューしてください', 'error');
+        return;
+      }
+
+      console.log('=== タスク抽出プレビュー開始 ===');
+      console.log('タイトル:', title);
+      console.log('内容:', content);
+      console.log('会議日:', meetingDate);
+
+      extractedData = extractTasksAndSchedules(content, title, meetingDate);
+      
+      console.log('抽出結果:', extractedData);
+
+      // プレビュー表示
+      let previewHTML = '';
+      
+      if (extractedData.tasks.length > 0) {
+        previewHTML += '<div style="margin-bottom: 1rem;"><h4 style="color: var(--ultla-green); margin-bottom: 0.5rem;">📋 タスク (' + extractedData.tasks.length + '件)</h4>';
+        extractedData.tasks.forEach(task => {
+          previewHTML += `
+            <div class="task-item">
+              <div class="item-content">${escapeHTML(task.content)}</div>
+              <div class="item-meta">
+                ${task.assignee ? `担当: ${escapeHTML(task.assignee)} | ` : ''}
+                ${task.deadline ? `期限: ${task.deadline.toLocaleDateString('ja-JP')} | ` : ''}
+                抽出方法: ${task.source === 'explicit' ? '明示的' : '自然言語'}
+              </div>
+            </div>
+          `;
+        });
+        previewHTML += '</div>';
+      }
+
+      if (extractedData.meetings.length > 0) {
+        previewHTML += '<div style="margin-bottom: 1rem;"><h4 style="color: var(--ultla-blue); margin-bottom: 0.5rem;">📅 会議・スケジュール (' + extractedData.meetings.length + '件)</h4>';
+        extractedData.meetings.forEach(meeting => {
+          previewHTML += `
+            <div class="meeting-item">
+              <div class="item-content">${escapeHTML(meeting.content)}</div>
+              <div class="item-meta">
+                ${meeting.date ? `日時: ${meeting.date.toLocaleString('ja-JP')}` : '日時未設定'}
+              </div>
+            </div>
+          `;
+        });
+        previewHTML += '</div>';
+      }
+
+      if (extractedData.decisions.length > 0) {
+        previewHTML += '<div style="margin-bottom: 1rem;"><h4 style="color: var(--ultla-red); margin-bottom: 0.5rem;">✅ 決定事項 (' + extractedData.decisions.length + '件)</h4>';
+        extractedData.decisions.forEach(decision => {
+          previewHTML += `
+            <div class="decision-item">
+              <div class="item-content">${escapeHTML(decision.content)}</div>
+            </div>
+          `;
+        });
+        previewHTML += '</div>';
+      }
+
+      if (previewHTML === '') {
+        previewHTML = '<p style="color: var(--text-muted); text-align: center;">タスクやスケジュールが検出されませんでした。<br>明示的な形式（TODO: など）で記述すると抽出精度が向上します。</p>';
+      }
+
+      taskPreviewContent.innerHTML = previewHTML;
+      taskPreviewSection.classList.add('show');
+
+      showMessage('タスク抽出が完了しました！', 'success');
     }
 
     // ファイル選択処理
@@ -909,7 +1415,7 @@
     document.getElementById('meetingDate').addEventListener('input', updateSubmitButton);
     document.getElementById('meetingDescription').addEventListener('input', updateSubmitButton);
 
-    // 議事録投稿処理
+    // 議事録投稿処理（タスク抽出統合版）
     document.getElementById('uploadForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -946,6 +1452,15 @@
           fileType = selectedFile.type;
         }
 
+        // タスク抽出（プレビューがあればそれを使用、なければ新規抽出）
+        let extractedTasks = extractedData;
+        if (!extractedTasks) {
+          extractedTasks = extractTasksAndSchedules(formData.description, formData.title, formData.meetingDate);
+        }
+
+        console.log('=== 投稿時タスク抽出結果 ===');
+        console.log(extractedTasks);
+
         // Firestoreに保存
         const recordData = {
           uid: currentUID,
@@ -961,18 +1476,54 @@
           fileType,
           project: 'ULTLA2025',
           status: 'published',
+          // 抽出されたタスク・スケジュール情報を追加
+          extractedTasks: extractedTasks.tasks,
+          extractedMeetings: extractedTasks.meetings,
+          extractedDecisions: extractedTasks.decisions,
+          taskExtractionVersion: '1.0', // 抽出エンジンのバージョン
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         };
 
-        await addDoc(collection(db, "meetingRecords"), recordData);
+        const docRef = await addDoc(collection(db, "meetingRecords"), recordData);
         
-        showMessage('議事録が正常に投稿されました！', 'success');
+        // 抽出されたタスクを個別にprojectTasksコレクションに保存
+        if (extractedTasks.tasks.length > 0) {
+          for (const task of extractedTasks.tasks) {
+            const taskData = {
+              ...task,
+              meetingRecordId: docRef.id,
+              meetingTitle: formData.title,
+              uid: currentUID,
+              project: 'ULTLA2025',
+              createdAt: serverTimestamp()
+            };
+            await addDoc(collection(db, "projectTasks"), taskData);
+          }
+        }
+
+        // 会議情報も保存
+        if (extractedTasks.meetings.length > 0) {
+          for (const meeting of extractedTasks.meetings) {
+            const meetingData = {
+              ...meeting,
+              meetingRecordId: docRef.id,
+              uid: currentUID,
+              project: 'ULTLA2025',
+              createdAt: serverTimestamp()
+            };
+            await addDoc(collection(db, "projectSchedules"), meetingData);
+          }
+        }
+        
+        showMessage(`議事録が投稿されました！（タスク${extractedTasks.tasks.length}件、会議${extractedTasks.meetings.length}件を抽出）`, 'success');
         
         // フォームリセット
         document.getElementById('uploadForm').reset();
         selectedFile = null;
+        extractedData = null;
         fileInfo.style.display = 'none';
+        taskPreviewSection.classList.remove('show');
         toggleUploadSection();
         updateSubmitButton();
 
@@ -991,9 +1542,6 @@
       try {
         const recordsRef = collection(db, "meetingRecords");
         console.log('Collection参照作成成功');
-        
-        // まずシンプルなクエリでテスト
-        console.log('クエリ実行中...');
         
         onSnapshot(recordsRef, (querySnapshot) => {
           console.log('=== Firestore応答受信 ===');
@@ -1060,7 +1608,7 @@
       }
     }
 
-    // 議事録カード描画（デバッグ強化版）
+    // 議事録カード描画（タスク抽出結果表示対応版）
     function renderMeetingRecords(records) {
       console.log('=== レンダリング開始 ===');
       console.log('レンダリング対象件数:', records.length);
@@ -1088,7 +1636,7 @@
       console.log('=== レンダリング完了 ===');
     }
 
-    // 議事録カード作成（エラーハンドリング強化版）
+    // 議事録カード作成（タスク表示対応版）
     function createMeetingRecordCard(record) {
       console.log('カード作成開始:', record);
       
@@ -1108,13 +1656,50 @@
 
       const isOwner = record.uid === currentUID;
       
-      console.log('カードデータ確認:');
-      console.log('- タイトル:', record.title);
-      console.log('- 説明:', record.description);
-      console.log('- 参加者:', record.participants);
-      console.log('- 日付:', meetingDate);
-      console.log('- 投稿者:', record.uploaderName);
-      console.log('- タグ:', record.tags);
+      // 抽出されたタスク・スケジュール情報の表示準備
+      let extractedContentHTML = '';
+      if (record.extractedTasks && record.extractedTasks.length > 0) {
+        extractedContentHTML += `
+          <div class="extracted-tasks">
+            <div class="extracted-tasks-title">🤖 抽出されたタスク (${record.extractedTasks.length}件)</div>
+            ${record.extractedTasks.slice(0, 3).map(task => `
+              <div class="extracted-task-item">
+                📋 ${escapeHTML(task.content)}
+                ${task.assignee ? ` (担当: ${escapeHTML(task.assignee)})` : ''}
+                ${task.deadline ? ` (期限: ${new Date(task.deadline.seconds * 1000).toLocaleDateString('ja-JP')})` : ''}
+              </div>
+            `).join('')}
+            ${record.extractedTasks.length > 3 ? `<div class="extracted-task-item" style="color: var(--text-muted);">...他${record.extractedTasks.length - 3}件</div>` : ''}
+          </div>
+        `;
+      }
+
+      if (record.extractedMeetings && record.extractedMeetings.length > 0) {
+        extractedContentHTML += `
+          <div class="extracted-tasks" style="border-color: rgba(0,163,217,0.2);">
+            <div class="extracted-tasks-title">📅 抽出された会議 (${record.extractedMeetings.length}件)</div>
+            ${record.extractedMeetings.map(meeting => `
+              <div class="extracted-task-item">
+                📅 ${escapeHTML(meeting.content)}
+                ${meeting.date ? ` (${new Date(meeting.date.seconds * 1000).toLocaleString('ja-JP')})` : ''}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      if (record.extractedDecisions && record.extractedDecisions.length > 0) {
+        extractedContentHTML += `
+          <div class="extracted-tasks" style="border-color: rgba(255,107,107,0.2);">
+            <div class="extracted-tasks-title">✅ 決定事項 (${record.extractedDecisions.length}件)</div>
+            ${record.extractedDecisions.map(decision => `
+              <div class="extracted-task-item">
+                ✅ ${escapeHTML(decision.content)}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
 
       element.innerHTML = `
         <div class="minutes-header">
@@ -1141,6 +1726,8 @@
             }).join('')}
           </div>
         ` : ''}
+        
+        ${extractedContentHTML}
         
         <div class="minutes-actions">
           <div>
@@ -1250,6 +1837,7 @@
     logoutBtn.addEventListener('click', handleLogout);
     showUploadBtn.addEventListener('click', toggleUploadSection);
     cancelUploadBtn.addEventListener('click', toggleUploadSection);
+    previewTasksBtn.addEventListener('click', previewTasks);
 
     // 検索入力でEnterキー対応
     document.getElementById('searchInput').addEventListener('keypress', function(e) {
@@ -1306,8 +1894,34 @@
     // グローバル関数として公開（デバッグ用）
     window.debugDisplayRecords = displayMeetingRecords;
     window.debugAllRecords = () => console.log('All records:', allMeetingRecords);
+    window.testTaskExtraction = () => {
+      const sampleText = `
+第3回企画会議の議事録
 
-    console.log("=== デバッグ強化版読み込み完了 ===");
+TODO: チラシデザインを田中さんが9月15日まで作成
+担当: 佐藤さん
+締切: 来週まで
+
+会場予約について確認する必要がある
+山田さんが音響設備を調整します
+
+決定事項: 参加費を3000円に設定
+次回会議: 9月20日 15:00〜
+
+⬜ 資料準備
+⬜ 告知文作成
+`;
+
+      const result = extractTasksAndSchedules(sampleText, '第3回企画会議', new Date('2025-09-01'));
+      console.log('=== タスク抽出テスト結果 ===');
+      console.log('タスク:', result.tasks);
+      console.log('会議:', result.meetings);
+      console.log('決定事項:', result.decisions);
+      return result;
+    };
+
+    console.log("=== タスク抽出統合版読み込み完了 ===");
+    console.log("テスト用関数: window.testTaskExtraction()");
   </script>
 </body>
 </html>
