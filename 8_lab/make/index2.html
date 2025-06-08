@@ -968,27 +968,40 @@ TODO: チラシデザインを田中さんが9月15日まで作成
     function extractNaturalLanguageTasks(text, meetingDate) {
       const tasks = [];
       
-      // 強化版: より柔軟な動詞パターン
+      console.log('=== 自然言語タスク抽出開始 ===');
+      console.log('対象テキスト:', text);
+      
+      // より柔軟なパターンに修正
       const enhancedActionPatterns = [
-        // 基本パターン（既存）
-        /([^\s。、]+?)([さん|氏|君]?)が\s*([^\s。、]+?)[を|に]\s*(確認|調整|検討|準備|作成|実施|対応|連絡)[する|します|した]?/g,
+        // パターン1: 期限付きタスク（最優先）
+        /(明日|今日|今週|来週|[0-9]+日|[0-9]+月[0-9]+日)までに[、,]?\s*([^\s。、]+?)[が|は]?\s*([^\s。、]+?)[を|に]\s*(実装|開発|作成|準備|確認|調整|検討|実施|対応|連絡)[する|します|してもらう]?/g,
         
-        // 新しい柔軟なパターン
-        /([^\s。、]+?)[が|は]\s*([^\s。、]+?)[を|に]\s*(実装|開発|作成|準備|確認|調整|検討|実施|対応|連絡)[する|します|してもらう]/g,
+        // パターン2: 緊急・今すぐパターン
+        /(緊急|今すぐ|急ぎ|ASAP)[で]?\s*([^\s。、]+?)[の]?\s*(確認|調整|検討|準備|作成|実施|対応|連絡)[が必要|をする|をしてください]/g,
         
-        // 期限付きタスクパターン
-        /(明日|今日|今週|来週|[0-9]+日|[0-9]+月[0-9]+日)までに[、,]?\s*([^\s。、]+?)[が|は]?\s*([^\s。、]+?)[を|に]\s*(実装|開発|作成|準備|確認|調整|検討|実施|対応|連絡)/g,
+        // パターン3: ヒアリング・相談パターン
+        /([^\s。、]+?)から\s*([^\s。、]+?)[の]?\s*([^\s。、]+?)[を|に|について]\s*(ヒアリング|相談|確認|聞く)[する|してもらう]?/g,
         
-        // ヒアリング・相談パターン
-        /([^\s。、]+?)から\s*([^\s。、]+?)[を|に|について]\s*(ヒアリング|相談|確認|聞く)/g,
+        // パターン4: 基本的な動作パターン
+        /([^\s。、]+?)[が|は]\s*([^\s。、]+?)[を|に]\s*(実装|開発|作成|準備|確認|調整|検討|実施|対応|連絡)[する|します]/g,
         
-        // 依頼パターン
-        /([^\s。、]+?)[に|へ]\s*([^\s。、]+?)[を|について]\s*(依頼|お願い|要請)/g
+        // パターン5: 〜に相談するパターン
+        /([^\s。、]+?)[に|へ]\s*(来週|今週|明日|今日)?[までに]?\s*([^\s。、]+?)[について]?\s*(相談|依頼|お願い|要請)[する|します]?/g,
+        
+        // パターン6: 〜が必要パターン
+        /([^\s。、]+?)[の]?\s*(確認|調整|検討|準備|作成|実施|対応)[が必要]/g
       ];
       
-      for (const pattern of enhancedActionPatterns) {
+      for (let i = 0; i < enhancedActionPatterns.length; i++) {
+        const pattern = enhancedActionPatterns[i];
+        console.log(`パターン${i + 1}での抽出開始:`, pattern.source);
+        
         let match;
+        pattern.lastIndex = 0; // 正規表現をリセット
+        
         while ((match = pattern.exec(text)) !== null) {
+          console.log(`パターン${i + 1}でマッチ:`, match);
+          
           let assignee = null;
           let content = match[0].trim();
           let deadline = null;
@@ -996,33 +1009,55 @@ TODO: チラシデザインを田中さんが9月15日まで作成
           let priority = 'medium';
           
           // パターン別の処理
-          if (pattern.source.includes('までに')) {
-            // 期限付きパターン
+          if (i === 0) {
+            // パターン1: 期限付きタスク
             deadlineText = match[1];
             deadline = extractDeadline(match[1], meetingDate);
             assignee = extractAssignee(match[2]);
             content = `${match[3]}${match[4]}`;
             
-            // 期限による優先度判定
             if (match[1].includes('今日') || match[1].includes('明日')) {
               priority = 'high';
             }
-          } else if (pattern.source.includes('から')) {
-            // ヒアリングパターン
+          } else if (i === 1) {
+            // パターン2: 緊急パターン
+            priority = 'urgent';
+            deadlineText = '今日';
+            deadline = new Date(meetingDate);
+            content = `${match[2]}${match[3]}`;
+          } else if (i === 2) {
+            // パターン3: ヒアリングパターン
             assignee = extractAssignee(match[1]);
-            content = `${match[2]}について${match[3]}`;
-          } else if (pattern.source.includes('に|へ')) {
-            // 依頼パターン
+            content = `${match[2]}${match[3]}について${match[4]}`;
+          } else if (i === 3) {
+            // パターン4: 基本動作パターン
             assignee = extractAssignee(match[1]);
             content = `${match[2]}を${match[3]}`;
-          } else {
-            // 基本パターン
+          } else if (i === 4) {
+            // パターン5: 相談パターン
             assignee = extractAssignee(match[1]);
+            if (match[2]) {
+              deadlineText = match[2];
+              deadline = extractDeadline(match[2], meetingDate);
+            }
+            content = `${match[3] || ''}について${match[4]}`;
+          } else if (i === 5) {
+            // パターン6: 〜が必要パターン
+            content = `${match[1]}${match[2]}`;
+            if (content.includes('緊急') || content.includes('急ぎ')) {
+              priority = 'urgent';
+              deadline = new Date(meetingDate);
+              deadlineText = '今日';
+            }
           }
           
           // 緊急度キーワードチェック
           if (content.includes('緊急') || content.includes('急ぎ') || content.includes('今すぐ') || content.includes('ASAP')) {
             priority = 'urgent';
+            if (!deadline) {
+              deadline = new Date(meetingDate);
+              deadlineText = '今日';
+            }
           }
           
           const task = {
@@ -1038,10 +1073,13 @@ TODO: チラシデザインを田中さんが9月15日まで作成
             createdAt: new Date()
           };
           
+          console.log('抽出されたタスク:', task);
           tasks.push(task);
         }
       }
       
+      console.log('=== 自然言語タスク抽出完了 ===');
+      console.log('抽出タスク数:', tasks.length);
       return tasks;
     }
 
