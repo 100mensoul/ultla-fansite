@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多摩川南側エリアマップ｜ULTRA FANSITE</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="map.css">
+</head>
+<body>
+
+<header class="section-title">
+  <h2>多摩川南側エリアマップ <span class="en">TAMA RIVER SOUTH AREA MAP</span></h2>
+</header>
+
+<main class="content">
+
+  <div class="map-wrapper">
+    <img src="map-tama-city.jpg" alt="多摩川南側エリア地図">
+
+    <!-- ピン①：歴史的建物エリア（旧校舎風建物） -->
+    <div class="pin" style="left: 30%; top: 35%;" onclick="openModal('modal1')"></div>
+
+    <!-- ピン②：多摩川河川敷・飛び石エリア -->
+    <div class="pin" style="left: 65%; top: 25%;" onclick="openModal('modal2')"></div>
+
+    <!-- ピン③：森の広場・キャンプエリア -->
+    <div class="pin" style="left: 45%; top: 50%;" onclick="openModal('modal3')"></div>
+    
+    <!-- ピン④：コミュニティ拠点・東屋エリア -->
+    <div class="pin" style="left: 55%; top: 60%;" onclick="openModal('modal4')"></div>
+
+    <!-- ピン⑤：多摩川南岸・自然観察エリア -->
+    <div class="pin" style="left: 40%; top: 75%;" onclick="openModal('modal5')"></div>
+
+    <!-- ピン⑥：緑陰休憩・ピクニックエリア -->
+    <div class="pin" style="left: 70%; top: 80%;" onclick="openModal('modal6')"></div>
+  </div>
+
+  <!-- モーダル①：桑ハウス・仲田の森蚕糸公園 -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('modal1')">×</span>
+      <img src="images/kaiko.jpg" alt="桑ハウス・仲田の森蚕糸公園" class="thumbnail">
+      <div class="modal-header">桑ハウス・仲田の森蚕糸公園</div>
+      <div class="modal-body">
+        <div class="info-row">
+          <div class="info-label">住所</div>
+          <div>東京都日野市日野本町6丁目1-74</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">歴史</div>
+          <div>昭和3年（1928）に設置された蚕糸試験場付属日野桑園の貴重な遺構。日本の近代化を支えた絹産業の研究拠点として、桑と蚕の品種開発が行われていました。現在残る「桑ハウス」（旧第一蚕室）は国登録有形文化財に指定されています。</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">説明</div>
+          <div>多摩川べりの元田んぼ地帯に建設された日本の産業遺産。80年以上の風雪に耐えて残る建物は、当時の最先端研究施設の面影を今に伝えています。広大な桑畑跡地は現在、公園として市民に親しまれています。</div>
+        </div>
+        <div class="link-group">
+          <a href="https://maps.app.goo.gl/Pg6LWiTHyt16QtUy6" target="_blank" class="map-link">📍 マップで見る</a>
+          <a href="https://photos.app.goo.gl/JNELf8Axur7EZLpD7" target="_blank" class="photo-link">📸 写真を見る</a>
+          <a href="https://youtu.be/eKQH7RLv5AE" target="_blank" class="video-link">🎬 動画で確認</a>
+        </div>
+        <div class="info-row">
+          <div class="info-label">詳細情報</div>
+          <div><a href="https://shinsenhino.com/日野のみどころ/日野のスポット/遊び場・公園/仲田の森蚕糸公園.php" target="_blank" style="color: var(--primary-orange); text-decoration: underline;">🔗 公園詳細ページ</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- モーダル②：多摩川河川敷・飛び石エリア -->
+  <div id="modal2" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('modal2')">×</span>
+      <img src="images/river-stones.jpg" alt="多摩川飛び石エリア" class="thumbnail">
+      <div class="modal-header">リバーサイド・ステッピング</div>
+      <div class="modal-body">
+        <div class="info-row">
+          <div class="info-label">住所</div>
+          <div>東京都日野市石田</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">説明</div>
+          <div>多摩川の清流に配置された飛び石。川の音を聞きながら、自然との対話を楽しめる憩いのスポットです。</div>
+        </div>
+        <div class="link-group">
+          <a href="https://maps.app.goo.gl/river1" target="_blank" class="map-link">📍 マップで見る</a>
+          <a href="https://photos.app.goo.gl/river1" target="_blank" class="photo-link">📸 写真を見る</a>
+          <a href="https://youtube.com/watch?v=river1" target="_blank" class="video-link">🎬 動画で確認</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- モーダル③：森の広場・キャンプエリア -->
+  <div id="modal3" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('modal3')">×</span>
+      <img src="images/forest-camp.jpg" alt="森の広場キャンプエリア" class="thumbnail">
+      <div class="modal-header">フォレスト・ベースキャンプ</div>
+      <div class="modal-body">
+        <div class="info-row">
+          <div class="info-label">住所</div>
+          <div>東京都日野市百草</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">説明</div>
+          <div>豊かな緑に囲まれた開放的な広場。テントを張ったり焚き火を囲んだり、自然の中でのアクティビティを楽しめます。</div>
+        </div>
+        <div class="link-group">
+          <a href="https://maps.app.goo.gl/forest1" target="_blank" class="map-link">📍 マップで見る</a>
+          <a href="https://photos.app.goo.gl/forest1" target="_blank" class="photo-link">📸 写真を見る</a>
+          <a href="https://youtube.com/watch?v=forest1" target="_blank" class="video-link">🎬 動画で確認</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- モーダル④：コミュニティ拠点・東屋エリア -->
+  <div id="modal4" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('modal4')">×</span>
+      <img src="images/community-pavilion.jpg" alt="コミュニティ東屋エリア" class="thumbnail">
+      <div class="modal-header">コミュニティ・パビリオン</div>
+      <div class="modal-body">
+        <div class="info-row">
+          <div class="info-label">住所</div>
+          <div>東京都日野市落川</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">説明</div>
+          <div>地域の人々が集う東屋を中心とした交流エリア。ベンチやテーブルが設置され、のんびりとした時間を過ごせます。</div>
+        </div>
+        <div class="link-group">
+          <a href="https://maps.app.goo.gl/community1" target="_blank" class="map-link">📍 マップで見る</a>
+          <a href="https://photos.app.goo.gl/community1" target="_blank" class="photo-link">📸 写真を見る</a>
+          <a href="https://youtube.com/watch?v=community1" target="_blank" class="video-link">🎬 動画で確認</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- モーダル⑤：多摩川南岸・自然観察エリア -->
+  <div id="modal5" class="modal">
+    <div class="modal-content">
+    <span class="close" onclick="closeModal('modal5')">×</span>
+      <img src="images/nature-observation.jpg" alt="多摩川南岸自然観察エリア" class="thumbnail">
+      <div class="modal-header">ネイチャー・ウォッチング</div>
+      <div class="modal-body">
+        <div class="info-row">
+          <div class="info-label">住所</div>
+          <div>東京都日野市日野</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">説明</div>
+          <div>多摩川の豊かな生態系を観察できる自然エリア。野鳥や水生生物など、都市近郊でありながら多様な生き物と出会えます。</div>
+        </div>
+        <div class="link-group">
+          <a href="https://maps.app.goo.gl/nature1" target="_blank" class="map-link">📍 マップで見る</a>
+          <a href="https://photos.app.goo.gl/nature1" target="_blank" class="photo-link">📸 写真を見る</a>
+          <a href="https://youtube.com/watch?v=nature1" target="_blank" class="video-link">🎬 動画で確認</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- モーダル⑥：緑陰休憩・ピクニックエリア -->
+  <div id="modal6" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('modal6')">×</span>
+      <img src="images/picnic-area.jpg" alt="緑陰休憩ピクニックエリア" class="thumbnail">
+      <div class="modal-header">グリーンシェイド・ピクニック</div>
+      <div class="modal-body">
+        <div class="info-row">
+          <div class="info-label">住所</div>
+          <div>東京都日野市万願寺</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">説明</div>
+          <div>大きな木陰の下でゆったりと過ごせるピクニックエリア。家族や友人と自然の中で食事や休憩を楽しめる平和な場所です。</div>
+        </div>
+        <div class="link-group">
+          <a href="https://maps.app.goo.gl/picnic1" target="_blank" class="map-link">📍 マップで見る</a>
+          <a href="https://photos.app.goo.gl/picnic1" target="_blank" class="photo-link">📸 写真を見る</a>
+          <a href="https://youtube.com/watch?v=picnic1" target="_blank" class="video-link">🎬 動画で確認</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p><a href="../index.html">← トップページへ戻る</a></p>
+</footer>
+
+<script src="map.js"></script>
+
+</body>
+</html>

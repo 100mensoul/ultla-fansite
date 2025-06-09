@@ -1,0 +1,289 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Zen+Maru+Gothic:wght@400;500&display=swap');
+
+/* CSS Variables - 落ち着いたオレンジトーンと自然テーマ */
+:root {
+  /* プライマリカラー - 温かい炎の色調 */
+  --primary-orange: #d4541e;          /* 深いオレンジ - 囲炉裏の炎 */
+  --primary-orange-light: #e67e3b;    /* ライトオレンジ - 夕日 */
+  --primary-orange-dark: #b8441a;     /* ダークオレンジ - 薪の燃え殻 */
+  
+  /* セカンダリカラー - 自然と歴史 */
+  --earth-brown: #8b5a3c;             /* 大地の茶色 */
+  --forest-green: #4a6741;            /* 森の緑 */
+  --stone-gray: #6b6b6b;              /* 石の灰色 */
+  --warm-cream: #f9f5f1;              /* 温かいクリーム */
+  
+  /* アクセントカラー - 新しい風 */
+  --sky-blue: #7db4d1;                /* 空の青 */
+  --young-green: #9db86a;             /* 若葉の緑 */
+  
+  /* ニュートラル */
+  --text-primary: #3a3a3a;
+  --text-secondary: #666;
+  --bg-main: #faf8f5;
+  --bg-card: #ffffff;
+  --border-light: rgba(212, 84, 30, 0.15);
+  
+  /* シャドウとエフェクト */
+  --shadow-warm: 0 4px 20px rgba(212, 84, 30, 0.15);
+  --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+body {
+  font-family: 'Zen Maru Gothic', 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+  background: linear-gradient(135deg, var(--bg-main) 0%, var(--warm-cream) 100%);
+  color: var(--text-primary);
+  line-height: 1.7;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-bar {
+  background: linear-gradient(135deg, var(--primary-orange) 0%, var(--earth-brown) 100%);
+  color: #fff;
+  font-weight: 500;
+  padding: 1.2rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-warm);
+}
+
+.nav-bar a {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.nav-bar a:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ドロップダウン用 */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background: var(--bg-card);
+  min-width: 180px;
+  box-shadow: var(--shadow-soft);
+  z-index: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+}
+
+.dropdown-content a {
+  color: var(--text-primary);
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  transition: all 0.2s ease;
+  font-weight: 400;
+}
+
+.dropdown-content a:hover {
+  background: linear-gradient(135deg, var(--primary-orange-light), var(--primary-orange));
+  color: white;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.hero {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+.hero img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.hero-teaser {
+  position: relative;
+  background: linear-gradient(135deg, 
+    rgba(212, 84, 30, 0.85), 
+    rgba(139, 90, 60, 0.75)), 
+    url('images/hero-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+}
+
+.hero-teaser .teaser-text {
+  padding: 2.5rem;
+  font-family: 'Zen Maru Gothic', serif;
+  font-size: 1.2rem;
+  color: #fff;
+  line-height: 1.9;
+  max-width: 850px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-warm);
+}
+
+footer {
+  background: linear-gradient(135deg, var(--earth-brown), var(--stone-gray));
+  color: #fff;
+  text-align: center;
+  padding: 2.5rem 1rem;
+  font-size: 0.95rem;
+  margin-top: 3rem;
+}
+
+footer a {
+  color: var(--primary-orange-light);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+footer a:hover {
+  color: #fff;
+  background: var(--primary-orange);
+  transform: translateY(-2px);
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .nav-bar {
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem;
+  }
+  
+  .hero-teaser .teaser-text {
+    font-size: 1rem;
+    padding: 1.8rem;
+    margin: 1rem;
+  }
+  
+  .section-title h2 {
+    font-size: 1.8rem;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 10% auto;
+  }
+  
+  .link-group {
+    flex-direction: column;
+  }
+  
+  .map-link, .photo-link, .video-link {
+    flex: none;
+    width: 100%;
+  }
+  
+  .pin {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .pin::before {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentleGlow {
+  0%, 100% {
+    box-shadow: 0 3px 12px rgba(212, 84, 30, 0.4), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(212, 84, 30, 0.6), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+}
+
+.modal-content {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.pin {
+  animation: gentleGlow 3s ease-in-out infinite;
+}
+
+/* アクセシビリティ改善 */
+.pin:focus {
+  outline: 3px solid var(--sky-blue);
+  outline-offset: 3px;
+}
+
+.close:focus {
+  outline: 2px solid var(--warm-cream);
+  outline-offset: 2px;
+}
+
+/* 追加のスタイリング */
+.content {
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.map-wrapper {
+  position: relative;
+  text-align: center;
+  margin-top: 2rem;
+  background: var(--warm-cream);
+  border-radius: 20px;
+  padding: 1rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.map-wrapper img {
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  border-radius: 15px;
+}
