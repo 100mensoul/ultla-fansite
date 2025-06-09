@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>聖蹟桜ヶ丘駅周辺拡大地図｜ULTRA FANSITE</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="map.css">
+  <style>
+    .zoom-page-header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, 
+        var(--primary-orange) 0%, 
+        var(--earth-brown) 50%,
+        var(--forest-green) 100%);
+      color: white;
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .zoom-page-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.08)"/><circle cx="50" cy="70" r="1" fill="rgba(255,255,255,0.06)"/></svg>');
+      animation: float 20s infinite linear;
+    }
+
+    .zoom-page-header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .zoom-page-header .en {
+      display: block;
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-top: 0.5rem;
+      font-weight: 400;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .zoom-content {
+      padding: 2rem 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .zoom-map-wrapper {
+      position: relative;
+      text-align: center;
+      margin-top: 1rem;
+      background: var(--warm-cream);
+      border-radius: 20px;
+      padding: 1rem;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .zoom-map-wrapper img {
+      width: 100%;
+      max-width: 1000px;
+      height: auto;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .zoom-description {
+      background: var(--bg-card);
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      box-shadow: var(--shadow-soft);
+      border-left: 4px solid var(--primary-orange);
+    }
+
+    .zoom-description h2 {
+      color: var(--primary-orange-dark);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .zoom-description p {
+      line-height: 1.7;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .back-button {
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary-orange), var(--primary-orange-light));
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    .back-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 84, 30, 0.3);
+    }
+
+    .navigation-info {
+      background: rgba(212, 84, 30, 0.1);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem 0;
+      text-align: center;
+      border: 1px solid rgba(212, 84, 30, 0.2);
+    }
+
+    .navigation-info p {
+      margin: 0;
+      color: var(--primary-orange-dark);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      .zoom-page-header h1 {
+        font-size: 1.5rem;
+      }
+      
+      .zoom-content {
+        padding: 1.5rem 1rem;
+      }
+      
+      .zoom-description {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header class="zoom-page-header">
+  <h1>聖蹟桜ヶ丘駅周辺拡大地図 <span class="en">SEISEKI-SAKURAGAOKA DETAIL MAP</span></h1>
+</header>
+
+<main class="zoom-content">
+
+  <div class="navigation-info">
+    <p>📍 多摩川南側エリアマップから聖蹟桜ヶ丘駅周辺を拡大表示しています</p>
+  </div>
+
+  <div class="zoom-map-wrapper">
+    <img src="zoom-map-tama.jpg" alt="聖蹟桜ヶ丘駅周辺拡大地図">
+  </div>
+
+  <div class="zoom-description">
+    <h2>聖蹟桜ヶ丘駅周辺エリアについて</h2>
+    <p>聖蹟桜ヶ丘駅は京王線の主要駅の一つで、多摩川南側エリアの交通の要衝として機能しています。駅周辺には商業施設や住宅地が広がり、多摩川の自然環境と都市機能が調和したエリアです。</p>
+    
+    <p>このエリアは「耳をすませば」などのスタジオジブリ作品の舞台としても知られており、映画ファンにとっても特別な場所となっています。また、多摩川河川敷へのアクセスも良く、自然散策の拠点としても人気があります。</p>
+    
+    <p>詳細な地図では、駅から各スポットへのルートや、周辺の施設、公園などがより詳しく確認できます。</p>
+  </div>
+
+  <div style="text-align: center;">
+    <a href="index.html" class="back-button">← 多摩川南側エリアマップに戻る</a>
+  </div>
+
+</main>
+
+<footer>
+  <p><a href="../index.html">← トップページへ戻る</a></p>
+</footer>
+
+<script src="map.js"></script>
+
+</body>
+</html>

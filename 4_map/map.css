@@ -318,3 +318,19 @@
     padding: 1.5rem 1rem;
   }
 }
+
+/* 拡大地図エリア */
+.zoom-area {
+  position: absolute;
+  cursor: pointer;
+  border: 2px dashed none;
+  background: none;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.zoom-area:hover {
+  background: rgba(255, 69, 0, 0.2);
+  border-color: rgba(255, 69, 0, 0.2);
+  transform: scale(1.05);
+}
