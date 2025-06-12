@@ -444,41 +444,45 @@ color: white;
 /* コンパクトキーパーソンカード */
 .keyperson-grid {
 display: grid;
-grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
 gap: 1rem;
+max-width: 1200px;
+margin: 0 auto;
 }
 
 .keyperson-card.compact {
 background: var(–bg-card);
 border-radius: 12px;
-padding: 1rem;
+padding: 1.2rem;
 box-shadow: var(–shadow-soft);
 border: 1px solid var(–border-light);
 transition: all 0.3s ease;
 cursor: pointer;
+height: fit-content;
+min-height: 120px;
 }
 
 .keyperson-card.compact:hover {
-transform: translateY(-3px);
+transform: translateY(-2px);
 box-shadow: var(–shadow-warm);
 }
 
 .card-compact-header {
 display: flex;
-align-items: flex-start;
+align-items: center;
 margin-bottom: 0.8rem;
 }
 
 .avatar-small {
-width: 40px;
-height: 40px;
+width: 45px;
+height: 45px;
 border-radius: 50%;
 background: linear-gradient(135deg, var(–primary-orange), var(–primary-orange-light));
 display: flex;
 align-items: center;
 justify-content: center;
-font-size: 1.2rem;
-margin-right: 0.8rem;
+font-size: 1.3rem;
+margin-right: 1rem;
 flex-shrink: 0;
 }
 
@@ -488,72 +492,149 @@ min-width: 0;
 }
 
 .person-name-compact {
-font-size: 1rem;
+font-size: 1.1rem;
 font-weight: 600;
 color: var(–text-primary);
-margin: 0 0 0.2rem 0;
+margin: 0 0 0.3rem 0;
+line-height: 1.2;
 }
 
 .person-role-compact {
 color: var(–text-secondary);
-font-size: 0.85rem;
-margin: 0 0 0.4rem 0;
+font-size: 0.9rem;
+margin: 0 0 0.5rem 0;
+line-height: 1.2;
 }
 
 .group-badge {
 display: inline-block;
-padding: 0.15rem 0.5rem;
-border-radius: 10px;
-font-size: 0.7rem;
+padding: 0.2rem 0.6rem;
+border-radius: 12px;
+font-size: 0.75rem;
 font-weight: 600;
 text-transform: uppercase;
-letter-spacing: 0.5px;
+letter-spacing: 0.3px;
 }
 
 .group-badge.navigator {
-background: rgba(34, 139, 34, 0.1);
-color: #228B22;
+background: #e8f5e8;
+color: #2d7d32;
+border: 1px solid #4caf50;
 }
 
 .group-badge.expert {
-background: rgba(70, 130, 180, 0.1);
-color: #4682B4;
+background: #e3f2fd;
+color: #1976d2;
+border: 1px solid #2196f3;
 }
 
 .group-badge.management {
-background: rgba(255, 140, 0, 0.1);
-color: #FF8C00;
+background: #fff3e0;
+color: #f57c00;
+border: 1px solid #ff9800;
 }
 
 .group-badge.admin {
-background: rgba(139, 69, 19, 0.1);
-color: #8B4513;
+background: #f3e5f5;
+color: #7b1fa2;
+border: 1px solid #9c27b0;
 }
 
 .card-compact-body {
-margin-top: 0.8rem;
+margin-top: 0.5rem;
 }
 
 .person-description-compact {
 color: var(–text-secondary);
-line-height: 1.5;
+line-height: 1.4;
 margin-bottom: 0.8rem;
 font-size: 0.9rem;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
+overflow: hidden;
 }
 
 .person-tags-compact {
 display: flex;
 flex-wrap: wrap;
 gap: 0.3rem;
+margin-top: 0.5rem;
 }
 
 .tag-small {
-background: rgba(212, 84, 30, 0.1);
+background: rgba(212, 84, 30, 0.12);
 color: var(–primary-orange-dark);
-padding: 0.15rem 0.4rem;
-border-radius: 8px;
+padding: 0.2rem 0.5rem;
+border-radius: 10px;
 font-size: 0.75rem;
 font-weight: 500;
+border: 1px solid rgba(212, 84, 30, 0.2);
+}
+
+/* 検索結果表示 */
+.keyperson-card.hidden {
+display: none;
+}
+
+.no-results {
+grid-column: 1 / -1;
+text-align: center;
+padding: 3rem 2rem;
+color: var(–text-secondary);
+font-size: 1.1rem;
+background: var(–warm-cream);
+border-radius: 12px;
+border: 2px dashed var(–border-light);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1200px) {
+.keyperson-grid {
+grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+}
+
+@media (max-width: 768px) {
+.keyperson-grid {
+grid-template-columns: 1fr;
+gap: 0.8rem;
+}
+
+.keyperson-card.compact {
+padding: 1rem;
+min-height: 100px;
+}
+
+.filter-row {
+flex-direction: column;
+gap: 0.8rem;
+}
+
+.group-filters, .tag-filters {
+justify-content: center;
+}
+
+.filter-label {
+width: 100%;
+text-align: center;
+margin-bottom: 0.3rem;
+}
+
+.person-name-compact {
+font-size: 1rem;
+}
+
+.person-role-compact {
+font-size: 0.85rem;
+}
+
+.avatar-small {
+width: 40px;
+height: 40px;
+font-size: 1.2rem;
+margin-right: 0.8rem;
+}
 }
 
 /* 既存の大きなカードスタイル（将来のモーダル用に保持） */
