@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多摩川南側エリア・コーディネートページ｜ULTRA FANSITE</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="map.css">
+</head>
+<body>
+
+<header class="section-title">
+  <h2>多摩川南側エリア・コーディネートページ <span class="en">TAMA RIVER SOUTH AREA COORDINATE</span></h2>
+  <p class="coordinate-subtitle">地域プログラム作りのための場所・人・ストーリー集約ページ</p>
+</header>
+
+<main class="content">
+
+  <!-- マップセクション -->
+
+  <section class="map-section">
+    <div class="section-header">
+      <h3 class="section-heading">📍 フィールドマップ <span class="section-en">FIELD MAP</span></h3>
+      <p class="section-description">エリア内の重要スポットと活動拠点</p>
+    </div>
+
+```
+<div class="map-wrapper">
+  <img src="map-tama-city.jpg" alt="多摩川南側エリア地図">
+
+  <!-- ピン①：歴史的建物エリア（旧校舎風建物） -->
+  <div class="pin" style="left: 44.5%; top: 29%;" onclick="openModal('modal1')"></div>
+
+  <!-- ピン②：多摩川河川敷・飛び石エリア -->
+  <div class="pin" style="left: 56.5%; top: 44%;" onclick="openModal('modal2')"></div>
+
+  <!-- ピン③：森の広場・キャンプエリア -->
+  <div class="pin" style="left: 57.5%; top: 43%;" onclick="openModal('modal3')"></div>
+  
+  <!-- ピン④：コミュニティ拠点・東屋エリア -->
+  <div class="pin" style="left: 62%; top: 51.5%;" onclick="openModal('modal4')"></div>
+
+  <!-- ピン⑤：多摩川南岸・自然観察エリア -->
+  <div class="pin" style="left: 68.7%; top: 64%;" onclick="openModal('modal5')"></div>
+
+  <!-- 聖蹟桜ヶ丘エリア拡大地図リンク -->
+  <div class="zoom-area" style="left: 75%; top: 52%; width: 8%; height: 6%;" onclick="location.href='zoom.html'" title="聖蹟桜ヶ丘駅周辺を拡大表示"></div>
+
+</div>
+```
+
+  </section>
+
+  <!-- キーパーソンセクション -->
+
+  <section class="keyperson-section">
+    <div class="section-header">
+      <h3 class="section-heading">👥 キーパーソン <span class="section-en">KEY PERSONS</span></h3>
+      <p class="section-description">地域で活動する専門家・実践者・コーディネーター</p>
+    </div>
+
+```
+<!-- 検索・フィルター -->
+<div class="filter-controls">
+  <input type="text" id="searchInput" placeholder="名前・専門分野・キーワードで検索..." class="search-input">
+  <div class="tag-filters">
+    <button class="tag-filter active" data-tag="all">すべて</button>
+    <button class="tag-filter" data-tag="教育">教育</button>
+    <button class="tag-filter" data-tag="環境">環境</button>
+    <button class="tag-filter" data-tag="アート">アート</button>
+    <button class="tag-filter" data-tag="コミュニティ">コミュニティ</button>
+    <button class="tag-filter" data-tag="歴史">歴史</button>
+    <button class="tag-filter" data-tag="農業">農業</button>
+    <button class="tag-filter" data-tag="技術">技術</button>
+  </div>
+</div>
+
+<!-- キーパーソンカード -->
+<div class="keyperson-grid" id="keypersonGrid">
+  
+  <!-- カード1: 環境教育専門家 -->
+  <div class="keyperson-card" data-tags="教育,環境">
+    <div class="card-header">
+      <div class="avatar">🌱</div>
+      <div class="card-info">
+        <h4 class="person-name">田中 美咲</h4>
+        <p class="person-role">環境教育コーディネーター</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="person-description">多摩川流域での自然体験プログラム企画・運営。子どもたちと川の生態系を学ぶワークショップを定期開催。</p>
+      <div class="person-tags">
+        <span class="tag">環境</span>
+        <span class="tag">教育</span>
+        <span class="tag">ワークショップ</span>
+      </div>
+      <div class="contact-info">
+        <p>📧 m.tanaka@eco-edu.jp</p>
+        <p>📱 090-1234-5678</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- カード2: プレイパーク運営者 -->
+  <div class="keyperson-card" data-tags="教育,コミュニティ">
+    <div class="card-header">
+      <div class="avatar">🔥</div>
+      <div class="card-info">
+        <h4 class="person-name">佐藤 健太</h4>
+        <p class="person-role">プレイリーダー</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="person-description">プレイパークどろんこの森でプレイリーダーとして活動。子どもの自由な遊びをサポートし、地域コミュニティの核となる。</p>
+      <div class="person-tags">
+        <span class="tag">教育</span>
+        <span class="tag">コミュニティ</span>
+        <span class="tag">子育て</span>
+      </div>
+      <div class="contact-info">
+        <p>📧 k.sato@playpark.org</p>
+        <p>🌐 ochisato.org</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- カード3: 歴史研究家 -->
+  <div class="keyperson-card" data-tags="歴史,文化">
+    <div class="card-header">
+      <div class="avatar">🏛️</div>
+      <div class="card-info">
+        <h4 class="person-name">山田 雅子</h4>
+        <p class="person-role">郷土史研究家</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="person-description">日野市の近世・近代史研究。特に桑園時代の産業遺産や、土方歳三関連の史跡調査に詳しい。</p>
+      <div class="person-tags">
+        <span class="tag">歴史</span>
+        <span class="tag">文化</span>
+        <span class="tag">産業遺産</span>
+      </div>
+      <div class="contact-info">
+        <p>📧 yamada@hino-history.jp</p>
+        <p>📚 日野市郷土資料館</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- カード4: アーティスト -->
+  <div class="keyperson-card" data-tags="アート,コミュニティ">
+    <div class="card-header">
+      <div class="avatar">🎨</div>
+      <div class="card-info">
+        <h4 class="person-name">鈴木 光</h4>
+        <p class="person-role">コミュニティアーティスト</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="person-description">地域住民と協働でパブリックアートを制作。多摩川の自然をテーマにした参加型アートプロジェクトを展開。</p>
+      <div class="person-tags">
+        <span class="tag">アート</span>
+        <span class="tag">コミュニティ</span>
+        <span class="tag">参加型</span>
+      </div>
+      <div class="contact-info">
+        <p>📧 hikaru@art-community.net</p>
+        <p>🎨 Instagram: @hikaru_tama_art</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- カード5: 農業指導者 -->
+  <div class="keyperson-card" data-tags="農業,環境,教育">
+    <div class="card-header">
+      <div class="avatar">🌾</div>
+      <div class="card-info">
+        <h4 class="person-name">高橋 一郎</h4>
+        <p class="person-role">農業体験指導員</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="person-description">有機農法による野菜栽培を指導。市民農園での体験プログラムや、学校への出張授業も行う。</p>
+      <div class="person-tags">
+        <span class="tag">農業</span>
+        <span class="tag">環境</span>
+        <span class="tag">教育</span>
+        <span class="tag">有機農法</span>
+      </div>
+      <div class="contact-info">
+        <p>📧 takahashi@organic-farm.jp</p>
+        <p>🚜 たかはし農園</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- カード6: 神社宮司 -->
+  <div class="keyperson-card" data-tags="歴史,文化,コミュニティ">
+    <div class="card-header">
+      <div class="avatar">⛩️</div>
+      <div class="card-info">
+        <h4 class="person-name">小野 尊道</h4>
+        <p class="person-role">小野神社宮司</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="person-description">武蔵国一之宮・小野神社の宮司。地域の伝統文化継承と、現代的なコミュニティ活動の橋渡し役。</p>
+      <div class="person-tags">
+        <span class="tag">歴史</span>
+        <span class="tag">文化</span>
+        <span class="tag">コミュニティ</span>
+        <span class="tag">伝統</span>
+      </div>
+      <div class="contact-info">
+        <p>📧 info@onojinja.or.jp</p>
+        <p>⛩️ 小野神社</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+```
+
+  </section>
+
+  <!-- モーダル①：桑ハウス・仲田の森蚕糸公園 -->
+
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('modal1')">×</span>
+      <img src="images/kaiko.jpg" alt="桑ハウス・仲田の森蚕糸公園" class="thumbnail">
+      <div class="modal-header">桑ハウス・仲田の森蚕糸公園</div>
+      <div class="modal-body">
+        <div class="info-row">
+          <div class="info-label">住所</div>
+          <div>東京都日野市日野本町6丁目1-74</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">歴史</div>
+          <div>昭和3年（1928）に設置された蚕糸試験場付属日野桑園の貴重な遺構。日本の近代化を支えた絹産業の研究拠点として、桑と蚕の品種開発が行われていました。現在残る「桑ハウス」（旧第一蚕室）は国登録有形文化財に指定されています。</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">説明</div>
+          <div>多摩川べりの元田んぼ地帯に建設された日本の産業遺産。80年以上の風雪に耐えて残る建物は、当時の最先端研究施設の面影を今に伝えています。広大な桑畑跡地は現在、公園として市民に親しまれています。</div>
+        </div>
+        <div class="link-group">
+          <a href="https://maps.app.goo.gl/Pg6LWiTHyt16QtUy6" target="_blank" class="map-link">📍 マップで見る</a>
+          <a href="https://photos.app.goo.gl/JNELf8Axur7EZLpD7" target="_blank" class="photo-link">📸 写真を見る</a>
+          <a href="https://youtu.be/eKQH7RLv5AE" target="_blank" class="video-link">🎬 動画で確認</a>
+        </div>
+        <div class="info-row">
+          <div class="info-label">詳細情報</div>
+          <div><a href="https://shinsenhino.com/日野のみどころ/日野のスポット/遊び場・公園/仲田の森蚕糸公園.php" target="_blank" style="color: var(--primary-orange); text-decoration: underline;">🔗 公園詳細ページ</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- モーダル②：プレイパークどろんこの森 -->
+
+  <div id="modal2" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('modal2')">×</span>
+      <img src="images/playpark.jpg" alt="プレイパークどろんこの森" class="thumbnail">
+      <div class="modal-header">プレイパークどろんこの森</div>
+      <div class="modal-body">
+        <div class="info-row">
+          <div class="info-label">住所</div>
+          <div>東京都日野市落川1400</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">コンセプト</div>
+          <div>子どもたちが「自分の責任で自由に遊ぶ」場所。やってみたいことに挑戦でき、小さなけがや失敗を繰り返しながら成長できる自然の中の遊び場です。</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">特徴</div>
+          <div>プレーリーダーが子どもたちと一緒に遊び、遊びのヒントを提供。焚き火の周りで人が集まり、食べ物を焼いたりするコミュニティ空間。いろいろな価値観の人が自分らしくいられる場所を目指しています。</div>
+        </div>
+
+```
+    <div class="link-group">
+      <a href="https://maps.app.goo.gl/WixePjc5hUAhWLoi7" target="_blank" class="map-link">📍 マップで見る</a>
+      <a href="https://photos.app.goo.gl/6sELtVG9N6VSkw8h9" target="_blank" class="photo-link">📸 写真を見る</a>
+      <a href="https://youtu.be/PXYd5g-Oaa0" target="_blank" class="video-link">🎬 動画で確認</a>
+    </div>
+    <div class="info-row">
+      <div class="info-label">詳細情報</div>
+      <div><a href="https://ochisato.org/aboutus/doronko/" target="_blank" style="color: var(--primary-orange); text-decoration: underline;">🔗 プレイパーク詳細ページ</a></div>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- モーダル③：浅川 -->
+
+  <div id="modal3" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('modal3')">×</span>
+      <img src="images/river.jpg" alt="浅川" class="thumbnail">
+      <div class="modal-header">浅川</div>
+      <div class="modal-body">
+        <div class="info-row">
+          <div class="info-label">場所</div>
+          <div>多摩川支流・日野市南地域を横切る河川</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">源流と歴史</div>
+          <div>八王子市の西方、「夕焼け小焼け」の歌のモデルとなった恩方から流れ出す多摩川の支流。石田村（土方歳三生誕地）の地名由来や、油免地区での菜種油栽培など、地域の歴史と深く結びついています。</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">現在の姿</div>
+          <div>かつてのドブ川から清流に復活。魚たちが泳ぐ澄んだ水となり、市民の憩いの場に。浅川・程久保川湾土では人工的に蘇らせた水辺の自然で、多様な生態系と子どもたちの遊び場が形成されています。</div>
+        </div>
+
+```
+    <div class="link-group">
+      <a href="https://maps.app.goo.gl/CiBf8SgRxaehEqAj9" target="_blank" class="map-link">📍 マップで見る</a>
+      <a href="https://photos.app.goo.gl/KsizyKdJstuCYhQ69" target="_blank" class="photo-link">📸 写真を見る</a>
+      <a href="https://youtu.be/_tboh974bkg" target="_blank" class="video-link">🎬 動画で確認</a>
+    </div>
+    <div class="info-row">
+      <div class="info-label">詳細情報</div>
+      <div>
+        <a href="https://shinsenhino.com/日野のみどころ/日野のスポット/水辺/浅川.php" target="_blank" style="color: var(--primary-orange); text-decoration: underline;">🔗 浅川詳細ページ</a><br>
+        <a href="https://www.ktr.mlit.go.jp/keihin/keihin00788.html" target="_blank" style="color: var(--primary-orange); text-decoration: underline;">🔗 国土交通省・浅川情報</a>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- モーダル④：小野神社 -->
+
+  <div id="modal4" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('modal4')">×</span>
+      <img src="images/ono-shrine.jpg" alt="小野神社" class="thumbnail">
+      <div class="modal-header">小野神社</div>
+      <div class="modal-body">
+        <div class="info-row">
+          <div class="info-label">住所</div>
+          <div>東京都多摩市一ノ宮1丁目54-7</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">格式</div>
+          <div><strong>武蔵国一之宮</strong> - 中世に確立された国内第一の鎮守。南北朝時代の『神道集』にも「一宮は小野大明神」と記載され、国司が最初に巡拝した神社として位置付けられています。</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">武蔵国六社制</div>
+          <div>一之宮小野神社を筆頭に、二之宮小河神社（あきる野市）、三之宮氷川神社（さいたま市）、四之宮秩父神社、五之宮金鑚神社、六之宮杉山神社が編成。武蔵総社・大国魂神社のくらやみ祭では、これら六社の神輿が出御します。</div>
+        </div>
+
+```
+    <div class="link-group">
+      <a href="https://maps.app.goo.gl/nUCryYfGHsQq1Wij6" target="_blank" class="map-link">📍 マップで見る</a>
+      <a href="https://photos.app.goo.gl/q6RBMTrer2MacQCfA" target="_blank" class="photo-link">📸 写真を見る</a>
+      <a href="https://youtu.be/z0fzFa6bGO0" target="_blank" class="video-link">🎬 動画で確認</a>
+    </div>
+    <div class="info-row">
+      <div class="info-label">詳細情報</div>
+      <div>
+        <a href="http://onojinja.or.jp/" target="_blank" style="color: var(--primary-orange); text-decoration: underline;">🔗 小野神社公式サイト</a><br>
+        <a href="https://onojinja.or.jp/festival/" target="_blank" style="color: var(--primary-orange); text-decoration: underline;">🔗 祭事情報</a><br>
+        <a href="https://www.youtube.com/watch?v=rD_TEiY7tB4" target="_blank" style="color: var(--primary-orange); text-decoration: underline;">🔗 祭り動画</a>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- モーダル⑤：大谷戸公園 -->
+
+  <div id="modal5" class="modal">
+    <div class="modal-content">
+    <span class="close" onclick="closeModal('modal5')">×</span>
+      <img src="images/oyado-park.jpg" alt="大谷戸公園" class="thumbnail">
+      <div class="modal-header">大谷戸公園</div>
+      <div class="modal-body">
+        <div class="info-row">
+          <div class="info-label">住所</div>
+          <div>東京都多摩市連光寺5丁目17-1</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">特徴</div>
+          <div>都市近郊でキャンプができる貴重な公園。大きな木々に囲まれた自然豊かな環境で、本格的なアウトドア体験が楽しめます。最近リニューアルされ、より充実した施設となっています。</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">アクティビティ</div>
+          <div><strong>テント宿泊</strong> - 一泊キャンプが可能<br>
+          <strong>薪火調理</strong> - 焚き火での本格的な野外料理<br>
+          <strong>自然体験</strong> - 豊かな緑に囲まれた癒しの空間<br>
+          <strong>ピクニック</strong> - 東屋やベンチでの日帰り利用</div>
+        </div>
+
+```
+    <div class="link-group">
+      <a href="https://maps.app.goo.gl/pv6j2jaXHuj4pZaJ8" target="_blank" class="map-link">📍 マップで見る</a>
+      <a href="https://photos.app.goo.gl/q6RBMTrer2MacQCfA" target="_blank" class="photo-link">📸 写真を見る</a>
+      <a href="https://youtu.be/c8ZxDQ_-vVA" target="_blank" class="video-link">🎬 動画で確認</a>
+    </div>
+    <div class="info-row">
+      <div class="info-label">詳細情報</div>
+      <div><a href="https://tama-sports.com/facility/camp" target="_blank" style="color: var(--primary-orange); text-decoration: underline;">🔗 キャンプ施設詳細</a></div>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+</main>
+
+<footer>
+  <p><a href="../index.html">← トップページへ戻る</a> | <a href="index.html">← 元のマップページ</a></p>
+</footer>
+
+<script src="map2.js"></script>
+
+</body>
+</html>
