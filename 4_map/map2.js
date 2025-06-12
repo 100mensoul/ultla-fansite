@@ -54,8 +54,10 @@
   constructor() {
   this.searchInput = document.getElementById(‘searchInput’);
   this.tagFilters = document.querySelectorAll(’.tag-filter’);
+  this.groupFilters = document.querySelectorAll(’.group-filter’);
   this.cards = document.querySelectorAll(’.keyperson-card’);
   this.activeTag = ‘all’;
+  this.activeGroup = ‘all’;
   this.searchQuery = ‘’;
   
   this.init();
@@ -82,6 +84,18 @@ this.tagFilters.forEach(filter => {
     this.filterCards();
   });
 });
+
+// グループフィルターイベント
+this.groupFilters.forEach(filter => {
+  filter.addEventListener('click', (e) => {
+    // アクティブグループの更新
+    this.groupFilters.forEach(f => f.classList.remove('active'));
+    e.target.classList.add('active');
+    
+    this.activeGroup = e.target.dataset.group;
+    this.filterCards();
+  });
+});
 ```
 
 }
@@ -92,15 +106,19 @@ let visibleCount = 0;
 ```
 this.cards.forEach(card => {
   const cardTags = card.dataset.tags || '';
+  const cardGroup = card.dataset.group || '';
   const cardText = card.textContent.toLowerCase();
   
   // タグフィルター
   const tagMatch = this.activeTag === 'all' || cardTags.includes(this.activeTag);
   
+  // グループフィルター
+  const groupMatch = this.activeGroup === 'all' || cardGroup === this.activeGroup;
+  
   // 検索フィルター
   const searchMatch = this.searchQuery === '' || cardText.includes(this.searchQuery);
   
-  if (tagMatch && searchMatch) {
+  if (tagMatch && groupMatch && searchMatch) {
     card.classList.remove('hidden');
     card.style.display = 'block';
     visibleCount++;
