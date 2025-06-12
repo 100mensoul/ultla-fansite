@@ -64,157 +64,179 @@
 <!-- 検索・フィルター -->
 <div class="filter-controls">
   <input type="text" id="searchInput" placeholder="名前・専門分野・キーワードで検索..." class="search-input">
-  <div class="tag-filters">
-    <button class="tag-filter active" data-tag="all">すべて</button>
-    <button class="tag-filter" data-tag="教育">教育</button>
-    <button class="tag-filter" data-tag="環境">環境</button>
-    <button class="tag-filter" data-tag="アート">アート</button>
-    <button class="tag-filter" data-tag="コミュニティ">コミュニティ</button>
-    <button class="tag-filter" data-tag="歴史">歴史</button>
-    <button class="tag-filter" data-tag="農業">農業</button>
-    <button class="tag-filter" data-tag="技術">技術</button>
+  
+  <div class="filter-row">
+    <div class="group-filters">
+      <span class="filter-label">グループ:</span>
+      <button class="group-filter active" data-group="all">すべて</button>
+      <button class="group-filter" data-group="ナビゲーター">ナビゲーター</button>
+      <button class="group-filter" data-group="運営メンバー">運営メンバー</button>
+      <button class="group-filter" data-group="行政メンバー">行政メンバー</button>
+      <button class="group-filter" data-group="専門家">専門家</button>
+    </div>
+    
+    <div class="tag-filters">
+      <span class="filter-label">専門分野:</span>
+      <button class="tag-filter active" data-tag="all">すべて</button>
+      <button class="tag-filter" data-tag="教育">教育</button>
+      <button class="tag-filter" data-tag="環境">環境</button>
+      <button class="tag-filter" data-tag="アート">アート</button>
+      <button class="tag-filter" data-tag="コミュニティ">コミュニティ</button>
+      <button class="tag-filter" data-tag="歴史">歴史</button>
+      <button class="tag-filter" data-tag="農業">農業</button>
+    </div>
   </div>
 </div>
 
 <!-- キーパーソンカード -->
 <div class="keyperson-grid" id="keypersonGrid">
   
-  <!-- カード1: 環境教育専門家 -->
-  <div class="keyperson-card" data-tags="教育,環境">
-    <div class="card-header">
-      <div class="avatar">🌱</div>
-      <div class="card-info">
-        <h4 class="person-name">田中 美咲</h4>
-        <p class="person-role">環境教育コーディネーター</p>
+  <!-- ナビゲーター -->
+  <div class="keyperson-card compact" data-group="ナビゲーター" data-tags="教育,環境">
+    <div class="card-compact-header">
+      <div class="avatar-small">🌱</div>
+      <div class="card-compact-info">
+        <h4 class="person-name-compact">田中 美咲</h4>
+        <p class="person-role-compact">環境教育ナビゲーター</p>
+        <div class="group-badge navigator">ナビゲーター</div>
       </div>
     </div>
-    <div class="card-body">
-      <p class="person-description">多摩川流域での自然体験プログラム企画・運営。子どもたちと川の生態系を学ぶワークショップを定期開催。</p>
-      <div class="person-tags">
-        <span class="tag">環境</span>
-        <span class="tag">教育</span>
-        <span class="tag">ワークショップ</span>
-      </div>
-      <div class="contact-info">
-        <p>📧 m.tanaka@eco-edu.jp</p>
-        <p>📱 090-1234-5678</p>
+    <div class="card-compact-body">
+      <p class="person-description-compact">多摩川での自然体験プログラム企画・運営</p>
+      <div class="person-tags-compact">
+        <span class="tag-small">環境</span>
+        <span class="tag-small">教育</span>
       </div>
     </div>
   </div>
 
-  <!-- カード2: プレイパーク運営者 -->
-  <div class="keyperson-card" data-tags="教育,コミュニティ">
-    <div class="card-header">
-      <div class="avatar">🔥</div>
-      <div class="card-info">
-        <h4 class="person-name">佐藤 健太</h4>
-        <p class="person-role">プレイリーダー</p>
+  <!-- ナビゲーター -->
+  <div class="keyperson-card compact" data-group="ナビゲーター" data-tags="教育,コミュニティ">
+    <div class="card-compact-header">
+      <div class="avatar-small">🔥</div>
+      <div class="card-compact-info">
+        <h4 class="person-name-compact">佐藤 健太</h4>
+        <p class="person-role-compact">プレイリーダー</p>
+        <div class="group-badge navigator">ナビゲーター</div>
       </div>
     </div>
-    <div class="card-body">
-      <p class="person-description">プレイパークどろんこの森でプレイリーダーとして活動。子どもの自由な遊びをサポートし、地域コミュニティの核となる。</p>
-      <div class="person-tags">
-        <span class="tag">教育</span>
-        <span class="tag">コミュニティ</span>
-        <span class="tag">子育て</span>
-      </div>
-      <div class="contact-info">
-        <p>📧 k.sato@playpark.org</p>
-        <p>🌐 ochisato.org</p>
+    <div class="card-compact-body">
+      <p class="person-description-compact">どろんこの森で子どもの自由な遊びをサポート</p>
+      <div class="person-tags-compact">
+        <span class="tag-small">教育</span>
+        <span class="tag-small">コミュニティ</span>
       </div>
     </div>
   </div>
 
-  <!-- カード3: 歴史研究家 -->
-  <div class="keyperson-card" data-tags="歴史,文化">
-    <div class="card-header">
-      <div class="avatar">🏛️</div>
-      <div class="card-info">
-        <h4 class="person-name">山田 雅子</h4>
-        <p class="person-role">郷土史研究家</p>
+  <!-- 専門家 -->
+  <div class="keyperson-card compact" data-group="専門家" data-tags="歴史,文化">
+    <div class="card-compact-header">
+      <div class="avatar-small">🏛️</div>
+      <div class="card-compact-info">
+        <h4 class="person-name-compact">山田 雅子</h4>
+        <p class="person-role-compact">郷土史研究家</p>
+        <div class="group-badge expert">専門家</div>
       </div>
     </div>
-    <div class="card-body">
-      <p class="person-description">日野市の近世・近代史研究。特に桑園時代の産業遺産や、土方歳三関連の史跡調査に詳しい。</p>
-      <div class="person-tags">
-        <span class="tag">歴史</span>
-        <span class="tag">文化</span>
-        <span class="tag">産業遺産</span>
-      </div>
-      <div class="contact-info">
-        <p>📧 yamada@hino-history.jp</p>
-        <p>📚 日野市郷土資料館</p>
+    <div class="card-compact-body">
+      <p class="person-description-compact">日野市の近世・近代史、桑園時代の産業遺産研究</p>
+      <div class="person-tags-compact">
+        <span class="tag-small">歴史</span>
+        <span class="tag-small">文化</span>
       </div>
     </div>
   </div>
 
-  <!-- カード4: アーティスト -->
-  <div class="keyperson-card" data-tags="アート,コミュニティ">
-    <div class="card-header">
-      <div class="avatar">🎨</div>
-      <div class="card-info">
-        <h4 class="person-name">鈴木 光</h4>
-        <p class="person-role">コミュニティアーティスト</p>
+  <!-- 専門家 -->
+  <div class="keyperson-card compact" data-group="専門家" data-tags="アート,コミュニティ">
+    <div class="card-compact-header">
+      <div class="avatar-small">🎨</div>
+      <div class="card-compact-info">
+        <h4 class="person-name-compact">鈴木 光</h4>
+        <p class="person-role-compact">コミュニティアーティスト</p>
+        <div class="group-badge expert">専門家</div>
       </div>
     </div>
-    <div class="card-body">
-      <p class="person-description">地域住民と協働でパブリックアートを制作。多摩川の自然をテーマにした参加型アートプロジェクトを展開。</p>
-      <div class="person-tags">
-        <span class="tag">アート</span>
-        <span class="tag">コミュニティ</span>
-        <span class="tag">参加型</span>
-      </div>
-      <div class="contact-info">
-        <p>📧 hikaru@art-community.net</p>
-        <p>🎨 Instagram: @hikaru_tama_art</p>
+    <div class="card-compact-body">
+      <p class="person-description-compact">地域住民と協働でパブリックアートを制作</p>
+      <div class="person-tags-compact">
+        <span class="tag-small">アート</span>
+        <span class="tag-small">コミュニティ</span>
       </div>
     </div>
   </div>
 
-  <!-- カード5: 農業指導者 -->
-  <div class="keyperson-card" data-tags="農業,環境,教育">
-    <div class="card-header">
-      <div class="avatar">🌾</div>
-      <div class="card-info">
-        <h4 class="person-name">高橋 一郎</h4>
-        <p class="person-role">農業体験指導員</p>
+  <!-- 運営メンバー -->
+  <div class="keyperson-card compact" data-group="運営メンバー" data-tags="農業,環境,教育">
+    <div class="card-compact-header">
+      <div class="avatar-small">🌾</div>
+      <div class="card-compact-info">
+        <h4 class="person-name-compact">高橋 一郎</h4>
+        <p class="person-role-compact">農業体験指導員</p>
+        <div class="group-badge management">運営メンバー</div>
       </div>
     </div>
-    <div class="card-body">
-      <p class="person-description">有機農法による野菜栽培を指導。市民農園での体験プログラムや、学校への出張授業も行う。</p>
-      <div class="person-tags">
-        <span class="tag">農業</span>
-        <span class="tag">環境</span>
-        <span class="tag">教育</span>
-        <span class="tag">有機農法</span>
-      </div>
-      <div class="contact-info">
-        <p>📧 takahashi@organic-farm.jp</p>
-        <p>🚜 たかはし農園</p>
+    <div class="card-compact-body">
+      <p class="person-description-compact">有機農法による野菜栽培指導、市民農園運営</p>
+      <div class="person-tags-compact">
+        <span class="tag-small">農業</span>
+        <span class="tag-small">環境</span>
       </div>
     </div>
   </div>
 
-  <!-- カード6: 神社宮司 -->
-  <div class="keyperson-card" data-tags="歴史,文化,コミュニティ">
-    <div class="card-header">
-      <div class="avatar">⛩️</div>
-      <div class="card-info">
-        <h4 class="person-name">小野 尊道</h4>
-        <p class="person-role">小野神社宮司</p>
+  <!-- 行政メンバー -->
+  <div class="keyperson-card compact" data-group="行政メンバー" data-tags="歴史,文化,コミュニティ">
+    <div class="card-compact-header">
+      <div class="avatar-small">⛩️</div>
+      <div class="card-compact-info">
+        <h4 class="person-name-compact">小野 尊道</h4>
+        <p class="person-role-compact">小野神社宮司</p>
+        <div class="group-badge admin">行政メンバー</div>
       </div>
     </div>
-    <div class="card-body">
-      <p class="person-description">武蔵国一之宮・小野神社の宮司。地域の伝統文化継承と、現代的なコミュニティ活動の橋渡し役。</p>
-      <div class="person-tags">
-        <span class="tag">歴史</span>
-        <span class="tag">文化</span>
-        <span class="tag">コミュニティ</span>
-        <span class="tag">伝統</span>
+    <div class="card-compact-body">
+      <p class="person-description-compact">武蔵国一之宮・地域の伝統文化継承</p>
+      <div class="person-tags-compact">
+        <span class="tag-small">歴史</span>
+        <span class="tag-small">文化</span>
       </div>
-      <div class="contact-info">
-        <p>📧 info@onojinja.or.jp</p>
-        <p>⛩️ 小野神社</p>
+    </div>
+  </div>
+
+  <!-- 運営メンバー -->
+  <div class="keyperson-card compact" data-group="運営メンバー" data-tags="コミュニティ">
+    <div class="card-compact-header">
+      <div class="avatar-small">👥</div>
+      <div class="card-compact-info">
+        <h4 class="person-name-compact">伊藤 花子</h4>
+        <p class="person-role-compact">地域コーディネーター</p>
+        <div class="group-badge management">運営メンバー</div>
+      </div>
+    </div>
+    <div class="card-compact-body">
+      <p class="person-description-compact">地域住民と各種団体との連携調整</p>
+      <div class="person-tags-compact">
+        <span class="tag-small">コミュニティ</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 行政メンバー -->
+  <div class="keyperson-card compact" data-group="行政メンバー" data-tags="行政">
+    <div class="card-compact-header">
+      <div class="avatar-small">🏢</div>
+      <div class="card-compact-info">
+        <h4 class="person-name-compact">田村 太郎</h4>
+        <p class="person-role-compact">日野市役所 企画部</p>
+        <div class="group-badge admin">行政メンバー</div>
+      </div>
+    </div>
+    <div class="card-compact-body">
+      <p class="person-description-compact">地域活性化事業の企画・予算調整</p>
+      <div class="person-tags-compact">
+        <span class="tag-small">行政</span>
       </div>
     </div>
   </div>
