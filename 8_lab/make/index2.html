@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -6,633 +7,940 @@
   <title>つくるページ | ULTLAラボ</title>
   <link rel="stylesheet" href="../../style.css">
   <style>
-    /* 既存のスタイルはそのまま保持 */
-    
-    .detail-header {
-      background: linear-gradient(135deg, var(--ultla-blue) 0%, #007BB8 100%);
-      color: white;
-      padding: var(--spacing-2xl) 0;
-      margin-bottom: var(--spacing-2xl);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .detail-header::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: 
-        radial-gradient(circle at 30% 40%, rgba(255,255,255,0.15) 0%, transparent 50%),
-        radial-gradient(circle at 70% 80%, rgba(0,163,217,0.3) 0%, transparent 40%);
-      z-index: 1;
-    }
-    
-    .detail-header .container {
-      position: relative;
-      z-index: 2;
-    }
-    
-    .detail-title {
-      font-size: clamp(2rem, 5vw, 3rem);
-      margin-bottom: var(--spacing-sm);
-      font-weight: 500;
-    }
-    
-    .detail-subtitle {
-      font-size: 1.2rem;
-      opacity: 0.9;
-      margin-bottom: var(--spacing-lg);
-    }
-    
-    .detail-meta {
-      display: flex;
-      gap: var(--spacing-lg);
-      flex-wrap: wrap;
-      font-size: 0.95rem;
-    }
-    
-    .meta-item {
-      background: rgba(255,255,255,0.2);
-      padding: var(--spacing-xs) var(--spacing-sm);
-      border-radius: var(--radius-md);
-      backdrop-filter: blur(10px);
-    }
+    /* 改修版スタイル - モダンなデザインシステム */
 
-    /* 認証状態表示 */
-    .auth-section {
-      background: var(--bg-card);
-      padding: var(--spacing-lg);
-      border-radius: var(--radius-lg);
-      margin-bottom: var(--spacing-xl);
-      box-shadow: var(--shadow-md);
-      text-align: center;
-    }
+```
+:root {
+  --primary-gradient: linear-gradient(135deg, var(--ultla-blue) 0%, #007BB8 100%);
+  --success-gradient: linear-gradient(135deg, var(--ultla-green) 0%, #00a86b 100%);
+  --warning-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  --glassmorphism: rgba(255, 255, 255, 0.1);
+  --glassmorphism-border: rgba(255, 255, 255, 0.2);
+  --box-shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --box-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.15);
+  --border-radius-card: 16px;
+  --border-radius-button: 12px;
+  --animation-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    .login-status {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--spacing-md);
-    }
+/* ヘッダーセクション */
+.detail-header {
+  background: var(--primary-gradient);
+  color: white;
+  padding: var(--spacing-2xl) 0;
+  margin-bottom: var(--spacing-2xl);
+  position: relative;
+  overflow: hidden;
+  border-radius: 0 0 var(--border-radius-card) var(--border-radius-card);
+}
 
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-    }
+.detail-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 30% 40%, rgba(255,255,255,0.2) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(0,163,217,0.3) 0%, transparent 40%);
+  z-index: 1;
+}
 
-    .logout-btn {
-      background: var(--ultla-red);
-      color: white;
-      border: none;
-      padding: var(--spacing-xs) var(--spacing-sm);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: all var(--transition-fast);
-    }
+.detail-header .container {
+  position: relative;
+  z-index: 2;
+}
 
-    .logout-btn:hover {
-      background: #c92a2a;
-    }
+.detail-title {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  margin-bottom: var(--spacing-md);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-    .login-prompt {
-      color: var(--text-secondary);
-    }
+.detail-subtitle {
+  font-size: 1.3rem;
+  opacity: 0.95;
+  margin-bottom: var(--spacing-lg);
+  font-weight: 400;
+}
 
-    .login-link {
-      color: var(--ultla-blue);
-      text-decoration: none;
-      font-weight: 500;
-    }
+.detail-meta {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+}
 
-    .login-link:hover {
-      color: var(--ultla-green);
-    }
+.meta-item {
+  background: var(--glassmorphism);
+  border: 1px solid var(--glassmorphism-border);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-button);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s var(--animation-smooth);
+}
 
-    /* 議事録投稿セクション */
-    .upload-section {
-      background: var(--bg-card);
-      padding: var(--spacing-xl);
-      border-radius: var(--radius-lg);
-      margin-bottom: var(--spacing-xl);
-      box-shadow: var(--shadow-md);
-      border: 2px dashed var(--border-light);
-      transition: all var(--transition-normal);
-      display: none; /* 初期状態では非表示 */
-    }
-    
-    .upload-section.show {
-      display: block;
-    }
-    
-    .upload-section.dragover {
-      border-color: var(--ultla-blue);
-      background: rgba(0,163,217,0.05);
-    }
-    
-    .upload-form {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    
-    .form-group {
-      margin-bottom: var(--spacing-md);
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: var(--spacing-xs);
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-    
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: var(--spacing-sm);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-md);
-      font-size: 1rem;
-      box-sizing: border-box;
-      transition: border-color var(--transition-fast);
-    }
-    
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: var(--ultla-blue);
-      box-shadow: 0 0 0 3px rgba(0,163,217,0.1);
-    }
-    
-    .file-drop-zone {
-      border: 2px dashed var(--border-light);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-2xl);
-      text-align: center;
-      transition: all var(--transition-normal);
-      cursor: pointer;
-      margin-bottom: var(--spacing-md);
-    }
-    
-    .file-drop-zone.dragover {
-      border-color: var(--ultla-blue);
-      background: rgba(0,163,217,0.05);
-    }
-    
-    .file-info {
-      background: var(--bg-light);
-      padding: var(--spacing-md);
-      border-radius: var(--radius-md);
-      margin-top: var(--spacing-sm);
-      display: none;
-    }
-    
-    .submit-btn {
-      background: linear-gradient(135deg, var(--ultla-blue), var(--ultla-green));
-      color: white;
-      padding: var(--spacing-md) var(--spacing-xl);
-      border: none;
-      border-radius: var(--radius-md);
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all var(--transition-normal);
-      box-shadow: var(--shadow-md);
-      width: 100%;
-    }
-    
-    .submit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-    }
-    
-    .submit-btn:disabled {
-      background: var(--text-muted);
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
+.meta-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
 
-    /* タスク抽出プレビュー */
-    .task-preview-section {
-      background: #f8f9ff;
-      border: 2px dashed var(--ultla-blue);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      margin-top: var(--spacing-md);
-      display: none;
-    }
+/* 認証セクション */
+.auth-section {
+  background: var(--bg-card);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-card);
+  margin-bottom: var(--spacing-2xl);
+  box-shadow: var(--box-shadow-soft);
+  text-align: center;
+  border: 1px solid var(--border-light);
+}
 
-    .task-preview-section.show {
-      display: block;
-    }
+.login-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--bg-light);
+  border-radius: var(--border-radius-button);
+}
 
-    .task-preview-title {
-      color: var(--ultla-blue);
-      font-size: 1.1rem;
-      font-weight: 500;
-      margin-bottom: var(--spacing-md);
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-xs);
-    }
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
 
-    .task-item {
-      background: white;
-      padding: var(--spacing-sm);
-      border-radius: var(--radius-sm);
-      margin-bottom: var(--spacing-xs);
-      border-left: 4px solid var(--ultla-green);
-    }
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--success-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
 
-    .meeting-item {
-      background: white;
-      padding: var(--spacing-sm);
-      border-radius: var(--radius-sm);
-      margin-bottom: var(--spacing-xs);
-      border-left: 4px solid var(--ultla-blue);
-    }
+.logout-btn {
+  background: var(--warning-gradient);
+  color: white;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-button);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s var(--animation-smooth);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
 
-    .decision-item {
-      background: white;
-      padding: var(--spacing-sm);
-      border-radius: var(--radius-sm);
-      margin-bottom: var(--spacing-xs);
-      border-left: 4px solid var(--ultla-red);
-    }
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
+}
 
-    .item-content {
-      font-weight: 500;
-      margin-bottom: 2px;
-    }
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-md);
+}
 
-    .item-meta {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
+.primary-btn {
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius-button);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s var(--animation-smooth);
+  box-shadow: 0 4px 12px rgba(0, 163, 217, 0.3);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
 
-    /* 検索・フィルター - 既存コードと統合 */
-    .search-filter-section {
-      background: var(--bg-card);
-      padding: var(--spacing-xl);
-      border-radius: var(--radius-lg);
-      margin-bottom: var(--spacing-xl);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .search-container {
-      display: flex;
-      gap: var(--spacing-md);
-      margin-bottom: var(--spacing-lg);
-      flex-wrap: wrap;
-    }
-    
-    .search-input {
-      flex: 1;
-      min-width: 250px;
-      padding: var(--spacing-md);
-      border: 2px solid var(--border-light);
-      border-radius: var(--radius-md);
-      font-size: 1rem;
-      transition: border-color var(--transition-normal);
-    }
-    
-    .search-input:focus {
-      outline: none;
-      border-color: var(--ultla-blue);
-    }
-    
-    .search-btn {
-      padding: var(--spacing-md) var(--spacing-lg);
-      background: var(--ultla-blue);
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
-      font-weight: 500;
-      cursor: pointer;
-      transition: background var(--transition-normal);
-    }
-    
-    .search-btn:hover {
-      background: var(--ultla-green);
-    }
-    
-    /* タグフィルター */
-    .tag-filters {
-      display: flex;
-      gap: var(--spacing-xs);
-      flex-wrap: wrap;
-      margin-bottom: var(--spacing-md);
-    }
-    
-    .tag-filter {
-      padding: var(--spacing-xs) var(--spacing-sm);
-      background: var(--bg-light);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-full);
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      user-select: none;
-    }
-    
-    .tag-filter:hover {
-      background: rgba(0,163,217,0.1);
-      border-color: var(--ultla-blue);
-    }
-    
-    .tag-filter.active {
-      background: var(--ultla-blue);
-      color: white;
-      border-color: var(--ultla-blue);
-    }
-    
-    .tag-filter.category {
-      background: var(--ultla-green);
-      color: white;
-      border-color: var(--ultla-green);
-    }
-    
-    .tag-filter.area {
-      background: var(--ultla-blue);
-      color: white;
-      border-color: var(--ultla-blue);
-    }
-    
-    .tag-filter.theme {
-      background: var(--ultla-red);
-      color: white;
-      border-color: var(--ultla-red);
-    }
-    
-    /* 議事録カード - 既存デザインを保持 */
-    .minutes-grid {
-      display: grid;
-      gap: var(--spacing-lg);
-    }
-    
-    .minutes-card {
-      background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      box-shadow: var(--shadow-md);
-      border: 1px solid var(--border-light);
-      transition: all var(--transition-normal);
-      position: relative;
-    }
-    
-    .minutes-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-    }
-    
-    .minutes-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: var(--spacing-md);
-    }
-    
-    .minutes-date {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      background: var(--bg-light);
-      padding: var(--spacing-xs) var(--spacing-sm);
-      border-radius: var(--radius-sm);
-    }
-    
-    .minutes-title {
-      font-size: 1.1rem;
-      font-weight: 500;
-      color: var(--text-primary);
-      margin-bottom: var(--spacing-xs);
-    }
-    
-    .minutes-participants {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-bottom: var(--spacing-md);
-    }
-    
-    .minutes-content {
-      color: var(--text-secondary);
-      line-height: 1.6;
-      margin-bottom: var(--spacing-md);
-    }
-    
-    .minutes-tags {
-      display: flex;
-      gap: var(--spacing-xs);
-      flex-wrap: wrap;
-      margin-bottom: var(--spacing-md);
-    }
-    
-    .minutes-tag {
-      font-size: 0.75rem;
-      padding: 2px var(--spacing-xs);
-      border-radius: var(--radius-sm);
-      font-weight: 500;
-    }
-    
-    .tag-area { background: rgba(0,163,217,0.1); color: var(--ultla-blue); }
-    .tag-category { background: rgba(0,184,148,0.1); color: var(--ultla-green); }
-    .tag-theme { background: rgba(255,107,107,0.1); color: var(--ultla-red); }
-    .tag-program { background: rgba(108,99,255,0.1); color: #6C63FF; }
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 163, 217, 0.4);
+  color: white;
+}
 
-    /* 抽出タスク表示 */
-    .extracted-tasks {
-      background: rgba(0,163,217,0.05);
-      border: 1px solid rgba(0,163,217,0.2);
-      border-radius: var(--radius-md);
-      padding: var(--spacing-md);
-      margin-top: var(--spacing-md);
-    }
+.secondary-btn {
+  background: var(--success-gradient);
+  color: white;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius-button);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s var(--animation-smooth);
+  box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
 
-    .extracted-tasks-title {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--ultla-blue);
-      margin-bottom: var(--spacing-sm);
-    }
+.secondary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 184, 148, 0.4);
+  color: white;
+}
 
-    .extracted-task-item {
-      background: white;
-      padding: var(--spacing-xs) var(--spacing-sm);
-      border-radius: var(--radius-sm);
-      margin-bottom: var(--spacing-xs);
-      font-size: 0.8rem;
-    }
+/* 議事録投稿セクション */
+.upload-section {
+  background: var(--bg-card);
+  padding: var(--spacing-2xl);
+  border-radius: var(--border-radius-card);
+  margin-bottom: var(--spacing-2xl);
+  box-shadow: var(--box-shadow-soft);
+  border: 2px dashed var(--border-light);
+  transition: all 0.3s var(--animation-smooth);
+  display: none;
+}
 
-    .extracted-task-item:last-child {
-      margin-bottom: 0;
-    }
-    
-    .minutes-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .view-detail-btn {
-      color: var(--ultla-blue);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-xs);
-      transition: color var(--transition-fast);
-    }
-    
-    .view-detail-btn:hover {
-      color: var(--ultla-green);
-    }
-    
-    .view-detail-btn::after {
-      content: "→";
-      transition: transform var(--transition-fast);
-    }
-    
-    .view-detail-btn:hover::after {
-      transform: translateX(2px);
-    }
+.upload-section.show {
+  display: block;
+  border-color: var(--ultla-blue);
+  background: rgba(0, 163, 217, 0.02);
+}
 
-    .edit-btn, .delete-btn {
-      padding: var(--spacing-xs) var(--spacing-sm);
-      border: none;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-size: 0.8rem;
-      margin-left: var(--spacing-xs);
-      transition: all var(--transition-fast);
-    }
+.upload-section.dragover {
+  border-color: var(--ultla-green);
+  background: rgba(0, 184, 148, 0.05);
+  transform: scale(1.01);
+}
 
-    .edit-btn {
-      background: var(--ultla-blue);
-      color: white;
-    }
+.upload-form {
+  max-width: 700px;
+  margin: 0 auto;
+}
 
-    .edit-btn:hover {
-      background: var(--ultla-green);
-    }
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
 
-    .delete-btn {
-      background: var(--ultla-red);
-      color: white;
-    }
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
 
-    .delete-btn:hover {
-      background: #c92a2a;
-    }
-    
-    /* 結果表示 */
-    .results-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--spacing-lg);
-      padding: var(--spacing-md);
-      background: var(--bg-light);
-      border-radius: var(--radius-md);
-    }
-    
-    .results-count {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-    }
-    
-    .sort-select {
-      padding: var(--spacing-xs) var(--spacing-sm);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      background: white;
-    }
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--border-light);
+  border-radius: var(--border-radius-button);
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: all 0.3s var(--animation-smooth);
+  background: white;
+}
 
-    /* ローディング・エラー表示 */
-    .loading-message {
-      text-align: center;
-      padding: var(--spacing-2xl);
-      color: var(--text-muted);
-    }
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--ultla-blue);
+  box-shadow: 0 0 0 4px rgba(0, 163, 217, 0.1);
+  transform: translateY(-1px);
+}
 
-    .error-message {
-      background: #fee;
-      border: 1px solid #fcc;
-      color: #a00;
-      padding: var(--spacing-md);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--spacing-md);
-    }
+.file-drop-zone {
+  border: 2px dashed var(--border-light);
+  border-radius: var(--border-radius-card);
+  padding: var(--spacing-2xl);
+  text-align: center;
+  transition: all 0.3s var(--animation-smooth);
+  cursor: pointer;
+  margin-bottom: var(--spacing-md);
+  background: var(--bg-light);
+}
 
-    .success-message {
-      background: #efe;
-      border: 1px solid #cfc;
-      color: #090;
-      padding: var(--spacing-md);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--spacing-md);
-    }
+.file-drop-zone.dragover {
+  border-color: var(--ultla-blue);
+  background: rgba(0, 163, 217, 0.05);
+  transform: scale(1.02);
+}
 
-    /* タスク抽出ボタン */
-    .preview-btn {
-      background: var(--ultla-green);
-      color: white;
-      border: none;
-      padding: var(--spacing-sm) var(--spacing-md);
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-      cursor: pointer;
-      margin-left: var(--spacing-sm);
-      transition: all var(--transition-fast);
-    }
+.file-drop-zone:hover {
+  border-color: var(--ultla-green);
+  background: rgba(0, 184, 148, 0.05);
+}
 
-    .preview-btn:hover {
-      background: #00a86b;
-    }
-    
-    /* レスポンシブ */
-    @media (max-width: 768px) {
-      .login-status {
-        flex-direction: column;
-        gap: var(--spacing-sm);
-      }
-      
-      .search-container {
-        flex-direction: column;
-      }
-      
-      .search-input {
-        min-width: unset;
-      }
-      
-      .minutes-header {
-        flex-direction: column;
-        gap: var(--spacing-sm);
-      }
-      
-      .results-info {
-        flex-direction: column;
-        gap: var(--spacing-sm);
-        text-align: center;
-      }
-      
-      .tag-filters {
-        justify-content: center;
-      }
+.file-info {
+  background: var(--bg-light);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-button);
+  margin-top: var(--spacing-md);
+  display: none;
+  border-left: 4px solid var(--ultla-green);
+}
 
-      .minutes-actions {
-        flex-direction: column;
-        gap: var(--spacing-sm);
-        align-items: stretch;
-      }
-    }
+.submit-btn {
+  background: var(--primary-gradient);
+  color: white;
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  border: none;
+  border-radius: var(--border-radius-button);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s var(--animation-smooth);
+  box-shadow: var(--box-shadow-soft);
+  width: 100%;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+.submit-btn:disabled {
+  background: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* タスク抽出プレビュー */
+.task-preview-section {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+  border: 2px solid var(--ultla-blue);
+  border-radius: var(--border-radius-card);
+  padding: var(--spacing-xl);
+  margin-top: var(--spacing-lg);
+  display: none;
+  animation: slideIn 0.5s var(--animation-smooth);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task-preview-section.show {
+  display: block;
+}
+
+.task-preview-title {
+  color: var(--ultla-blue);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.preview-item {
+  background: white;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-button);
+  margin-bottom: var(--spacing-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s var(--animation-smooth);
+}
+
+.preview-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.task-item {
+  border-left: 4px solid var(--ultla-green);
+}
+
+.meeting-item {
+  border-left: 4px solid var(--ultla-blue);
+}
+
+.decision-item {
+  border-left: 4px solid var(--ultla-red);
+}
+
+.item-content {
+  font-weight: 500;
+  margin-bottom: var(--spacing-xs);
+  color: var(--text-primary);
+}
+
+.item-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* 検索・フィルターセクション */
+.search-filter-section {
+  background: var(--bg-card);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-card);
+  margin-bottom: var(--spacing-2xl);
+  box-shadow: var(--box-shadow-soft);
+  border: 1px solid var(--border-light);
+}
+
+.search-container {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 300px;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 2px solid var(--border-light);
+  border-radius: var(--border-radius-button);
+  font-size: 1rem;
+  transition: all 0.3s var(--animation-smooth);
+  background: white;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--ultla-blue);
+  box-shadow: 0 0 0 4px rgba(0, 163, 217, 0.1);
+}
+
+.search-btn {
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-button);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s var(--animation-smooth);
+  box-shadow: 0 4px 12px rgba(0, 163, 217, 0.3);
+}
+
+.search-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 163, 217, 0.4);
+}
+
+/* タグフィルター */
+.tag-filters {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-md);
+}
+
+.tag-filter {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-light);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s var(--animation-smooth);
+  user-select: none;
+  font-weight: 500;
+}
+
+.tag-filter:hover {
+  background: rgba(0, 163, 217, 0.1);
+  border-color: var(--ultla-blue);
+  transform: translateY(-1px);
+}
+
+.tag-filter.active {
+  background: var(--ultla-blue);
+  color: white;
+  border-color: var(--ultla-blue);
+  box-shadow: 0 2px 8px rgba(0, 163, 217, 0.3);
+}
+
+.tag-filter.area {
+  background: var(--ultla-blue);
+  color: white;
+  border-color: var(--ultla-blue);
+}
+
+.tag-filter.category {
+  background: var(--ultla-green);
+  color: white;
+  border-color: var(--ultla-green);
+}
+
+.tag-filter.theme {
+  background: var(--ultla-red);
+  color: white;
+  border-color: var(--ultla-red);
+}
+
+.tag-filter.program {
+  background: #6c63ff;
+  color: white;
+  border-color: #6c63ff;
+}
+
+/* 議事録カード */
+.minutes-grid {
+  display: grid;
+  gap: var(--spacing-xl);
+}
+
+.minutes-card {
+  background: var(--bg-card);
+  border-radius: var(--border-radius-card);
+  padding: var(--spacing-xl);
+  box-shadow: var(--box-shadow-soft);
+  border: 1px solid var(--border-light);
+  transition: all 0.3s var(--animation-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.minutes-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--primary-gradient);
+  transform: scaleY(0);
+  transition: transform 0.3s var(--animation-smooth);
+}
+
+.minutes-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+.minutes-card:hover::before {
+  transform: scaleY(1);
+}
+
+.minutes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-lg);
+}
+
+.minutes-date {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  background: var(--bg-light);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+
+.minutes-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+  line-height: 1.3;
+}
+
+.minutes-participants {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.minutes-content {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--spacing-lg);
+}
+
+.minutes-tags {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-lg);
+}
+
+.minutes-tag {
+  font-size: 0.8rem;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+
+.tag-area { 
+  background: rgba(0,163,217,0.15); 
+  color: var(--ultla-blue);
+  border: 1px solid rgba(0,163,217,0.3);
+}
+.tag-category { 
+  background: rgba(0,184,148,0.15); 
+  color: var(--ultla-green);
+  border: 1px solid rgba(0,184,148,0.3);
+}
+.tag-theme { 
+  background: rgba(255,107,107,0.15); 
+  color: var(--ultla-red);
+  border: 1px solid rgba(255,107,107,0.3);
+}
+.tag-program { 
+  background: rgba(108,99,255,0.15); 
+  color: #6C63FF;
+  border: 1px solid rgba(108,99,255,0.3);
+}
+
+/* 抽出タスク表示 */
+.extracted-tasks {
+  background: rgba(0,163,217,0.05);
+  border: 1px solid rgba(0,163,217,0.2);
+  border-radius: var(--border-radius-button);
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
+}
+
+.extracted-tasks-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ultla-blue);
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.extracted-task-item {
+  background: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-button);
+  margin-bottom: var(--spacing-sm);
+  font-size: 0.9rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s var(--animation-smooth);
+}
+
+.extracted-task-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.extracted-task-item:last-child {
+  margin-bottom: 0;
+}
+
+.minutes-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.view-detail-btn {
+  color: var(--ultla-blue);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  transition: all 0.3s var(--animation-smooth);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-button);
+}
+
+.view-detail-btn:hover {
+  color: var(--ultla-green);
+  background: rgba(0, 184, 148, 0.1);
+  transform: translateX(4px);
+}
+
+.view-detail-btn::after {
+  content: "→";
+  transition: transform 0.3s var(--animation-smooth);
+}
+
+.view-detail-btn:hover::after {
+  transform: translateX(4px);
+}
+
+.action-btn {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: none;
+  border-radius: var(--border-radius-button);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-left: var(--spacing-xs);
+  transition: all 0.3s var(--animation-smooth);
+}
+
+.edit-btn {
+  background: var(--primary-gradient);
+  color: white;
+  box-shadow: 0 2px 6px rgba(0, 163, 217, 0.3);
+}
+
+.edit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 163, 217, 0.4);
+}
+
+.delete-btn {
+  background: var(--warning-gradient);
+  color: white;
+  box-shadow: 0 2px 6px rgba(255, 107, 107, 0.3);
+}
+
+.delete-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(255, 107, 107, 0.4);
+}
+
+/* 結果表示 */
+.results-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  background: var(--bg-light);
+  border-radius: var(--border-radius-button);
+  border: 1px solid var(--border-light);
+}
+
+.results-count {
+  font-size: 1rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.sort-select {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 2px solid var(--border-light);
+  border-radius: var(--border-radius-button);
+  font-size: 0.9rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s var(--animation-smooth);
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: var(--ultla-blue);
+}
+
+/* メッセージ表示 */
+.loading-message {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.error-message {
+  background: linear-gradient(135deg, #fee 0%, #fdd 100%);
+  border: 1px solid #faa;
+  color: #a00;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-button);
+  margin-bottom: var(--spacing-md);
+  border-left: 4px solid #f00;
+}
+
+.success-message {
+  background: linear-gradient(135deg, #efe 0%, #dfd 100%);
+  border: 1px solid #afa;
+  color: #090;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-button);
+  margin-bottom: var(--spacing-md);
+  border-left: 4px solid #0a0;
+}
+
+.info-message {
+  background: linear-gradient(135deg, #e6f3ff 0%, #cce7ff 100%);
+  border: 1px solid #99d6ff;
+  color: #0066cc;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-button);
+  margin-bottom: var(--spacing-md);
+  border-left: 4px solid #0088ff;
+}
+
+/* タスク抽出ボタン */
+.preview-btn {
+  background: var(--success-gradient);
+  color: white;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-button);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: var(--spacing-sm);
+  transition: all 0.3s var(--animation-smooth);
+  box-shadow: 0 2px 6px rgba(0, 184, 148, 0.3);
+}
+
+.preview-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 184, 148, 0.4);
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .detail-title {
+    font-size: clamp(2rem, 8vw, 2.5rem);
+  }
+  
+  .detail-meta {
+    justify-content: center;
+  }
+  
+  .login-status {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .action-buttons {
+    justify-content: center;
+  }
+  
+  .search-container {
+    flex-direction: column;
+  }
+  
+  .search-input {
+    min-width: unset;
+  }
+  
+  .minutes-header {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .results-info {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+  
+  .tag-filters {
+    justify-content: center;
+  }
+
+  .minutes-actions {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    align-items: stretch;
+  }
+
+  .upload-form {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-header {
+    padding: var(--spacing-xl) 0;
+  }
+  
+  .auth-section,
+  .upload-section,
+  .search-filter-section {
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .minutes-card {
+    padding: var(--spacing-lg);
+  }
+  
+  .container {
+    padding: 0 var(--spacing-md);
+  }
+}
+
+/* 未ログイン状態のスタイル */
+.login-prompt {
+  color: var(--text-secondary);
+  text-align: center;
+  padding: var(--spacing-xl);
+  background: var(--bg-light);
+  border-radius: var(--border-radius-button);
+  border: 2px dashed var(--border-light);
+}
+
+.login-link {
+  color: var(--ultla-blue);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s var(--animation-smooth);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-button);
+  display: inline-block;
+  margin-top: var(--spacing-md);
+}
+
+.login-link:hover {
+  color: var(--ultla-green);
+  background: rgba(0, 184, 148, 0.1);
+  transform: translateY(-1px);
+}
+
+/* アニメーション効果 */
+.fade-in {
+  animation: fadeIn 0.5s var(--animation-smooth);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.4s var(--animation-smooth);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+
   </style>
 </head>
 <body>
@@ -670,62 +978,74 @@
       </div>
     </section>
 
-    <div class="container">
-      <!-- 認証状態表示 -->
-      <section class="auth-section">
-        <div id="authStatus">
-          <!-- ログイン状態 -->
-          <div id="loggedInStatus" style="display: none;">
-            <div class="login-status">
-              <div class="user-info">
-                <span style="color: var(--ultla-green); font-weight: bold;">✅ ログイン中:</span>
-                <span id="currentUser"></span>
-              </div>
-              <button id="logoutBtn" class="logout-btn">ログアウト</button>
-            </div>
-            <button id="showUploadBtn" class="search-btn" style="margin-bottom: var(--spacing-md);">📝 新しい議事録を投稿</button>
-          </div>
-          
-          <!-- 未ログイン状態 -->
-          <div id="notLoggedInStatus" style="display: none;">
-            <div class="login-prompt">
-              <p style="margin-bottom: var(--spacing-sm);">⚠️ ログインしていません</p>
-              <p>議事録の投稿・編集にはログインが必要です。</p>
-              <a href="../auth-test.html" class="login-link">ログインページへ →</a>
+```
+<div class="container">
+  <!-- 認証状態表示 -->
+  <section class="auth-section fade-in">
+    <div id="authStatus">
+      <!-- ログイン状態 -->
+      <div id="loggedInStatus" style="display: none;">
+        <div class="login-status">
+          <div class="user-info">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div>
+              <div style="color: var(--ultla-green); font-weight: bold; font-size: 0.9rem;">✅ ログイン中</div>
+              <div id="currentUser" style="font-size: 0.9rem; color: var(--text-secondary);"></div>
             </div>
           </div>
+          <button id="logoutBtn" class="logout-btn">ログアウト</button>
         </div>
-      </section>
-
-      <!-- メッセージ表示エリア -->
-      <div id="messageArea"></div>
-
-      <!-- 議事録投稿セクション -->
-      <section id="uploadSection" class="upload-section">
-        <div class="section-header">
-          <h2 class="section-title">📁 議事録投稿</h2>
-          <p class="section-subtitle">会議の記録をプロジェクトメンバーと共有しましょう</p>
+        <div class="action-buttons">
+          <button id="showUploadBtn" class="primary-btn">
+            📝 新しい議事録を投稿
+          </button>
+          <a href="staff.html" class="secondary-btn">
+            👥 つくるひとページ
+          </a>
         </div>
+      </div>
+      
+      <!-- 未ログイン状態 -->
+      <div id="notLoggedInStatus" style="display: none;">
+        <div class="login-prompt">
+          <h3 style="color: var(--ultla-blue); margin-bottom: var(--spacing-md);">⚠️ ログインが必要です</h3>
+          <p>議事録の投稿・編集・プロジェクト管理にはログインが必要です。</p>
+          <a href="../auth-test.html" class="login-link">ログインページへ →</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        <form class="upload-form" id="uploadForm">
-          <div class="form-group">
-            <label for="meetingTitle">会議タイトル <span style="color: var(--ultla-red);">*</span></label>
-            <input type="text" id="meetingTitle" required placeholder="例：第3回 海エリア企画会議">
-          </div>
+  <!-- メッセージ表示エリア -->
+  <div id="messageArea"></div>
 
-          <div class="form-group">
-            <label for="meetingDate">会議日付 <span style="color: var(--ultla-red);">*</span></label>
-            <input type="date" id="meetingDate" required>
-          </div>
+  <!-- 議事録投稿セクション -->
+  <section id="uploadSection" class="upload-section">
+    <div class="section-header">
+      <h2 class="section-title">📁 議事録投稿</h2>
+      <p class="section-subtitle">会議の記録をプロジェクトメンバーと共有しましょう</p>
+    </div>
 
-          <div class="form-group">
-            <label for="meetingParticipants">参加者</label>
-            <input type="text" id="meetingParticipants" placeholder="例：田中、佐藤、鎌倉市・山田氏">
-          </div>
+    <form class="upload-form" id="uploadForm">
+      <div class="form-group">
+        <label for="meetingTitle">会議タイトル <span style="color: var(--ultla-red);">*</span></label>
+        <input type="text" id="meetingTitle" required placeholder="例：第3回 海エリア企画会議">
+      </div>
 
-          <div class="form-group">
-            <label for="meetingDescription">内容・概要 <span style="color: var(--ultla-red);">*</span></label>
-            <textarea id="meetingDescription" rows="6" required placeholder="会議の内容や主要な決定事項など
+      <div class="form-group">
+        <label for="meetingDate">会議日付 <span style="color: var(--ultla-red);">*</span></label>
+        <input type="date" id="meetingDate" required>
+      </div>
+
+      <div class="form-group">
+        <label for="meetingParticipants">参加者</label>
+        <input type="text" id="meetingParticipants" placeholder="例：田中、佐藤、鎌倉市・山田氏">
+      </div>
+
+      <div class="form-group">
+        <label for="meetingDescription">内容・概要 <span style="color: var(--ultla-red);">*</span></label>
+        <textarea id="meetingDescription" rows="8" required placeholder="会議の内容や主要な決定事項など
+```
 
 例：
 TODO: チラシデザインを田中さんが9月15日まで作成
@@ -734,91 +1054,98 @@ TODO: チラシデザインを田中さんが9月15日まで作成
 
 会場予約について確認する必要がある
 決定事項: 参加費を3000円に設定
-次回会議: 9月20日 15:00〜"></textarea>
-            <div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-xs);">
-              <button type="button" id="previewTasksBtn" class="preview-btn">🤖 タスク抽出プレビュー</button>
-              <small style="color: var(--text-muted); align-self: center;">※投稿前にどんなタスクが抽出されるか確認できます</small>
-            </div>
-          </div>
+次回会議: 9月20日 15:00〜”></textarea>
+<div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-sm); align-items: center; flex-wrap: wrap;">
+<button type="button" id="previewTasksBtn" class="preview-btn">🤖 タスク抽出プレビュー</button>
+<small style="color: var(--text-muted);">※投稿前にどんなタスクが抽出されるか確認できます</small>
+</div>
+</div>
 
-          <!-- タスク抽出プレビュー -->
-          <div id="taskPreviewSection" class="task-preview-section">
-            <div class="task-preview-title">
-              🤖 抽出されるタスク・スケジュール
-            </div>
-            <div id="taskPreviewContent">
-              <!-- プレビュー内容がここに表示されます -->
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="meetingTags">タグ（カンマ区切り）</label>
-            <input type="text" id="meetingTags" placeholder="例：海,事務,広報,コマ1">
-            <small style="color: var(--text-muted);">💡 エリア（海・森）、カテゴリ（事務・広報）、テーマ、プログラム（コマ1-4・全体）など</small>
-          </div>
-
-          <div class="form-group">
-            <label for="meetingFile">議事録ファイル（任意）</label>
-            <div class="file-drop-zone" id="fileDropZone">
-              <p>📄 ファイルをドラッグ&ドロップするか、クリックして選択</p>
-              <p style="color: var(--text-muted); font-size: 0.9rem;">対応形式: PDF, Word, Excel, PowerPoint, テキスト</p>
-            </div>
-            <input type="file" id="meetingFile" style="display: none;" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md">
-            <div class="file-info" id="fileInfo"></div>
-          </div>
-
-          <div style="display: flex; gap: var(--spacing-md);">
-            <button type="submit" class="submit-btn" id="submitBtn" disabled>
-              📤 議事録を投稿
-            </button>
-            <button type="button" id="cancelUploadBtn" class="submit-btn" style="background: var(--text-muted); flex: 0 0 auto;">
-              キャンセル
-            </button>
-          </div>
-        </form>
-      </section>
-
-      <!-- 検索・フィルター -->
-      <section class="search-filter-section">
-        <div class="search-container">
-          <input type="text" class="search-input" placeholder="議事録を検索（フリーワード）" id="searchInput">
-          <button class="search-btn" onclick="performSearch()">検索</button>
+```
+      <!-- タスク抽出プレビュー -->
+      <div id="taskPreviewSection" class="task-preview-section">
+        <div class="task-preview-title">
+          🤖 抽出されるタスク・スケジュール
         </div>
-        
-        <div class="tag-filters">
-          <span class="tag-filter active" data-tag="all">すべて</span>
-          <span class="tag-filter area" data-tag="海">海</span>
-          <span class="tag-filter area" data-tag="森">森</span>
-          <span class="tag-filter category" data-tag="広報">広報</span>
-          <span class="tag-filter category" data-tag="事務">事務</span>
-          <span class="tag-filter theme" data-tag="身体">身体</span>
-          <span class="tag-filter theme" data-tag="霊性">霊性</span>
-          <span class="tag-filter theme" data-tag="発散">発散</span>
-          <span class="tag-filter theme" data-tag="収束">収束</span>
-          <span class="tag-filter theme" data-tag="内省">内省</span>
-          <span class="tag-filter program" data-tag="コマ1">コマ1</span>
-          <span class="tag-filter program" data-tag="コマ2">コマ2</span>
-          <span class="tag-filter program" data-tag="コマ3">コマ3</span>
-          <span class="tag-filter program" data-tag="コマ4">コマ4</span>
-          <span class="tag-filter program" data-tag="全体">全体</span>
+        <div id="taskPreviewContent">
+          <!-- プレビュー内容がここに表示されます -->
         </div>
-      </section>
-
-      <!-- 検索結果情報 -->
-      <div class="results-info">
-        <span class="results-count" id="resultsCount">議事録を読み込み中...</span>
-        <select class="sort-select" id="sortSelect" onchange="sortResults()">
-          <option value="date-desc">新しい順</option>
-          <option value="date-asc">古い順</option>
-          <option value="relevance">関連度順</option>
-        </select>
       </div>
 
-      <!-- 議事録カード一覧 -->
-      <section class="minutes-grid" id="minutesGrid">
-        <div class="loading-message">議事録を読み込んでいます...</div>
-      </section>
+      <div class="form-group">
+        <label for="meetingTags">タグ（カンマ区切り）</label>
+        <input type="text" id="meetingTags" placeholder="例：海,事務,広報,コマ1">
+        <small style="color: var(--text-muted); display: block; margin-top: var(--spacing-xs);">💡 エリア（海・森）、カテゴリ（事務・広報）、テーマ、プログラム（コマ1-4・全体）など</small>
+      </div>
+
+      <div class="form-group">
+        <label for="meetingFile">議事録ファイル（任意）</label>
+        <div class="file-drop-zone" id="fileDropZone">
+          <div style="font-size: 2rem; margin-bottom: var(--spacing-md);">📄</div>
+          <p style="font-size: 1.1rem; font-weight: 500; margin-bottom: var(--spacing-sm);">ファイルをドラッグ&ドロップするか、クリックして選択</p>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">対応形式: PDF, Word, Excel, PowerPoint, テキスト</p>
+        </div>
+        <input type="file" id="meetingFile" style="display: none;" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md">
+        <div class="file-info" id="fileInfo"></div>
+      </div>
+
+      <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap;">
+        <button type="submit" class="submit-btn" id="submitBtn" disabled>
+          📤 議事録を投稿
+        </button>
+        <button type="button" id="cancelUploadBtn" class="submit-btn" style="background: var(--text-muted); flex: 0 0 auto; max-width: 200px;">
+          キャンセル
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 検索・フィルター -->
+  <section class="search-filter-section slide-up">
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="議事録を検索（フリーワード）" id="searchInput">
+      <button class="search-btn" onclick="performSearch()">🔍 検索</button>
     </div>
+    
+    <div class="tag-filters">
+      <span class="tag-filter active" data-tag="all">すべて</span>
+      <span class="tag-filter area" data-tag="海">🌊 海</span>
+      <span class="tag-filter area" data-tag="森">🌲 森</span>
+      <span class="tag-filter category" data-tag="広報">📢 広報</span>
+      <span class="tag-filter category" data-tag="事務">📋 事務</span>
+      <span class="tag-filter theme" data-tag="身体">🧘 身体</span>
+      <span class="tag-filter theme" data-tag="霊性">✨ 霊性</span>
+      <span class="tag-filter theme" data-tag="発散">🌟 発散</span>
+      <span class="tag-filter theme" data-tag="収束">🎯 収束</span>
+      <span class="tag-filter theme" data-tag="内省">🤔 内省</span>
+      <span class="tag-filter program" data-tag="コマ1">1️⃣ コマ1</span>
+      <span class="tag-filter program" data-tag="コマ2">2️⃣ コマ2</span>
+      <span class="tag-filter program" data-tag="コマ3">3️⃣ コマ3</span>
+      <span class="tag-filter program" data-tag="コマ4">4️⃣ コマ4</span>
+      <span class="tag-filter program" data-tag="全体">🌐 全体</span>
+    </div>
+  </section>
+
+  <!-- 検索結果情報 -->
+  <div class="results-info">
+    <span class="results-count" id="resultsCount">議事録を読み込み中...</span>
+    <select class="sort-select" id="sortSelect" onchange="sortResults()">
+      <option value="date-desc">📅 新しい順</option>
+      <option value="date-asc">📅 古い順</option>
+      <option value="relevance">🎯 関連度順</option>
+    </select>
+  </div>
+
+  <!-- 議事録カード一覧 -->
+  <section class="minutes-grid" id="minutesGrid">
+    <div class="loading-message">
+      <div style="font-size: 2rem; margin-bottom: var(--spacing-md);">⏳</div>
+      議事録を読み込んでいます...
+    </div>
+  </section>
+</div>
+```
+
   </main>
 
   <footer>
@@ -828,9 +1155,11 @@ TODO: チラシデザインを田中さんが9月15日まで作成
   </footer>
 
   <!-- Firebase設定 -->
+
   <script type="module" src="../firebase-test.js"></script>
-  
-  <!-- 議事録管理機能 - タスク抽出統合版 -->
+
+  <!-- 議事録管理機能 - 改修版 -->
+
   <script type="module">
     import { db, storage, authReady, auth } from '../firebase-test.js';
     import {
@@ -857,7 +1186,7 @@ TODO: チラシデザインを田中さんが9月15日まで作成
       signOut
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    // タスク抽出エンジンをインライン化（本来は外部ファイルから読み込み）
+    // タスク抽出エンジン（改良版）
     function extractTasksAndSchedules(content, title = '', meetingDate = new Date()) {
       const result = {
         tasks: [],
@@ -968,49 +1297,28 @@ TODO: チラシデザインを田中さんが9月15日まで作成
     function extractNaturalLanguageTasks(text, meetingDate) {
       const tasks = [];
       
-      console.log('=== 自然言語タスク抽出開始 ===');
-      console.log('対象テキスト:', text);
-      
-      // より柔軟なパターンに修正
       const enhancedActionPatterns = [
-        // パターン1: 期限付きタスク（最優先）
         /(明日|今日|今週|来週|[0-9]+日|[0-9]+月[0-9]+日)までに[、,]?\s*([^\s。、]+?)[が|は]?\s*([^\s。、]+?)[を|に]\s*(実装|開発|作成|準備|確認|調整|検討|実施|対応|連絡)[する|します|してもらう]?/g,
-        
-        // パターン2: 緊急・今すぐパターン
         /(緊急|今すぐ|急ぎ|ASAP)[で]?\s*([^\s。、]+?)[の]?\s*(確認|調整|検討|準備|作成|実施|対応|連絡)[が必要|をする|をしてください]/g,
-        
-        // パターン3: ヒアリング・相談パターン
         /([^\s。、]+?)から\s*([^\s。、]+?)[の]?\s*([^\s。、]+?)[を|に|について]\s*(ヒアリング|相談|確認|聞く)[する|してもらう]?/g,
-        
-        // パターン4: 基本的な動作パターン
         /([^\s。、]+?)[が|は]\s*([^\s。、]+?)[を|に]\s*(実装|開発|作成|準備|確認|調整|検討|実施|対応|連絡)[する|します]/g,
-        
-        // パターン5: 〜に相談するパターン
         /([^\s。、]+?)[に|へ]\s*(来週|今週|明日|今日)?[までに]?\s*([^\s。、]+?)[について]?\s*(相談|依頼|お願い|要請)[する|します]?/g,
-        
-        // パターン6: 〜が必要パターン
         /([^\s。、]+?)[の]?\s*(確認|調整|検討|準備|作成|実施|対応)[が必要]/g
       ];
       
       for (let i = 0; i < enhancedActionPatterns.length; i++) {
         const pattern = enhancedActionPatterns[i];
-        console.log(`パターン${i + 1}での抽出開始:`, pattern.source);
-        
         let match;
-        pattern.lastIndex = 0; // 正規表現をリセット
+        pattern.lastIndex = 0;
         
         while ((match = pattern.exec(text)) !== null) {
-          console.log(`パターン${i + 1}でマッチ:`, match);
-          
           let assignee = null;
           let content = match[0].trim();
           let deadline = null;
           let deadlineText = null;
           let priority = 'medium';
           
-          // パターン別の処理
           if (i === 0) {
-            // パターン1: 期限付きタスク
             deadlineText = match[1];
             deadline = extractDeadline(match[1], meetingDate);
             assignee = extractAssignee(match[2]);
@@ -1020,21 +1328,17 @@ TODO: チラシデザインを田中さんが9月15日まで作成
               priority = 'high';
             }
           } else if (i === 1) {
-            // パターン2: 緊急パターン
             priority = 'urgent';
             deadlineText = '今日';
             deadline = new Date(meetingDate);
             content = `${match[2]}${match[3]}`;
           } else if (i === 2) {
-            // パターン3: ヒアリングパターン
             assignee = extractAssignee(match[1]);
             content = `${match[2]}${match[3]}について${match[4]}`;
           } else if (i === 3) {
-            // パターン4: 基本動作パターン
             assignee = extractAssignee(match[1]);
             content = `${match[2]}を${match[3]}`;
           } else if (i === 4) {
-            // パターン5: 相談パターン
             assignee = extractAssignee(match[1]);
             if (match[2]) {
               deadlineText = match[2];
@@ -1042,7 +1346,6 @@ TODO: チラシデザインを田中さんが9月15日まで作成
             }
             content = `${match[3] || ''}について${match[4]}`;
           } else if (i === 5) {
-            // パターン6: 〜が必要パターン
             content = `${match[1]}${match[2]}`;
             if (content.includes('緊急') || content.includes('急ぎ')) {
               priority = 'urgent';
@@ -1051,7 +1354,6 @@ TODO: チラシデザインを田中さんが9月15日まで作成
             }
           }
           
-          // 緊急度キーワードチェック
           if (content.includes('緊急') || content.includes('急ぎ') || content.includes('今すぐ') || content.includes('ASAP')) {
             priority = 'urgent';
             if (!deadline) {
@@ -1073,13 +1375,10 @@ TODO: チラシデザインを田中さんが9月15日まで作成
             createdAt: new Date()
           };
           
-          console.log('抽出されたタスク:', task);
           tasks.push(task);
         }
       }
       
-      console.log('=== 自然言語タスク抽出完了 ===');
-      console.log('抽出タスク数:', tasks.length);
       return tasks;
     }
 
@@ -1244,12 +1543,13 @@ TODO: チラシデザインを田中さんが9月15日まで作成
     let userProfile = null;
     let selectedFile = null;
     let allMeetingRecords = [];
-    let extractedData = null; // プレビュー用
+    let extractedData = null;
 
     // DOM要素
     const loggedInStatus = document.getElementById('loggedInStatus');
     const notLoggedInStatus = document.getElementById('notLoggedInStatus');
     const currentUser = document.getElementById('currentUser');
+    const userAvatar = document.getElementById('userAvatar');
     const logoutBtn = document.getElementById('logoutBtn');
     const showUploadBtn = document.getElementById('showUploadBtn');
     const uploadSection = document.getElementById('uploadSection');
@@ -1302,36 +1602,50 @@ TODO: チラシデザインを田中さんが9月15日まで作成
         userProfile = await getUserProfile(user.uid);
         
         let displayText;
+        let avatarText = 'U';
+        
         if (userProfile && userProfile.username) {
           displayText = `${userProfile.username}さん`;
+          avatarText = userProfile.username.charAt(0).toUpperCase();
         } else {
           const email = user.email || `匿名ユーザー (${user.uid.substring(0, 8)}...)`;
           displayText = email;
+          avatarText = user.email ? user.email.charAt(0).toUpperCase() : 'A';
         }
         
         const authMethod = user.isAnonymous ? '匿名' : (user.providerData[0]?.providerId === 'google.com' ? 'Google' : 'メール');
-        currentUser.innerHTML = `${displayText} <small style="color: #666;">(${authMethod}認証)</small>`;
+        currentUser.innerHTML = `${displayText} <small style="color: var(--text-muted);">(${authMethod}認証)</small>`;
+        userAvatar.textContent = avatarText;
         
         loggedInStatus.style.display = 'block';
         notLoggedInStatus.style.display = 'none';
+        
+        // アニメーション効果
+        loggedInStatus.classList.add('fade-in');
       } else {
         currentUID = null;
         userProfile = null;
         loggedInStatus.style.display = 'none';
         notLoggedInStatus.style.display = 'block';
+        notLoggedInStatus.classList.add('fade-in');
       }
     }
 
-    // メッセージ表示
+    // メッセージ表示（改良版）
     function showMessage(message, type = 'info') {
       const messageDiv = document.createElement('div');
-      messageDiv.className = `${type}-message`;
+      messageDiv.className = `${type}-message fade-in`;
       messageDiv.textContent = message;
       messageArea.innerHTML = '';
       messageArea.appendChild(messageDiv);
       
+      // 自動消去タイマー
       setTimeout(() => {
-        messageDiv.remove();
+        messageDiv.style.opacity = '0';
+        messageDiv.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+          messageDiv.remove();
+        }, 300);
       }, 5000);
     }
 
@@ -1353,16 +1667,17 @@ TODO: チラシデザインを田中さんが9月15日まで作成
     function toggleUploadSection() {
       if (uploadSection.classList.contains('show')) {
         uploadSection.classList.remove('show');
-        showUploadBtn.textContent = '📝 新しい議事録を投稿';
+        showUploadBtn.innerHTML = '📝 新しい議事録を投稿';
         taskPreviewSection.classList.remove('show');
       } else {
         uploadSection.classList.add('show');
-        showUploadBtn.textContent = '📝 投稿フォームを閉じる';
+        uploadSection.classList.add('slide-up');
+        showUploadBtn.innerHTML = '❌ 投稿フォームを閉じる';
         document.getElementById('meetingDate').value = new Date().toISOString().split('T')[0];
       }
     }
 
-    // タスク抽出プレビュー
+    // タスク抽出プレビュー（改良版）
     function previewTasks() {
       const title = document.getElementById('meetingTitle').value.trim();
       const content = document.getElementById('meetingDescription').value.trim();
@@ -1374,28 +1689,26 @@ TODO: チラシデザインを田中さんが9月15日まで作成
         return;
       }
 
-      console.log('=== タスク抽出プレビュー開始 ===');
-      console.log('タイトル:', title);
-      console.log('内容:', content);
-      console.log('会議日:', meetingDate);
-
       extractedData = extractTasksAndSchedules(content, title, meetingDate);
-      
-      console.log('抽出結果:', extractedData);
 
       // プレビュー表示
       let previewHTML = '';
       
       if (extractedData.tasks.length > 0) {
-        previewHTML += '<div style="margin-bottom: 1rem;"><h4 style="color: var(--ultla-green); margin-bottom: 0.5rem;">📋 タスク (' + extractedData.tasks.length + '件)</h4>';
+        previewHTML += `<div style="margin-bottom: 1.5rem;">
+          <h4 style="color: var(--ultla-green); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            📋 タスク (${extractedData.tasks.length}件)
+          </h4>`;
         extractedData.tasks.forEach(task => {
+          const priorityEmoji = task.priority === 'urgent' ? '🔥' : task.priority === 'high' ? '⚡' : '📝';
           previewHTML += `
-            <div class="task-item">
-              <div class="item-content">${escapeHTML(task.content)}</div>
+            <div class="preview-item task-item">
+              <div class="item-content">${priorityEmoji} ${escapeHTML(task.content)}</div>
               <div class="item-meta">
-                ${task.assignee ? `担当: ${escapeHTML(task.assignee)} | ` : ''}
-                ${task.deadline ? `期限: ${task.deadline.toLocaleDateString('ja-JP')} | ` : ''}
-                抽出方法: ${task.source === 'explicit' ? '明示的' : '自然言語'}
+                ${task.assignee ? `👤 担当: ${escapeHTML(task.assignee)} | ` : ''}
+                ${task.deadline ? `📅 期限: ${task.deadline.toLocaleDateString('ja-JP')} | ` : ''}
+                🔍 抽出方法: ${task.source === 'explicit' ? '明示的パターン' : '自然言語解析'}
+                ${task.priority !== 'medium' ? ` | ⚠️ 優先度: ${task.priority}` : ''}
               </div>
             </div>
           `;
@@ -1404,13 +1717,16 @@ TODO: チラシデザインを田中さんが9月15日まで作成
       }
 
       if (extractedData.meetings.length > 0) {
-        previewHTML += '<div style="margin-bottom: 1rem;"><h4 style="color: var(--ultla-blue); margin-bottom: 0.5rem;">📅 会議・スケジュール (' + extractedData.meetings.length + '件)</h4>';
+        previewHTML += `<div style="margin-bottom: 1.5rem;">
+          <h4 style="color: var(--ultla-blue); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            📅 会議・スケジュール (${extractedData.meetings.length}件)
+          </h4>`;
         extractedData.meetings.forEach(meeting => {
           previewHTML += `
-            <div class="meeting-item">
-              <div class="item-content">${escapeHTML(meeting.content)}</div>
+            <div class="preview-item meeting-item">
+              <div class="item-content">🗓️ ${escapeHTML(meeting.content)}</div>
               <div class="item-meta">
-                ${meeting.date ? `日時: ${meeting.date.toLocaleString('ja-JP')}` : '日時未設定'}
+                ${meeting.date ? `📅 日時: ${meeting.date.toLocaleString('ja-JP')}` : '⚠️ 日時未設定'}
               </div>
             </div>
           `;
@@ -1419,11 +1735,14 @@ TODO: チラシデザインを田中さんが9月15日まで作成
       }
 
       if (extractedData.decisions.length > 0) {
-        previewHTML += '<div style="margin-bottom: 1rem;"><h4 style="color: var(--ultla-red); margin-bottom: 0.5rem;">✅ 決定事項 (' + extractedData.decisions.length + '件)</h4>';
+        previewHTML += `<div style="margin-bottom: 1.5rem;">
+          <h4 style="color: var(--ultla-red); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            ✅ 決定事項 (${extractedData.decisions.length}件)
+          </h4>`;
         extractedData.decisions.forEach(decision => {
           previewHTML += `
-            <div class="decision-item">
-              <div class="item-content">${escapeHTML(decision.content)}</div>
+            <div class="preview-item decision-item">
+              <div class="item-content">📋 ${escapeHTML(decision.content)}</div>
             </div>
           `;
         });
@@ -1431,16 +1750,24 @@ TODO: チラシデザインを田中さんが9月15日まで作成
       }
 
       if (previewHTML === '') {
-        previewHTML = '<p style="color: var(--text-muted); text-align: center;">タスクやスケジュールが検出されませんでした。<br>明示的な形式（TODO: など）で記述すると抽出精度が向上します。</p>';
+        previewHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🤔</div>
+            <p>タスクやスケジュールが検出されませんでした。</p>
+            <p style="font-size: 0.9rem; margin-top: 1rem;">
+              💡 ヒント: 「TODO:」「担当:」「締切:」「決定事項:」などの明示的な形式で記述すると抽出精度が向上します。
+            </p>
+          </div>
+        `;
       }
 
       taskPreviewContent.innerHTML = previewHTML;
       taskPreviewSection.classList.add('show');
 
-      showMessage('タスク抽出が完了しました！', 'success');
+      showMessage('タスク抽出が完了しました！投稿前に内容をご確認ください。', 'success');
     }
 
-    // ファイル選択処理
+    // ファイル選択処理（改良版）
     const fileDropZone = document.getElementById('fileDropZone');
     const meetingFile = document.getElementById('meetingFile');
     const fileInfo = document.getElementById('fileInfo');
@@ -1476,10 +1803,15 @@ TODO: チラシデザインを田中さんが9月15日まで作成
       selectedFile = file;
       fileInfo.style.display = 'block';
       fileInfo.innerHTML = `
-        <h4>選択されたファイル:</h4>
-        <p><strong>名前:</strong> ${file.name}</p>
-        <p><strong>サイズ:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-        <p><strong>種類:</strong> ${file.type || '不明'}</p>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="font-size: 2rem;">📎</div>
+          <div>
+            <h4 style="margin: 0; color: var(--ultla-green);">✅ ファイルが選択されました</h4>
+            <p style="margin: 0.5rem 0 0 0;"><strong>名前:</strong> ${file.name}</p>
+            <p style="margin: 0.25rem 0;"><strong>サイズ:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+            <p style="margin: 0.25rem 0 0 0;"><strong>形式:</strong> ${file.type || '不明'}</p>
+          </div>
+        </div>
       `;
       updateSubmitButton();
     }
@@ -1491,8 +1823,10 @@ TODO: チラシデザインを田中さんが9月15日まで作成
       
       if (title && date && description) {
         submitBtn.disabled = false;
+        submitBtn.style.background = 'var(--primary-gradient)';
       } else {
         submitBtn.disabled = true;
+        submitBtn.style.background = 'var(--text-muted)';
       }
     }
 
@@ -1501,7 +1835,7 @@ TODO: チラシデザインを田中さんが9月15日まで作成
     document.getElementById('meetingDate').addEventListener('input', updateSubmitButton);
     document.getElementById('meetingDescription').addEventListener('input', updateSubmitButton);
 
-    // 議事録投稿処理（タスク抽出統合版）
+    // 議事録投稿処理（改良版）
     document.getElementById('uploadForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -1519,7 +1853,8 @@ TODO: チラシデザインを田中さんが9月15日まで作成
       };
 
       submitBtn.disabled = true;
-      submitBtn.textContent = '📤 投稿中...';
+      submitBtn.innerHTML = '📤 投稿中...';
+      submitBtn.style.background = 'var(--text-muted)';
 
       try {
         let fileUrl = '';
@@ -1529,6 +1864,7 @@ TODO: チラシデザインを田中さんが9月15日まで作成
 
         // ファイルアップロード処理
         if (selectedFile) {
+          showMessage('ファイルをアップロード中...', 'info');
           const fileStorageName = `meeting_records/${currentUID}_${Date.now()}_${selectedFile.name}`;
           const fileRef = ref(storage, fileStorageName);
           const snapshot = await uploadBytes(fileRef, selectedFile);
@@ -1544,13 +1880,10 @@ TODO: チラシデザインを田中さんが9月15日まで作成
           extractedTasks = extractTasksAndSchedules(formData.description, formData.title, formData.meetingDate);
         }
 
-        console.log('=== 投稿時タスク抽出結果 ===');
-        console.log(extractedTasks);
-
         // Firestoreに保存
         const recordData = {
           uid: currentUID,
-          uploaderName: userProfile ? userProfile.displayName : '匿名ユーザー',
+          uploaderName: userProfile ? userProfile.displayName || userProfile.username : '匿名ユーザー',
           title: formData.title,
           meetingDate: formData.meetingDate,
           participants: formData.participants,
@@ -1566,7 +1899,7 @@ TODO: チラシデザインを田中さんが9月15日まで作成
           extractedTasks: extractedTasks.tasks,
           extractedMeetings: extractedTasks.meetings,
           extractedDecisions: extractedTasks.decisions,
-          taskExtractionVersion: '1.0', // 抽出エンジンのバージョン
+          taskExtractionVersion: '2.0', // 改良版バージョン
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         };
@@ -1602,7 +1935,7 @@ TODO: チラシデザインを田中さんが9月15日まで作成
           }
         }
         
-        showMessage(`議事録が投稿されました！（タスク${extractedTasks.tasks.length}件、会議${extractedTasks.meetings.length}件を抽出）`, 'success');
+        showMessage(`🎉 議事録が投稿されました！（タスク${extractedTasks.tasks.length}件、会議${extractedTasks.meetings.length}件、決定事項${extractedTasks.decisions.length}件を抽出）`, 'success');
         
         // フォームリセット
         document.getElementById('uploadForm').reset();
@@ -1617,43 +1950,33 @@ TODO: チラシデザインを田中さんが9月15日まで作成
         console.error('投稿エラー:', error);
         showMessage('投稿に失敗しました: ' + error.message, 'error');
       } finally {
-        submitBtn.textContent = '📤 議事録を投稿';
+        submitBtn.innerHTML = '📤 議事録を投稿';
+        submitBtn.disabled = false;
+        submitBtn.style.background = 'var(--primary-gradient)';
       }
     });
 
-    // 議事録一覧表示（デバッグ強化版）
+    // 議事録一覧表示（改良版）
     function displayMeetingRecords() {
-      console.log('=== 議事録読み込み開始 ===');
-      
       try {
         const recordsRef = collection(db, "meetingRecords");
-        console.log('Collection参照作成成功');
         
         onSnapshot(recordsRef, (querySnapshot) => {
-          console.log('=== Firestore応答受信 ===');
-          console.log('取得件数:', querySnapshot.size);
-          
+          console.log('議事録データ取得:', querySnapshot.size);
           allMeetingRecords = [];
           
           querySnapshot.forEach((doc) => {
             const record = doc.data();
-            console.log('ドキュメントID:', doc.id);
-            console.log('ドキュメントデータ:', record);
-            
             allMeetingRecords.push({
               id: doc.id,
               ...record
             });
           });
           
-          console.log('全議事録データ:', allMeetingRecords);
-          
           // プロジェクトフィルタリング
           const filteredRecords = allMeetingRecords.filter(record => 
             record.project === 'ULTLA2025'
           );
-          
-          console.log('ULTLA2025フィルター後:', filteredRecords);
           
           // 日付ソート
           filteredRecords.sort((a, b) => {
@@ -1662,70 +1985,63 @@ TODO: チラシデザインを田中さんが9月15日まで作成
             return dateB - dateA;
           });
           
-          console.log('ソート後:', filteredRecords);
-          
           // 表示処理
           renderMeetingRecords(filteredRecords);
           updateResultsCount(filteredRecords.length);
           
         }, (error) => {
-          console.error("=== Firestore読み込みエラー ===");
-          console.error("エラー詳細:", error);
-          console.error("エラーコード:", error.code);
-          console.error("エラーメッセージ:", error.message);
-          
+          console.error("議事録読み込みエラー:", error);
           minutesGrid.innerHTML = `
             <div class="error-message">
-              議事録の読み込みに失敗しました<br>
-              エラー: ${error.message}<br>
-              <button onclick="window.debugDisplayRecords()" style="margin-top: 10px; padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px;">再試行</button>
+              <h4>❌ 議事録の読み込みに失敗しました</h4>
+              <p>エラー: ${error.message}</p>
+              <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 8px 16px; background: var(--ultla-blue); color: white; border: none; border-radius: var(--border-radius-button); cursor: pointer;">
+                🔄 ページを再読み込み
+              </button>
             </div>
           `;
         });
         
       } catch (error) {
-        console.error('=== クエリ作成エラー ===');
-        console.error(error);
+        console.error('クエリ作成エラー:', error);
         minutesGrid.innerHTML = `
           <div class="error-message">
-            クエリの作成に失敗しました: ${error.message}
+            <h4>❌ システムエラーが発生しました</h4>
+            <p>クエリの作成に失敗しました: ${error.message}</p>
           </div>
         `;
       }
     }
 
-    // 議事録カード描画（タスク抽出結果表示対応版）
+    // 議事録カード描画（改良版）
     function renderMeetingRecords(records) {
-      console.log('=== レンダリング開始 ===');
-      console.log('レンダリング対象件数:', records.length);
-      
       if (records.length === 0) {
-        console.log('表示する議事録がありません');
-        minutesGrid.innerHTML = '<div class="loading-message">議事録がまだありません</div>';
+        minutesGrid.innerHTML = `
+          <div class="loading-message">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
+            <h3>議事録がまだありません</h3>
+            <p>最初の議事録を投稿してプロジェクトを開始しましょう！</p>
+          </div>
+        `;
         return;
       }
 
       minutesGrid.innerHTML = '';
       
       records.forEach((record, index) => {
-        console.log(`カード作成中 ${index + 1}/${records.length}:`, record.title);
-        
         try {
           const cardElement = createMeetingRecordCard(record);
+          cardElement.style.animationDelay = `${index * 0.1}s`;
+          cardElement.classList.add('slide-up');
           minutesGrid.appendChild(cardElement);
-          console.log(`カード作成成功: ${record.title}`);
         } catch (error) {
           console.error(`カード作成エラー (${record.title}):`, error);
         }
       });
-      
-      console.log('=== レンダリング完了 ===');
     }
 
-    // 議事録カード作成（タスク表示対応版）
+    // 議事録カード作成（改良版）
     function createMeetingRecordCard(record) {
-      console.log('カード作成開始:', record);
-      
       const element = document.createElement('article');
       element.className = 'minutes-card';
       element.setAttribute('data-tags', record.tags ? record.tags.join(',') : '');
@@ -1744,60 +2060,78 @@ TODO: チラシデザインを田中さんが9月15日まで作成
       
       // 抽出されたタスク・スケジュール情報の表示準備
       let extractedContentHTML = '';
-      if (record.extractedTasks && record.extractedTasks.length > 0) {
-        extractedContentHTML += `
-          <div class="extracted-tasks">
-            <div class="extracted-tasks-title">🤖 抽出されたタスク (${record.extractedTasks.length}件)</div>
-            ${record.extractedTasks.slice(0, 3).map(task => `
-              <div class="extracted-task-item">
-                📋 ${escapeHTML(task.content)}
-                ${task.assignee ? ` (担当: ${escapeHTML(task.assignee)})` : ''}
-                ${task.deadline ? ` (期限: ${new Date(task.deadline.seconds * 1000).toLocaleDateString('ja-JP')})` : ''}
-              </div>
-            `).join('')}
-            ${record.extractedTasks.length > 3 ? `<div class="extracted-task-item" style="color: var(--text-muted);">...他${record.extractedTasks.length - 3}件</div>` : ''}
-          </div>
-        `;
-      }
+      const totalTasks = (record.extractedTasks || []).length;
+      const totalMeetings = (record.extractedMeetings || []).length;
+      const totalDecisions = (record.extractedDecisions || []).length;
 
-      if (record.extractedMeetings && record.extractedMeetings.length > 0) {
-        extractedContentHTML += `
-          <div class="extracted-tasks" style="border-color: rgba(0,163,217,0.2);">
-            <div class="extracted-tasks-title">📅 抽出された会議 (${record.extractedMeetings.length}件)</div>
-            ${record.extractedMeetings.map(meeting => `
+      if (totalTasks > 0 || totalMeetings > 0 || totalDecisions > 0) {
+        extractedContentHTML = `
+          <div class="extracted-tasks">
+            <div class="extracted-tasks-title">
+              🤖 AI抽出結果 (タスク${totalTasks}件・会議${totalMeetings}件・決定${totalDecisions}件)
+            </div>
+        `;
+
+        // タスクの表示（最大3件）
+        if (record.extractedTasks && record.extractedTasks.length > 0) {
+          record.extractedTasks.slice(0, 3).forEach(task => {
+            const priorityEmoji = task.priority === 'urgent' ? '🔥' : task.priority === 'high' ? '⚡' : '📝';
+            extractedContentHTML += `
+              <div class="extracted-task-item">
+                ${priorityEmoji} ${escapeHTML(task.content)}
+                ${task.assignee ? ` (👤 ${escapeHTML(task.assignee)})` : ''}
+                ${task.deadline ? ` (📅 ${new Date(task.deadline.seconds * 1000).toLocaleDateString('ja-JP')})` : ''}
+              </div>
+            `;
+          });
+          if (record.extractedTasks.length > 3) {
+            extractedContentHTML += `<div class="extracted-task-item" style="color: var(--text-muted); font-style: italic;">...他${record.extractedTasks.length - 3}件のタスク</div>`;
+          }
+        }
+
+        // 会議の表示（最大2件）
+        if (record.extractedMeetings && record.extractedMeetings.length > 0) {
+          record.extractedMeetings.slice(0, 2).forEach(meeting => {
+            extractedContentHTML += `
               <div class="extracted-task-item">
                 📅 ${escapeHTML(meeting.content)}
                 ${meeting.date ? ` (${new Date(meeting.date.seconds * 1000).toLocaleString('ja-JP')})` : ''}
               </div>
-            `).join('')}
-          </div>
-        `;
-      }
+            `;
+          });
+          if (record.extractedMeetings.length > 2) {
+            extractedContentHTML += `<div class="extracted-task-item" style="color: var(--text-muted); font-style: italic;">...他${record.extractedMeetings.length - 2}件の会議</div>`;
+          }
+        }
 
-      if (record.extractedDecisions && record.extractedDecisions.length > 0) {
-        extractedContentHTML += `
-          <div class="extracted-tasks" style="border-color: rgba(255,107,107,0.2);">
-            <div class="extracted-tasks-title">✅ 決定事項 (${record.extractedDecisions.length}件)</div>
-            ${record.extractedDecisions.map(decision => `
+        // 決定事項の表示（最大2件）
+        if (record.extractedDecisions && record.extractedDecisions.length > 0) {
+          record.extractedDecisions.slice(0, 2).forEach(decision => {
+            extractedContentHTML += `
               <div class="extracted-task-item">
                 ✅ ${escapeHTML(decision.content)}
               </div>
-            `).join('')}
-          </div>
-        `;
+            `;
+          });
+          if (record.extractedDecisions.length > 2) {
+            extractedContentHTML += `<div class="extracted-task-item" style="color: var(--text-muted); font-style: italic;">...他${record.extractedDecisions.length - 2}件の決定事項</div>`;
+          }
+        }
+
+        extractedContentHTML += '</div>';
       }
 
       element.innerHTML = `
         <div class="minutes-header">
           <div>
             <h3 class="minutes-title">${escapeHTML(record.title || '無題')}</h3>
-            ${record.participants ? `<p class="minutes-participants">参加者: ${escapeHTML(record.participants)}</p>` : ''}
+            ${record.participants ? `<p class="minutes-participants">👥 参加者: ${escapeHTML(record.participants)}</p>` : ''}
           </div>
-          <span class="minutes-date">${meetingDate.toLocaleDateString('ja-JP')}</span>
+          <span class="minutes-date">📅 ${meetingDate.toLocaleDateString('ja-JP')}</span>
         </div>
         
         <div class="minutes-content">
-          ${escapeHTML(record.description || '内容なし')}
+          ${escapeHTML((record.description || '内容なし').substring(0, 200))}${record.description && record.description.length > 200 ? '...' : ''}
         </div>
         
         ${record.tags && record.tags.length > 0 ? `
@@ -1819,11 +2153,11 @@ TODO: チラシデザインを田中さんが9月15日まで作成
           <div>
             ${record.fileUrl ? `<a href="${record.fileUrl}" target="_blank" class="view-detail-btn">📄 ファイルを開く</a>` : ''}
           </div>
-          <div>
-            <small style="color: var(--text-muted);">投稿者: ${escapeHTML(record.uploaderName || '不明')}</small>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <small style="color: var(--text-muted);">👤 ${escapeHTML(record.uploaderName || '不明')}</small>
             ${isOwner ? `
-              <button class="edit-btn" onclick="editRecord('${record.id}')">編集</button>
-              <button class="delete-btn" onclick="deleteRecord('${record.id}')">削除</button>
+              <button class="action-btn edit-btn" onclick="editRecord('${record.id}')">✏️ 編集</button>
+              <button class="action-btn delete-btn" onclick="deleteRecord('${record.id}')">🗑️ 削除</button>
             ` : ''}
           </div>
         </div>
@@ -1832,7 +2166,7 @@ TODO: チラシデザインを田中さんが9月15日まで作成
       return element;
     }
 
-    // 検索・フィルター機能
+    // 検索・フィルター機能（改良版）
     window.performSearch = function() {
       const searchTerm = document.getElementById('searchInput').value.toLowerCase();
       
@@ -1844,16 +2178,36 @@ TODO: チラシデザインを田中さんが9月15日まで作成
 
       const filteredRecords = allMeetingRecords.filter(record => {
         if (record.project !== 'ULTLA2025') return false;
-        const searchableText = `${record.title} ${record.description} ${record.participants || ''} ${(record.tags || []).join(' ')}`.toLowerCase();
+        
+        // 検索対象を拡張
+        const searchableText = [
+          record.title,
+          record.description,
+          record.participants || '',
+          (record.tags || []).join(' '),
+          // 抽出されたタスクも検索対象に含める
+          (record.extractedTasks || []).map(task => task.content).join(' '),
+          (record.extractedMeetings || []).map(meeting => meeting.content).join(' '),
+          (record.extractedDecisions || []).map(decision => decision.content).join(' ')
+        ].join(' ').toLowerCase();
+        
         return searchableText.includes(searchTerm);
       });
 
       renderMeetingRecords(filteredRecords);
       updateResultsCount(filteredRecords.length);
+      
+      if (filteredRecords.length === 0) {
+        showMessage(`"${searchTerm}" に該当する議事録が見つかりませんでした`, 'info');
+      }
     };
 
-    // タグフィルター
+    // タグフィルター（改良版）
     function filterByTag(tag) {
+      // アクティブなタグの視覚的更新
+      document.querySelectorAll('.tag-filter').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tag-filter[data-tag="${tag}"]`).classList.add('active');
+      
       if (tag === 'all') {
         const filteredRecords = allMeetingRecords.filter(record => record.project === 'ULTLA2025');
         renderMeetingRecords(filteredRecords);
@@ -1867,20 +2221,21 @@ TODO: チラシデザインを田中さんが9月15日まで作成
 
       renderMeetingRecords(filteredRecords);
       updateResultsCount(filteredRecords.length);
+      
+      if (filteredRecords.length === 0) {
+        showMessage(`"${tag}" タグの議事録が見つかりませんでした`, 'info');
+      }
     }
 
     // タグフィルターイベント
     document.querySelectorAll('.tag-filter').forEach(tag => {
       tag.addEventListener('click', function() {
-        document.querySelectorAll('.tag-filter').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-        
         const selectedTag = this.dataset.tag;
         filterByTag(selectedTag);
       });
     });
 
-    // ソート機能
+    // ソート機能（改良版）
     window.sortResults = function() {
       const sortBy = document.getElementById('sortSelect').value;
       const currentRecords = [...allMeetingRecords].filter(record => record.project === 'ULTLA2025');
@@ -1894,6 +2249,11 @@ TODO: チラシデザインを田中さんが9月15日まで作成
           const dateA = a.meetingDate?.toDate ? a.meetingDate.toDate() : new Date(a.meetingDate);
           const dateB = b.meetingDate?.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
           return dateA - dateB;
+        } else if (sortBy === 'relevance') {
+          // 抽出されたタスク数で関連度をソート
+          const scoreA = (a.extractedTasks || []).length + (a.extractedMeetings || []).length + (a.extractedDecisions || []).length;
+          const scoreB = (b.extractedTasks || []).length + (b.extractedMeetings || []).length + (b.extractedDecisions || []).length;
+          return scoreB - scoreA;
         }
         return 0;
       });
@@ -1903,18 +2263,18 @@ TODO: チラシデザインを田中さんが9月15日まで作成
 
     // グローバル関数（編集・削除用）
     window.editRecord = function(recordId) {
-      showMessage('編集機能は開発中です', 'info');
+      showMessage('編集機能は現在開発中です。近日中に実装予定です。', 'info');
     };
 
     window.deleteRecord = function(recordId) {
-      if (confirm('この議事録を削除しますか？\n※この操作は取り消せません。')) {
+      if (confirm('❌ この議事録を削除しますか？\n\n⚠️ この操作は取り消せません。\n📋 抽出されたタスクやスケジュールも同時に削除されます。')) {
         deleteDoc(doc(db, "meetingRecords", recordId))
           .then(() => {
-            showMessage('議事録が削除されました', 'success');
+            showMessage('🗑️ 議事録が削除されました', 'success');
           })
           .catch((error) => {
             console.error('削除エラー:', error);
-            showMessage('削除に失敗しました', 'error');
+            showMessage('削除に失敗しました: ' + error.message, 'error');
           });
       }
     };
@@ -1932,82 +2292,44 @@ TODO: チラシデザインを田中さんが9月15日まで作成
       }
     });
 
-    // 認証完了後の処理（デバッグ強化版）
+    // リアルタイム検索（オプション）
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', function() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        if (this.value.length >= 2 || this.value.length === 0) {
+          performSearch();
+        }
+      }, 500);
+    });
+
+    // 認証完了後の処理
     authReady.then(async (user) => {
-      console.log("=== 認証完了 ===");
+      console.log("=== 改修版議事録ページ認証完了 ===");
       console.log("ユーザー:", user);
       
       await updateAuthDisplay(user);
       
-      // データベース接続テスト
-      console.log("=== データベース接続テスト ===");
-      try {
-        const testRef = collection(db, "meetingRecords");
-        const testQuery = query(testRef);
-        const testSnapshot = await getDocs(testQuery);
-        console.log("データベース接続成功、総件数:", testSnapshot.size);
-        
-        testSnapshot.forEach(doc => {
-          const data = doc.data();
-          console.log("テストデータ:", doc.id, data.project, data.title);
-        });
-        
-      } catch (dbError) {
-        console.error("データベース接続エラー:", dbError);
-      }
-      
       // 議事録一覧を表示
-      console.log("=== 議事録表示開始 ===");
       displayMeetingRecords();
-      
-      // URLパラメータでのフィルタリング処理（遅延実行）
-      setTimeout(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const filterTag = urlParams.get('filter');
-        if (filterTag && filterTag !== 'all') {
-          console.log("URLパラメータフィルター適用:", filterTag);
-          filterByTag(filterTag);
-        }
-      }, 2000); // 少し長めに待機
       
     }).catch(error => {
       console.error("=== 認証処理エラー ===");
       console.error(error);
       updateAuthDisplay(null);
-      minutesGrid.innerHTML = '<div class="error-message">認証中にエラーが発生しました</div>';
+      minutesGrid.innerHTML = `
+        <div class="error-message">
+          <h4>❌ 認証中にエラーが発生しました</h4>
+          <p>${error.message}</p>
+          <a href="../auth-test.html" style="color: var(--ultla-blue); text-decoration: none; font-weight: 500;">
+            🔑 ログインページへ →
+          </a>
+        </div>
+      `;
     });
 
-    // グローバル関数として公開（デバッグ用）
-    window.debugDisplayRecords = displayMeetingRecords;
-    window.debugAllRecords = () => console.log('All records:', allMeetingRecords);
-    window.testTaskExtraction = () => {
-      const sampleText = `
-第3回企画会議の議事録
-
-TODO: チラシデザインを田中さんが9月15日まで作成
-担当: 佐藤さん
-締切: 来週まで
-
-会場予約について確認する必要がある
-山田さんが音響設備を調整します
-
-決定事項: 参加費を3000円に設定
-次回会議: 9月20日 15:00〜
-
-⬜ 資料準備
-⬜ 告知文作成
-`;
-
-      const result = extractTasksAndSchedules(sampleText, '第3回企画会議', new Date('2025-09-01'));
-      console.log('=== タスク抽出テスト結果 ===');
-      console.log('タスク:', result.tasks);
-      console.log('会議:', result.meetings);
-      console.log('決定事項:', result.decisions);
-      return result;
-    };
-
-    console.log("=== タスク抽出統合版読み込み完了 ===");
-    console.log("テスト用関数: window.testTaskExtraction()");
+    console.log("=== 改修版議事録ページ読み込み完了 ===");
   </script>
+
 </body>
 </html>
