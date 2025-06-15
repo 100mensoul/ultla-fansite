@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>視察・下見の判断基準 | ULTLAプログラムの作り方</title>
+  <link rel="stylesheet" href="../../../style.css">
+  <link rel="stylesheet" href="../lab.css">
+  <style>
+    /* 記事専用スタイル */
+    .article-header {
+      background: linear-gradient(135deg, var(--ultla-blue) 0%, #007BB8 100%);
+      color: white;
+      padding: var(--spacing-2xl) 0;
+      margin-bottom: var(--spacing-2xl);
+      position: relative;
+      overflow: hidden;
+    }
+
+```
+.article-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 30% 40%, rgba(255,255,255,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(0,163,217,0.3) 0%, transparent 40%);
+  z-index: 1;
+}
+
+.article-header .container {
+  position: relative;
+  z-index: 2;
+}
+
+.article-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.article-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.4;
+}
+
+.article-meta {
+  display: flex;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+}
+
+.meta-item {
+  background: rgba(255,255,255,0.2);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(10px);
+}
+
+/* 目次 */
+.table-of-contents {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-2xl);
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--ultla-blue);
+}
+
+.toc-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ultla-blue);
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.toc-list {
+  list-style: none;
+  padding: 0;
+}
+
+.toc-item {
+  margin-bottom: var(--spacing-sm);
+}
+
+.toc-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  display: block;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.toc-link:hover {
+  background: rgba(0,163,217,0.1);
+  color: var(--ultla-blue);
+}
+
+/* 記事コンテンツ */
+.article-content {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+.section {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.section-title {
+  font-size: 1.8rem;
+  color: var(--ultla-blue);
+  margin-bottom: var(--spacing-lg);
+  font-weight: 600;
+  border-bottom: 3px solid var(--ultla-blue);
+  padding-bottom: var(--spacing-sm);
+}
+
+.subsection-title {
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  margin: var(--spacing-xl) 0 var(--spacing-md) 0;
+  font-weight: 600;
+}
+
+/* ハイライトボックス */
+.highlight-box {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+  border: 2px solid var(--ultla-blue);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin: var(--spacing-xl) 0;
+  position: relative;
+}
+
+.highlight-box::before {
+  content: '💡';
+  position: absolute;
+  top: -15px;
+  left: 20px;
+  background: white;
+  padding: 0 var(--spacing-sm);
+  font-size: 1.5rem;
+}
+
+.warning-box {
+  background: linear-gradient(135deg, #fff8f0 0%, #ffecdb 100%);
+  border: 2px solid #ff9500;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin: var(--spacing-xl) 0;
+  position: relative;
+}
+
+.warning-box::before {
+  content: '⚠️';
+  position: absolute;
+  top: -15px;
+  left: 20px;
+  background: white;
+  padding: 0 var(--spacing-sm);
+  font-size: 1.5rem;
+}
+
+.success-box {
+  background: linear-gradient(135deg, #f0fff4 0%, #dcfce7 100%);
+  border: 2px solid var(--ultla-green);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin: var(--spacing-xl) 0;
+  position: relative;
+}
+
+.success-box::before {
+  content: '✅';
+  position: absolute;
+  top: -15px;
+  left: 20px;
+  background: white;
+  padding: 0 var(--spacing-sm);
+  font-size: 1.5rem;
+}
+
+/* 判定マトリックス */
+.decision-matrix {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  margin: var(--spacing-xl) 0;
+}
+
+.matrix-header {
+  background: var(--ultla-blue);
+  color: white;
+  padding: var(--spacing-md);
+  text-align: center;
+  font-weight: 600;
+}
+
+.matrix-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--border-light);
+}
+
+.matrix-cell {
+  background: white;
+  padding: var(--spacing-md);
+  text-align: center;
+}
+
+.matrix-cell.header {
+  background: var(--bg-light);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.matrix-cell.high-risk {
+  background: #fee;
+  border-left: 4px solid #ff6b6b;
+}
+
+.matrix-cell.medium-risk {
+  background: #fff8f0;
+  border-left: 4px solid #ff9500;
+}
+
+.matrix-cell.low-risk {
+  background: #f0fff4;
+  border-left: 4px solid var(--ultla-green);
+}
+
+/* ケーススタディ */
+.case-study {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin: var(--spacing-xl) 0;
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--ultla-green);
+}
+
+.case-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ultla-green);
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* チェックリスト */
+.checklist {
+  background: var(--bg-light);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin: var(--spacing-lg) 0;
+}
+
+.checklist-title {
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-primary);
+}
+
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.checklist-item:hover {
+  background: rgba(0,163,217,0.1);
+}
+
+.checklist-icon {
+  color: var(--ultla-green);
+  font-weight: bold;
+  min-width: 20px;
+}
+
+/* フローチャート */
+.flowchart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  align-items: center;
+  margin: var(--spacing-xl) 0;
+}
+
+.flow-step {
+  background: var(--bg-card);
+  border: 2px solid var(--ultla-blue);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  text-align: center;
+  max-width: 300px;
+  position: relative;
+}
+
+.flow-step::after {
+  content: '↓';
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  color: var(--ultla-blue);
+}
+
+.flow-step:last-child::after {
+  display: none;
+}
+
+.flow-decision {
+  background: #fff8f0;
+  border-color: #ff9500;
+  border-radius: 50px;
+}
+
+/* リスクレベル表示 */
+.risk-level {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.risk-high {
+  background: rgba(255, 107, 107, 0.2);
+  color: #cc0000;
+  border: 1px solid rgba(255, 107, 107, 0.5);
+}
+
+.risk-medium {
+  background: rgba(255, 149, 0, 0.2);
+  color: #cc7700;
+  border: 1px solid rgba(255, 149, 0, 0.5);
+}
+
+.risk-low {
+  background: rgba(0, 184, 148, 0.2);
+  color: #006644;
+  border: 1px solid rgba(0, 184, 148, 0.5);
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .matrix-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .article-meta {
+    justify-content: center;
+  }
+  
+  .flowchart {
+    padding: 0 var(--spacing-md);
+  }
+  
+  .flow-step {
+    max-width: 250px;
+  }
+}
+```
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>ULTLAラボ</h1>
+      <nav>
+        <a href="../../../1_news/index.html">ニュース</a>
+        <a href="../../../2_about/index.html">ULTLAとは</a>
+        <a href="../../../3_people/index.html">ULTLA人</a>
+        <a href="../../../4_map/index.html">マップ</a>
+        <a href="../../../5_recipe/index.html">レシピ</a>
+        <a href="../../../6_chat/index.html">チャット</a>
+        <a href="../../../7_mypage/index.html">自分学</a>
+        <a href="../../index.html">ラボ</a>
+        <a href="../../../9_archive/index.html">アーカイブ</a>
+        <a href="../../../10_contact/index.html">お問い合わせ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- 記事ヘッダー -->
+    <section class="article-header">
+      <div class="container">
+        <h1 class="article-title">視察・下見の判断基準</h1>
+        <p class="article-subtitle">ULTLAプログラムにおける事前体験の必要性をどう見極めるか</p>
+        <div class="article-meta">
+          <span class="meta-item">📝 プログラムの作り方</span>
+          <span class="meta-item">⚠️ リスク管理</span>
+          <span class="meta-item">🎯 体験価値</span>
+          <span class="meta-item">👥 チーム運営</span>
+        </div>
+      </div>
+    </section>
+
+```
+<div class="container">
+  <!-- 目次 -->
+  <nav class="table-of-contents">
+    <h2 class="toc-title">📋 目次</h2>
+    <ul class="toc-list">
+      <li class="toc-item"><a href="#introduction" class="toc-link">1. はじめに：ULTLAプログラムの特性</a></li>
+      <li class="toc-item"><a href="#decision-framework" class="toc-link">2. 視察判断の2軸フレームワーク</a></li>
+      <li class="toc-item"><a href="#risk-assessment" class="toc-link">3. リスク評価の観点</a></li>
+      <li class="toc-item"><a href="#experience-value" class="toc-link">4. 体験価値の評価</a></li>
+      <li class="toc-item"><a href="#case-studies" class="toc-link">5. 具体的ケーススタディ</a></li>
+      <li class="toc-item"><a href="#logistics" class="toc-link">6. 現実的なロジスティクス</a></li>
+      <li class="toc-item"><a href="#team-coordination" class="toc-link">7. チーム体制と情報共有</a></li>
+      <li class="toc-item"><a href="#conclusion" class="toc-link">8. まとめ：実践的ガイドライン</a></li>
+    </ul>
+  </nav>
+
+  <article class="article-content">
+    <!-- 1. はじめに -->
+    <section id="introduction" class="section">
+      <h2 class="section-title">1. はじめに：ULTLAプログラムの特性</h2>
+      
+      <p>ULTLAプログラムは、<strong>徹底的なオーダーメイド</strong>を特徴とする教育プログラムです。2〜3日間の中に、屋内・屋外、個人・チーム、安全・リスクを伴うものなど、性質の異なる多様なワークショップを組み合わせて一つの体験を創り上げます。</p>
+
+      <div class="highlight-box">
+        <h3>ULTLAプログラムの多様性</h3>
+        <ul>
+          <li><strong>場所</strong>：屋内（お寺、体育館、カフェ）⇔ 屋外（海、山、森）</li>
+          <li><strong>形式</strong>：個人ワーク ⇔ チームワーク</li>
+          <li><strong>リスク</strong>：安全な環境 ⇔ 危険を伴う活動</li>
+          <li><strong>身体性</strong>：座学・対話 ⇔ 身体的体験</li>
+          <li><strong>ナビゲーター</strong>：話し上手 ⇔ 職人気質</li>
+        </ul>
+      </div>
+
+      <p>この多様性こそがULTLAの価値でもありますが、同時に<strong>「どの程度まで事前に体験・視察すべきか」</strong>という判断を複雑にしています。全てのワークを全スタッフが体験するのは現実的ではありません。しかし、適切な判断なしに「お任せ」にしてしまうと、プログラムの質や安全性に重大な影響を与える可能性があります。</p>
+    </section>
+
+    <!-- 2. 判断フレームワーク -->
+    <section id="decision-framework" class="section">
+      <h2 class="section-title">2. 視察判断の2軸フレームワーク</h2>
+
+      <p>視察・下見の必要性は、以下の<strong>2つの軸</strong>で判断します：</p>
+
+      <div class="decision-matrix">
+        <div class="matrix-header">視察判断マトリックス</div>
+        <div class="matrix-grid">
+          <div class="matrix-cell header">リスクレベル / 体験価値</div>
+          <div class="matrix-cell header">高い体験価値<br>（感覚が重要）</div>
+          <div class="matrix-cell header">低い体験価値<br>（説明で理解可能）</div>
+          
+          <div class="matrix-cell header">高リスク<br>（安全管理が重要）</div>
+          <div class="matrix-cell high-risk">
+            <strong>🔴 必須</strong><br>
+            最低3人が体験<br>
+            例：馬、海、カヌー
+          </div>
+          <div class="matrix-cell medium-risk">
+            <strong>🟡 推奨</strong><br>
+            1-2人が体験<br>
+            例：ロッククライミング室内
+          </div>
+          
+          <div class="matrix-cell header">低リスク<br>（安全管理が容易）</div>
+          <div class="matrix-cell medium-risk">
+            <strong>🟡 推奨</strong><br>
+            1-2人が体験<br>
+            例：陶芸、木工
+          </div>
+          <div class="matrix-cell low-risk">
+            <strong>🟢 任意</strong><br>
+            説明・資料で十分<br>
+            例：講義、お寺での瞑想
+          </div>
+        </div>
+      </div>
+
+      <div class="flowchart">
+        <div class="flow-step">
+          <strong>ワークの性質を分析</strong><br>
+          リスクレベル × 体験価値
+        </div>
+        <div class="flow-step flow-decision">
+          <strong>高リスク？</strong><br>
+          安全管理が複雑か
+        </div>
+        <div class="flow-step flow-decision">
+          <strong>体験価値は高い？</strong><br>
+          感覚的理解が必要か
+        </div>
+        <div class="flow-step">
+          <strong>視察レベルを決定</strong><br>
+          必須 / 推奨 / 任意
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. リスク評価 -->
+    <section id="risk-assessment" class="section">
+      <h2 class="section-title">3. リスク評価の観点</h2>
+
+      <h3 class="subsection-title">高リスク活動の特徴</h3>
+      
+      <div class="warning-box">
+        <h4>高リスク活動の例</h4>
+        <ul>
+          <li><strong>水関連</strong>：海での活動、カヌー、SUP（溺水リスク、熱中症）</li>
+          <li><strong>動物関連</strong>：馬とのワーク（蹴られる、踏まれる、落馬）</li>
+          <li><strong>高所・移動</strong>：ロッククライミング、トレッキング</li>
+          <li><strong>道具使用</strong>：刃物を使う木工、火を使う活動</li>
+        </ul>
+      </div>
+
+      <div class="checklist">
+        <div class="checklist-title">リスク評価チェックリスト</div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✓</span>
+          <span>生命に関わる重大事故の可能性があるか</span>
+        </div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✓</span>
+          <span>専門的な安全知識・技術が必要か</span>
+        </div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✓</span>
+          <span>環境要因（天候、潮汐など）に左右されるか</span>
+        </div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✓</span>
+          <span>参加者の個人差が安全性に大きく影響するか</span>
+        </div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✓</span>
+          <span>緊急時の対応手順が複雑か</span>
+        </div>
+      </div>
+
+      <p><span class="risk-level risk-high">🔴 高リスク</span>の活動では、<strong>机上の説明だけでは安全管理は不可能</strong>です。実際の現場の感覚、危険の察知能力、緊急時の判断力は、体験によってのみ身につけることができます。</p>
+    </section>
+
+    <!-- 4. 体験価値の評価 -->
+    <section id="experience-value" class="section">
+      <h2 class="section-title">4. 体験価値の評価</h2>
+
+      <p>ULTLAでは「体験で終わらせない」ことを重視しています。身体的な実感をいかに学びや気づきにつなげるかが、ファシリテーターの腕の見せ所です。</p>
+
+      <h3 class="subsection-title">高い体験価値を持つ活動</h3>
+
+      <div class="success-box">
+        <h4>体験価値が高い活動の特徴</h4>
+        <ul>
+          <li><strong>身体感覚が鍵</strong>：海に浮かぶ感覚、馬の温もり、波の抵抗感</li>
+          <li><strong>感情的インパクト</strong>：恐怖、感動、驚きなどの強い感情体験</li>
+          <li><strong>非日常性</strong>：普段の生活では得られない特別な体験</li>
+          <li><strong>個人差が大きい</strong>：人によって全く異なる反応・感想</li>
+        </ul>
+      </div>
+
+      <div class="case-study">
+        <div class="case-title">🐴 ケーススタディ：馬とのワーク</div>
+        <p><strong>なぜ馬は「必須体験」なのか？</strong></p>
+        <ul>
+          <li><strong>リスク面</strong>：蹴られる、踏まれる、落馬など生命に関わる危険</li>
+          <li><strong>体験面</strong>：馬という「未知なる存在」との対話は、実際に触れなければ理解不可能</li>
+          <li><strong>ファシリテーション面</strong>：参加者の反応（恐怖、感動、戸惑い）を予測するには、自身の体験が不可欠</li>
+          <li><strong>声かけの質</strong>：「大丈夫、怖くないよ」ではなく、具体的で的確な安心材料を提供できる</li>
+        </ul>
+        <p><strong>結論</strong>：最低でも現場に当日いる3人のスタッフが体験する必要がある</p>
+      </div>
+
+      <h3 class="subsection-title">説明で十分な活動</h3>
+
+      <p>一方で、以下のような活動は必ずしも全員が体験する必要はありません：</p>
+
+      <ul>
+        <li><strong>講義型</strong>：専門家による知識共有（内容を事前に確認すれば十分）</li>
+        <li><strong>定型的なワーク</strong>：過去に同じ形式で実施した経験がある</li>
+        <li><strong>低リスク・高予測可能性</strong>：お寺での瞑想、カフェでの対話など</li>
+      </ul>
+    </section>
+
+    <!-- 5. ケーススタディ -->
+    <section id="case-studies" class="section">
+      <h2 class="section-title">5. 具体的ケーススタディ</h2>
+
+      <div class="case-study">
+        <div class="case-title">🌊 海でのワーク（高リスク×高体験価値）</div>
+        <p><strong>活動内容</strong>：海に入って浮遊体験、カヌー、SUP</p>
+        <p><strong>判定</strong>：<span class="risk-level risk-high">🔴 全員体験必須</span></p>
+        <div class="checklist">
+          <div class="checklist-title">必要な事前体験</div>
+          <div class="checklist-item">
+            <span class="checklist-icon">✓</span>
+            <span>実際に海に入り、浮遊感覚を体験</span>
+          </div>
+          <div class="checklist-item">
+            <span class="checklist-icon">✓</span>
+            <span>カヌーでの波との格闘、バランス感覚</span>
+          </div>
+          <div class="checklist-item">
+            <span class="checklist-icon">✓</span>
+            <span>潮汐、波の状況判断</span>
+          </div>
+          <div class="checklist-item">
+            <span class="checklist-icon">✓</span>
+            <span>緊急時の救助手順確認</span>
+          </div>
+        </div>
+        <p><strong>理由</strong>：「重力と意識の関係」について語るには、無重力感の実体験が不可欠。また水難事故のリスク管理も現場感覚なしには不可能。</p>
+      </div>
+
+      <div class="case-study">
+        <div class="case-title">🏺 陶芸ワーク（低リスク×高体験価値）</div>
+        <p><strong>活動内容</strong>：土に触れ、器を作る体験</p>
+        <p><strong>判定</strong>：<span class="risk-level risk-medium">🟡 1-2人が体験推奨</span></p>
+        <div class="checklist">
+          <div class="checklist-title">推奨する事前体験</div>
+          <div class="checklist-item">
+            <span class="checklist-icon">✓</span>
+            <span>土の感触、作業の難易度確認</span>
+          </div>
+          <div class="checklist-item">
+            <span class="checklist-icon">✓</span>
+            <span>初心者がつまづきやすいポイント把握</span>
+          </div>
+          <div class="checklist-item">
+            <span class="checklist-icon">✓</span>
+            <span>作品完成度と満足度の関係性理解</span>
+          </div>
+        </div>
+        <p><strong>理由</strong>：安全性は高いが、「土との対話」という感覚的体験を言語化するために一定の体験は有効。</p>
+      </div>
+
+      <div class="case-study">
+        <div class="case-title">🧘 お寺での瞑想（低リスク×低体験価値）</div>
+        <p><strong>活動内容</strong>：禅寺での座禅体験</p>
+        <p><strong>判定</strong>：<span class="risk-level risk-low">🟢 説明で十分</span></p>
+        <div class="checklist">
+          <div class="checklist-title">事前確認で十分な項目</div>
+          <div class="checklist-item">
+            <span class="checklist-icon">✓</span>
+            <span>座禅の作法・手順の確認</span>
+          </div>
+          <div class="checklist-item">
+            <span class="checklist-icon">✓</span>
+            <span>会場設備・時間配分の把握</span>
+          </div>
+          <div class="checklist-item">
+            <span class="checklist-icon">✓</span>
+            <span>僧侶との事前打ち合わせ</span>
+          </div>
+        </div>
+        <p><strong>理由</strong>：形式が確立されており、リスクも低い。瞑想体験自体は個人的なものであり、ファシリテーター側の体験による差は限定的。</p>
+      </div>
+    </section>
+
+    <!-- 6. ロジスティクス -->
+    <section id="logistics" class="section">
+      <h2 class="section-title">6. 現実的なロジスティクス</h2>
+
+      <p>理想的なプログラム構成と現実的な制約のバランスを取ることも、ULTLAコーディネーターの重要な判断です。</p>
+
+      <h3 class="subsection-title">場所選定の判断基準</h3>
+
+      <div class="highlight-box">
+        <h4>場所の影響要因</h4>
+        <ul>
+          <li><strong>物理的環境</strong>：屋内/屋外、開放感/閉塞感、自然/人工</li>
+          <li><strong>音響・視覚</strong>：静寂性、視界の広がり、自然音の有無</li>
+          <li><strong>アクセス</strong>：移動時間、交通手段、参加者の疲労度</li>
+          <li><strong>設備</strong>：トイレ、休憩場所、雨天時の対応</li>
+        </ul>
+      </div>
+
+      <div class="warning-box">
+        <h4>移動時間の落とし穴</h4>
+        <p>理想的な場所A（午前）→ 理想的な場所B（午後）の組み合わせでも、移動時間が1時間を超える場合は要注意：</p>
+        <ul>
+          <li>参加者の集中力の分散</li>
+          <li>移動疲れによる午後のパフォーマンス低下</li>
+          <li>移動時間中の安全管理</li>
+          <li>スケジュール遅延のリスク増大</li>
+        </ul>
+        <p><strong>代替案</strong>：場所Aの近くにある場所Cでの実施を検討する柔軟性が重要</p>
+      </div>
+
+      <h3 class="subsection-title">視察の効率化</h3>
+
+      <div class="checklist">
+        <div class="checklist-title">効率的な視察計画</div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✓</span>
+          <span><strong>優先順位付け</strong>：高リスク×高体験価値から順に実施</span>
+        </div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✓</span>
+          <span><strong>組み合わせ視察</strong>：近隣の複数会場を同日に回る</span>
+        </div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✓</span>
+          <span><strong>分担制</strong>：スタッフによる専門分野での役割分担</span>
+        </div>
+        <div class="checklist-item">
+          <span class="checklist-icon">✓</span>
+          <span><strong>記録共有</strong>：体験者による詳細レポート作成</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. チーム体制 -->
+    <section id="team-coordination" class="section">
+      <h2 class="section-title">7. チーム体制と情報共有</h2>
+
+      <h3 class="subsection-title">「チームとしての認識共有」の重要性</h3>
+
+      <p>ULTLAプログラムでは、<strong>個人の体験を組織の知識に変換する</strong>プロセスが極めて重要です。</p>
+
+      <div class="success-box">
+        <h4>効果的な情報共有の方法</h4>
+        <ol>
+          <li><strong>体験直後のブリーフィング</strong>：感覚が鮮明なうちに言語化</li>
+          <li><strong>構造化されたレポート</strong>：リスク要因・体験価値・ファシリテーションポイントを整理</li>
+          <li><strong>ロールプレイング</strong>：参加者の立場での疑似体験</li>
+          <li><strong>チェックリスト作成</strong>：当日の確認事項・緊急時対応を標準化</li>
+        </ol>
+      </div>
+
+      <h3 class="subsection-title">最低限必要な体験者数</h3>
+
+      <div class="decision-matrix">
+        <div class="matrix-header">リスクレベル別推奨体験者数</div>
+        <div class="matrix-grid">
+          <div class="matrix-cell header">リスクレベル</div>
+          <div class="matrix-cell header">推奨体験者数</div>
+          <div class="matrix-cell header">理由</div>
+          
+          <div class="matrix-cell high-risk">高リスク</div>
+          <div class="matrix-cell high-risk">最低3人</div>
+          <div class="matrix-cell high-risk">複数視点でのリスク把握<br>緊急時対応の冗長性確保</div>
+          
+          <div class="matrix-cell medium-risk">中リスク</div>
+          <div class="matrix-cell medium-risk">2人</div>
+          <div class="matrix-cell medium-risk">体験価値の客観視<br>ファシリテーション品質向上</div>
+          
+          <div class="matrix-cell low-risk">低リスク</div>
+          <div class="matrix-cell low-risk">1人</div>
+          <div class="matrix-cell low-risk">基本的な流れ・内容の把握<br>効率性重視</div>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <h4>「伝えられない体験」の存在</h4>
+        <p>馬との接触、海での浮遊感、土との対話など、<strong>言語化困難な身体感覚</strong>は他人に伝達不可能です。このような体験価値の高い活動では、説明や動画では代替できない「直接体験」が必須となります。</p>
+      </div>
+    </section>
+
+    <!-- 8. まとめ -->
+    <section id="conclusion" class="section">
+      <h2 class="section-title">8. まとめ：実践的ガイドライン</h2>
+
+      <div class="highlight-box">
+        <h3>視察判断の実践ガイドライン</h3>
+        <ol>
+          <li>
+            <strong>2軸で評価</strong>
+            <ul>
+              <li>リスクレベル（安全管理の複雑さ）</li>
+              <li>体験価値（感覚的理解の重要度）</li>
+            </ul>
+          </li>
+          <li>
+            <strong>段階的アプローチ</strong>
+            <ul>
+              <li>🔴 必須（最低3人）：高リスク×高体験価値</li>
+              <li>🟡 推奨（1-2人）：中程度のリスク・体験価値</li>
+              <li>🟢 任意（説明可）：低リスク×低体験価値</li>
+            </ul>
+          </li>
+          <li>
+            <strong>現実的制約の考慮</strong>
+            <ul>
+              <li>移動時間・コスト・スケジュール</li>
+              <li>代替案の柔軟な検討</li>
+            </ul>
+          </li>
+          <li>
+            <strong>チーム知識化</strong>
+            <ul>
+              <li>体験の言語化・構造化</li>
+              <li>標準化された共有方法</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <div class="success-box">
+        <h3>ULTLAコーディネーターとして身につけるべき感覚</h3>
+        <p>単なる体験提供ではなく、<strong>「異なるセンスを組み合わせて、より大きな価値を創造する」</strong>のがULTLAプログラムの本質です。</p>
+        <ul>
+          <li><strong>繊細な感受性</strong>：ナビゲーターの個性・特性の見極め</li>
+          <li><strong>総合的判断力</strong>：理想と現実のバランス</li>
+          <li><strong>チーム運営力</strong>：個人体験の組織知識化</li>
+          <li><strong>リスク感受性</strong>：安全性とチャレンジ性の両立</li>
+        </ul>
+      </div>
+
+      <p>この判断基準は、プログラム開催の<strong>約3ヶ月前</strong>から始まるナビゲーター選定・場所決定プロセスの根幹をなすものです。適切な視察判断により、参加者にとっても、運営チームにとっても、より安全で価値ある体験を創造していきましょう。</p>
+    </section>
+  </article>
+
+  <!-- 関連記事・ナビゲーション -->
+  <nav style="margin-top: var(--spacing-2xl); padding: var(--spacing-xl); background: var(--bg-card); border-radius: var(--radius-lg);">
+    <h3 style="margin-bottom: var(--spacing-md); color: var(--ultla-blue);">🔗 関連記事</h3>
+    <ul style="list-style: none; padding: 0;">
+      <li style="margin-bottom: var(--spacing-sm);">
+        <a href="../index.html" style="color: var(--ultla-blue); text-decoration: none;">← ULTLAラボ トップページ</a>
+      </li>
+      <li style="margin-bottom: var(--spacing-sm);">
+        <a href="#" style="color: var(--text-muted); text-decoration: none;">ナビゲーター選定の基準（執筆予定）</a>
+      </li>
+      <li style="margin-bottom: var(--spacing-sm);">
+        <a href="#" style="color: var(--text-muted); text-decoration: none;">リスク管理マニュアル（執筆予定）</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+```
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <small>© 2025 ULTLA Fan Community</small>
+    </div>
+  </footer>
+
+  <!-- 共通JSを読み込み -->
+
+  <script src="../../../shared/navigation.js"></script>
+
+  <!-- スムーススクロール -->
+
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
